@@ -1,4 +1,4 @@
-name: VIDAI Deploy
+name: VIDAI Production Deploy
 
 
 on:
@@ -25,11 +25,10 @@ jobs:
   deploy:
 
 
-    name: Build And Deploy
+    name: Build Minify Obfuscate Deploy
 
 
     runs-on: ubuntu-latest
-
 
 
     env:
@@ -38,15 +37,16 @@ jobs:
 
 
 
+
+
     steps:
 
 
-
-      # =====================================
+      # ================================
       # CHECKOUT
-      # =====================================
+      # ================================
 
-      - name: Checkout Repository
+      - name: Checkout
 
         uses: actions/checkout@v4
 
@@ -54,11 +54,11 @@ jobs:
 
 
 
-      # =====================================
+      # ================================
       # NODE
-      # =====================================
+      # ================================
 
-      - name: Setup Node.js
+      - name: Setup Node 22
 
         uses: actions/setup-node@v4
 
@@ -70,11 +70,11 @@ jobs:
 
 
 
-      # =====================================
+      # ================================
       # INSTALL TOOLS
-      # =====================================
+      # ================================
 
-      - name: Install Build Tools
+      - name: Install Tools
 
         run: |
 
@@ -92,11 +92,11 @@ jobs:
 
 
 
-      # =====================================
+      # ================================
       # CREATE DIST
-      # =====================================
+      # ================================
 
-      - name: Prepare Dist
+      - name: Create Dist
 
         run: |
 
@@ -110,36 +110,27 @@ jobs:
 
 
 
-      # =====================================
-      # MINIFY HTML
-      # =====================================
+      # ================================
+      # HTML MINIFY
+      # ================================
 
       - name: Minify HTML
 
         run: |
 
           find dist -type f -name "*.html" | while read file
-
           do
 
             html-minifier-terser \
-
               --collapse-whitespace \
-
               --remove-comments \
-
               --remove-redundant-attributes \
-
               --remove-script-type-attributes \
-
+              --remove-tag-whitespace \
               --use-short-doctype \
-
               --minify-css true \
-
               --minify-js true \
-
               "$file" \
-
               -o "$file"
 
           done
@@ -148,24 +139,20 @@ jobs:
 
 
 
-      # =====================================
-      # MINIFY CSS
-      # =====================================
+      # ================================
+      # CSS MINIFY
+      # ================================
 
       - name: Minify CSS
 
         run: |
 
           find dist -type f -name "*.css" | while read file
-
           do
 
             cleancss \
-
               -O2 \
-
               "$file" \
-
               -o "$file"
 
           done
@@ -174,24 +161,20 @@ jobs:
 
 
 
-      # =====================================
-      # MINIFY JAVASCRIPT
-      # =====================================
+      # ================================
+      # JS MINIFY
+      # ================================
 
       - name: Minify JavaScript
 
         run: |
 
           find dist -type f -name "*.js" | while read file
-
           do
 
             terser "$file" \
-
               --compress \
-
               --mangle \
-
               -o "$file"
 
           done
@@ -200,38 +183,27 @@ jobs:
 
 
 
-      # =====================================
-      # OBFUSCATE JAVASCRIPT
-      # =====================================
+      # ================================
+      # JS OBFUSCATION
+      # ================================
 
       - name: Obfuscate JavaScript
 
         run: |
 
           find dist -type f -name "*.js" | while read file
-
           do
 
             javascript-obfuscator "$file" \
-
               --output "$file" \
-
               --compact true \
-
               --control-flow-flattening true \
-
               --control-flow-flattening-threshold 0.5 \
-
               --identifier-names-generator hexadecimal \
-
               --rename-globals false \
-
               --self-defending true \
-
               --string-array true \
-
               --string-array-encoding base64 \
-
               --disable-console-output true
 
           done
@@ -240,11 +212,11 @@ jobs:
 
 
 
-      # =====================================
-      # CACHE HASH VERSION
-      # =====================================
+      # ================================
+      # BUILD HASH
+      # ================================
 
-      - name: Generate Build Hash
+      - name: Generate Version
 
         run: |
 
@@ -254,17 +226,22 @@ jobs:
 
 
 
-      - name: Inject Cache Version
+      # ================================
+      # CACHE BUST
+      # ================================
+
+      - name: Cache Bust
 
         run: |
 
           find dist -type f -name "*.html" | while read file
-
           do
 
             sed -i "s|main.css|main.css?v=${BUILD_VERSION}|g" "$file"
 
             sed -i "s|app.js|app.js?v=${BUILD_VERSION}|g" "$file"
+
+            sed -i "s|config.js|config.js?v=${BUILD_VERSION}|g" "$file"
 
             sed -i "s|manifest.json|manifest.json?v=${BUILD_VERSION}|g" "$file"
 
@@ -274,35 +251,29 @@ jobs:
 
 
 
-      # =====================================
-      # CLOUDFLARE HEADERS
-      # =====================================
+      # ================================
+      # SECURITY HEADERS
+      # ================================
 
-      - name: Security Headers
+      - name: Create Headers
 
         run: |
 
           cat > dist/_headers <<EOF
-
-          /*
-
-            X-Frame-Options: SAMEORIGIN
-
-            X-Content-Type-Options: nosniff
-
-            Referrer-Policy: strict-origin-when-cross-origin
-
-            Permissions-Policy: geolocation=(self)
-
-          EOF
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=()
+EOF
 
 
 
 
 
-      # =====================================
-      # DEPLOY
-      # =====================================
+      # ================================
+      # CLOUDFLARE DEPLOY
+      # ================================
 
       - name: Deploy Cloudflare Pages
 
@@ -315,21 +286,19 @@ jobs:
         run: |
 
           wrangler pages deploy dist \
-
             --project-name="$PROJECT_NAME" \
-
             --commit-dirty=true
 
 
 
 
 
-      # =====================================
+      # ================================
       # SUCCESS
-      # =====================================
+      # ================================
 
       - name: Success
 
         run: |
 
-          echo "VIDAI DEPLOYED SUCCESSFULLY"
+          echo "VIDAI DEPLOYMENT COMPLETED"
