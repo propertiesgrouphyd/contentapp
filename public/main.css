@@ -1511,3 +1511,89 @@ button:active{
     display:none !important;
 
 }
+
+
+
+/* =========================================================
+   PWA Install Floating Button
+   ========================================================= */
+
+
+.vw-install-btn{
+
+    position:fixed;
+
+    right:20px;
+
+    bottom:20px;
+
+    z-index:9999;
+
+
+    padding:14px 20px;
+
+
+    border:none;
+
+    border-radius:999px;
+
+
+    background:#111827;
+
+    color:white;
+
+
+    font-size:15px;
+
+    font-weight:600;
+
+
+    cursor:pointer;
+
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.25);
+
+
+    transition:
+    transform .2s ease,
+    opacity .2s ease;
+
+}
+
+
+
+.vw-install-btn:hover{
+
+    transform:translateY(-3px);
+
+}
+
+
+
+.vw-install-btn:active{
+
+    transform:scale(.96);
+
+}
+
+
+
+@media(max-width:768px){
+
+
+    .vw-install-btn{
+
+        right:16px;
+
+        bottom:16px;
+
+        width:auto;
+
+        max-width:calc(100vw - 32px);
+
+        font-size:14px;
+
+    }
+
+}

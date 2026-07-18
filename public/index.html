@@ -1,104 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <!-- =========================================================
          VIDHWAAN AI Writer
-         Version : 1.0.0
-         Global Production Build
+         Global Production SEO + PWA Head
          ========================================================= -->
+
 
     <meta charset="utf-8">
 
-    <title>VIDHWAAN AI Writer</title>
+
+    <title>
+        VIDHWAAN AI Writer - Professional AI Content Generator
+    </title>
+
 
     <meta name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover">
 
+
     <meta name="description"
-          content="Professional AI writing platform for creating high-quality content with an intelligent guided workflow.">
+          content="VIDHWAAN AI Writer is a professional AI writing platform that helps create blogs, marketing content, social media posts, emails, articles, and professional documents using intelligent AI technology.">
+
 
     <meta name="keywords"
-          content="AI Writer, Writing Assistant, Content Generator, Vidhwaan">
+          content="
+          VIDHWAAN AI Writer,
+          AI Writer,
+          AI Content Generator,
+          AI Writing Assistant,
+          Content Creator AI,
+          Blog Writer AI,
+          Marketing Content Generator,
+          Professional Writing Tool
+          ">
+
 
     <meta name="author"
-          content="GIDIGI TECHNOLOGIES PRIVATE LIMITED">
+          content="VIDHWAAN">
+
+
+    <meta name="publisher"
+          content="VIDHWAAN">
+
 
     <meta name="application-name"
           content="VIDHWAAN AI Writer">
 
+
+    <meta name="apple-mobile-web-app-title"
+          content="VIDHWAAN AI Writer">
+
+
     <meta name="theme-color"
           content="#111827">
+
 
     <meta name="color-scheme"
           content="light">
 
+
     <meta name="robots"
-          content="index,follow">
+          content="index, follow">
+
+
+    <meta name="googlebot"
+          content="index, follow">
+
 
     <meta name="referrer"
           content="strict-origin-when-cross-origin">
 
+
     <meta name="format-detection"
           content="telephone=no">
+
+
+
+    <!-- Canonical -->
+
+    <link rel="canonical"
+          href="https://create.vidhwaan.com/">
+
+
 
     <!-- Open Graph -->
 
     <meta property="og:type"
           content="website">
 
+
+    <meta property="og:url"
+          content="https://create.vidhwaan.com/">
+
+
     <meta property="og:title"
-          content="VIDHWAAN AI Writer">
+          content="VIDHWAAN AI Writer - Create Professional Content with AI">
+
 
     <meta property="og:description"
-          content="Professional AI writing platform.">
+          content="Generate professional blogs, marketing content, social media posts, emails, and documents with VIDHWAAN AI Writer.">
+
 
     <meta property="og:image"
-          content="assets/images/og-image.png">
+          content="https://create.vidhwaan.com/assets/images/og-image.png">
+
+
+    <meta property="og:site_name"
+          content="VIDHWAAN AI Writer">
+
+
 
     <!-- Twitter -->
 
     <meta name="twitter:card"
           content="summary_large_image">
 
+
     <meta name="twitter:title"
-          content="VIDHWAAN AI Writer">
+          content="VIDHWAAN AI Writer - Professional AI Writing Platform">
+
 
     <meta name="twitter:description"
-          content="Professional AI writing platform.">
+          content="Create high-quality AI-generated content for business, marketing, education, and professional communication.">
 
-    <!-- Apple -->
 
-    <meta name="apple-mobile-web-app-capable"
-          content="yes">
+    <meta name="twitter:image"
+          content="https://create.vidhwaan.com/assets/images/og-image.png">
 
-    <meta name="apple-mobile-web-app-status-bar-style"
-          content="default">
 
-    <meta name="apple-mobile-web-app-title"
-          content="VIDHWAAN AI Writer">
 
-    <!-- Manifest -->
+    <!-- PWA -->
 
     <link rel="manifest"
           href="manifest.json">
 
-    <!-- Icons -->
 
-    <link rel="icon"
-          href="favicon.ico">
+    <meta name="mobile-web-app-capable"
+          content="yes">
+
+
+    <meta name="apple-mobile-web-app-capable"
+          content="yes">
+
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="default">
+
 
     <link rel="apple-touch-icon"
           href="assets/icons/icon-192.png">
 
-    <!-- Styles -->
+
+
+    <!-- Icons -->
+
+    <link rel="icon"
+          type="image/svg+xml"
+          href="assets/logo.svg">
+
+
+    <link rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="assets/icons/icon-192.png">
+
+
+
+    <!-- Performance -->
+
+    <link rel="preconnect"
+          href="https://api.groq.com">
+
+
+    <link rel="dns-prefetch"
+          href="https://api.groq.com">
+
 
     <link rel="preload"
           href="main.css"
           as="style">
 
+
     <link rel="stylesheet"
           href="main.css">
+
+
+
+    <!-- Structured Data -->
+
+    <script type="application/ld+json">
+
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VIDHWAAN AI Writer",
+        "url": "https://create.vidhwaan.com/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web, Android, iOS, Windows",
+        "description": "Professional AI writing platform for creating blogs, marketing content, social media posts, emails and professional documents.",
+        "brand": {
+            "@type": "Brand",
+            "name": "VIDHWAAN"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "30",
+            "priceCurrency": "INR"
+        }
+    }
+
+    </script>
+
+
 </head>
+
 
 <body>
 
@@ -777,6 +894,75 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script type="module" src="engine/app.js"></script>
+
+<script src="config.js"></script>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script type="module" src="engine/app.js"></script>
+
+
+<script>
+
+if(
+"serviceWorker" in navigator
+){
+
+window.addEventListener(
+
+"load",
+
+()=>{
+
+
+navigator.serviceWorker.register(
+
+"sw.js"
+
+)
+
+.then(
+
+()=>console.log(
+"VIDHWAAN PWA Ready"
+)
+
+)
+
+.catch(
+
+error=>
+
+console.error(
+"PWA Error",
+error
+)
+
+);
+
+
+}
+
+);
+
+}
+
+</script>
+
+
+
+
+
+<button
+    id="vw-install-btn"
+    class="vw-install-btn"
+    type="button"
+    hidden>
+
+    Install
+
+</button>
+
 
 </body>
 </html>

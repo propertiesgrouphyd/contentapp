@@ -18,6 +18,7 @@ import AIClient from "./ai-client.js";
 import PromptBuilder from "./prompt-builder.js";
 import ContentRenderer from "./content-renderer.js";
 import * as OutputRenderer from "./output-renderer.js";
+import PWAManager from "./pwa-manager.js";
 
 const App = {
 
@@ -40,6 +41,8 @@ const App = {
         this.restoreApiKey();
 
         this.bindEvents();
+
+        PWAManager.init();
 
         await this.refreshSubscriptionUI();
 
