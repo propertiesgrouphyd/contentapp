@@ -7,9 +7,11 @@ on:
 
     branches:
       - main
+      - master
 
 
   workflow_dispatch:
+
 
 
 
@@ -19,13 +21,14 @@ permissions:
 
 
 
+
 jobs:
 
 
   deploy:
 
 
-    name: Build Minify Obfuscate Deploy
+    name: Build And Deploy
 
 
     runs-on: ubuntu-latest
@@ -38,15 +41,14 @@ jobs:
 
 
 
-
     steps:
 
 
-      # ================================
+      # ==========================
       # CHECKOUT
-      # ================================
+      # ==========================
 
-      - name: Checkout
+      - name: Checkout Repository
 
         uses: actions/checkout@v4
 
@@ -54,11 +56,11 @@ jobs:
 
 
 
-      # ================================
+      # ==========================
       # NODE
-      # ================================
+      # ==========================
 
-      - name: Setup Node 22
+      - name: Setup Node
 
         uses: actions/setup-node@v4
 
@@ -70,33 +72,29 @@ jobs:
 
 
 
-      # ================================
+      # ==========================
       # INSTALL TOOLS
-      # ================================
+      # ==========================
 
       - name: Install Tools
 
         run: |
 
           npm install -g terser
-
           npm install -g javascript-obfuscator
-
           npm install -g clean-css-cli
-
           npm install -g html-minifier-terser
-
           npm install -g wrangler
 
 
 
 
 
-      # ================================
+      # ==========================
       # CREATE DIST
-      # ================================
+      # ==========================
 
-      - name: Create Dist
+      - name: Prepare Dist
 
         run: |
 
@@ -110,9 +108,9 @@ jobs:
 
 
 
-      # ================================
+      # ==========================
       # HTML MINIFY
-      # ================================
+      # ==========================
 
       - name: Minify HTML
 
@@ -139,9 +137,9 @@ jobs:
 
 
 
-      # ================================
+      # ==========================
       # CSS MINIFY
-      # ================================
+      # ==========================
 
       - name: Minify CSS
 
@@ -161,9 +159,9 @@ jobs:
 
 
 
-      # ================================
+      # ==========================
       # JS MINIFY
-      # ================================
+      # ==========================
 
       - name: Minify JavaScript
 
@@ -183,9 +181,9 @@ jobs:
 
 
 
-      # ================================
-      # JS OBFUSCATION
-      # ================================
+      # ==========================
+      # JS OBFUSCATE
+      # ==========================
 
       - name: Obfuscate JavaScript
 
@@ -212,9 +210,9 @@ jobs:
 
 
 
-      # ================================
-      # BUILD HASH
-      # ================================
+      # ==========================
+      # CACHE VERSION
+      # ==========================
 
       - name: Generate Version
 
@@ -225,10 +223,6 @@ jobs:
 
 
 
-
-      # ================================
-      # CACHE BUST
-      # ================================
 
       - name: Cache Bust
 
@@ -251,29 +245,60 @@ jobs:
 
 
 
-      # ================================
-      # SECURITY HEADERS
-      # ================================
+      # ==========================
+      # CLOUDFLARE HEADERS
+      # ==========================
 
-      - name: Create Headers
+      - name: Create Security Headers
 
         run: |
 
-          cat > dist/_headers <<EOF
-/*
-  X-Frame-Options: SAMEORIGIN
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=()
-EOF
+          printf '%s\n' \
+          "/*" \
+          "  X-Frame-Options: SAMEORIGIN" \
+          "  X-Content-Type-Options: nosniff" \
+          "  Referrer-Policy: strict-origin-when-cross-origin" \
+          > dist/_headers
 
 
 
 
 
-      # ================================
-      # CLOUDFLARE DEPLOY
-      # ================================
+      # ==========================
+      # CREATE PAGES PROJECT
+      # ==========================
+
+      - name: Create Cloudflare Pages Project If Missing
+
+        env:
+
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+        run: |
+
+          if wrangler pages project list | grep -q "$PROJECT_NAME"
+          then
+
+            echo "Cloudflare Pages project exists"
+
+          else
+
+            echo "Creating Cloudflare Pages project"
+
+            wrangler pages project create "$PROJECT_NAME" \
+              --production-branch main
+
+          fi
+
+
+
+
+
+      # ==========================
+      # DEPLOY
+      # ==========================
 
       - name: Deploy Cloudflare Pages
 
@@ -293,12 +318,12 @@ EOF
 
 
 
-      # ================================
+      # ==========================
       # SUCCESS
-      # ================================
+      # ==========================
 
       - name: Success
 
         run: |
 
-          echo "VIDAI DEPLOYMENT COMPLETED"
+          echo "VIDAI DEPLOYMENT COMPLETED SUCCESSFULLY"
