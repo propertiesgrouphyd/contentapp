@@ -3,11 +3,7 @@ name: VIDAI Production Deploy
 
 on:
 
-  push:
 
-    branches:
-      - main
-      - master
 
 
   workflow_dispatch:
