@@ -285,7 +285,7 @@ strong{
 
     box-shadow:var(--vw-shadow-sm);
 
-    padding:var(--vw-space-6);
+    padding:20px;
 
 }
 
@@ -1004,7 +1004,7 @@ summary h2::before{
 
     #vw-main{
 
-        padding:24px;
+        padding:12px;
 
     }
 
@@ -1644,7 +1644,7 @@ summary h2::before{
         min-height:300px;
 
 
-        padding:18px;
+        padding:14px;
 
 
         font-size:16px;
@@ -1655,7 +1655,7 @@ summary h2::before{
         letter-spacing:0;
 
 
-        border-radius:16px;
+        border-radius:14px;
 
     }
 
@@ -1858,7 +1858,7 @@ summary h2::before{
 
     .vw-modal{
 
-        padding:12px;
+        padding:8px;
 
         align-items:flex-end;
 
