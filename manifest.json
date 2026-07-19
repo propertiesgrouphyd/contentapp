@@ -2,10 +2,22 @@
     "name": "VIDHWAAN AI Writer",
     "short_name": "VIDHWAAN AI",
     "description": "Professional AI writing platform for creating high-quality content.",
+
+    "id": "/",
+
     "start_url": "./",
     "scope": "./",
-    "display": "standalone",
+
+    "display": "minimal-ui",
+
+    "display_override": [
+        "minimal-ui",
+        "standalone",
+        "browser"
+    ],
+
     "orientation": "portrait-primary",
+
     "background_color": "#f8fafc",
     "theme_color": "#111827",
 
