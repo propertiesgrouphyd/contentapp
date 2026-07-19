@@ -1,31 +1,7 @@
 "use strict";
 
 
-const CACHE_NAME = "vidhwaan-ai-v13";
-
-
-
-const APP_FILES = [
-
-    "./",
-
-    "./index.html",
-
-    "./main.css",
-
-    "./config.js",
-
-    "./engine/app.js",
-
-    "./manifest.json",
-
-    "./assets/logo.svg",
-
-    "./assets/icons/icon-192.png"
-
-];
-
-
+const CACHE_NAME = "vidhwaan-ai-runtime-v1";
 
 
 
@@ -36,28 +12,10 @@ self.addEventListener(
 event=>{
 
 
-    event.waitUntil(
-
-
-        caches.open(CACHE_NAME)
-
-        .then(
-
-            cache =>
-
-            cache.addAll(APP_FILES)
-
-        )
-
-
-    );
-
-
     self.skipWaiting();
 
 
 });
-
 
 
 
@@ -82,7 +40,6 @@ event=>{
 
 
             Promise.all(
-
 
                 keys.map(
 
@@ -134,9 +91,12 @@ self.addEventListener(
 event=>{
 
 
+    const request = event.request;
+
+
     const url = new URL(
 
-        event.request.url
+        request.url
 
     );
 
@@ -145,12 +105,12 @@ event=>{
 
 
     /*
-        NEVER INTERCEPT
+        NEVER CACHE
 
-        Payment Worker
-        Razorpay
+        Payments
+        Workers
         AI APIs
-        External APIs
+        External services
 
     */
 
@@ -158,68 +118,42 @@ event=>{
     if(
 
 
-        url.hostname.includes(
-
-            "workers.dev"
-
-        )
+        url.hostname.includes("workers.dev")
 
 
         ||
 
 
-        url.hostname.includes(
-
-            "razorpay"
-
-        )
+        url.hostname.includes("razorpay")
 
 
         ||
 
 
-        url.hostname.includes(
-
-            "groq"
-
-        )
+        url.hostname.includes("groq")
 
 
         ||
 
 
-        url.pathname.includes(
-
-            "/api/"
-
-        )
+        url.pathname.includes("/api/")
 
 
         ||
 
 
-        url.pathname.includes(
-
-            "/create-order"
-
-        )
+        url.pathname.includes("/create-order")
 
 
         ||
 
 
-        url.pathname.includes(
-
-            "/verify-payment"
-
-        )
+        url.pathname.includes("/verify-payment")
 
 
     ){
 
-
         return;
-
 
     }
 
@@ -227,23 +161,19 @@ event=>{
 
 
 
-
-
     /*
-        Never handle non GET
+        Only GET
 
     */
 
 
     if(
 
-        event.request.method !== "GET"
+        request.method !== "GET"
 
     ){
 
-
         return;
-
 
     }
 
@@ -256,9 +186,9 @@ event=>{
     /*
         Network First
 
-        Fresh app always
+        Always get latest version.
 
-        Offline fallback
+        Cache only if offline.
 
     */
 
@@ -266,16 +196,64 @@ event=>{
     event.respondWith(
 
 
-        fetch(
-
-            event.request
-
-        )
-
+        fetch(request)
 
         .then(
 
             response=>{
+
+
+                /*
+                    Save successful
+                    static responses
+
+                */
+
+
+                if(
+
+                    response.ok
+
+                    &&
+
+                    url.origin === location.origin
+
+                ){
+
+
+                    const copy =
+
+                    response.clone();
+
+
+
+                    caches.open(
+
+                        CACHE_NAME
+
+                    )
+
+                    .then(
+
+                        cache=>{
+
+
+                            cache.put(
+
+                                request,
+
+                                copy
+
+                            );
+
+
+                        }
+
+                    );
+
+
+                }
+
 
 
                 return response;
@@ -294,7 +272,7 @@ event=>{
 
             caches.match(
 
-                event.request
+                request
 
             )
 
@@ -303,7 +281,6 @@ event=>{
 
 
     );
-
 
 
 });
