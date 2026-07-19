@@ -208,20 +208,24 @@ const App = {
                         );
 
 
-
-                        await this.refreshSubscriptionUI();
-
-
-
                         this.updateStatus(
                             "Subscription Activated"
                         );
 
 
-
-                        alert(
+                        this.showToast(
                             "Subscription activated successfully."
                         );
+
+
+
+                        setTimeout(()=>{
+
+
+                            this.refreshSubscriptionUI();
+
+
+                        },1000);
 
 
                     }
