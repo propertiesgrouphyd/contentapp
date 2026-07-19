@@ -141,7 +141,7 @@ const AIClient = {
 
 
 
-                        temperature:0.8,
+                        temperature:0.75,
 
 
 
