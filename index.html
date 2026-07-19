@@ -368,282 +368,472 @@
 
             <section
                 id="vw-generator-section"
-                class="vw-card">
+                class="vw-card vw-collapsible-card">
 
-                <form
-                    id="vw-generator-form"
-                    novalidate>
 
-                    <h2>
-                        Generate Content
-                    </h2>
+                <details
+                    id="vw-generator-details"
+                    open>
 
-                    <div class="vw-form-grid">
 
+                    <summary>
 
+                        <h2>
+                            Generate Content
+                        </h2>
 
+                    </summary>
 
-                        <div class="vw-field">
 
-                            <label for="vw-purpose">
 
-                                Purpose
+                    <form
+                        id="vw-generator-form"
+                        novalidate>
 
-                            </label>
 
-                            <select
-                                id="vw-purpose"
-                                name="purpose" required>
-                                    <option value="" selected disabled>Select an option</option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="vw-field">
-
-                            <label for="vw-category">
-
-                                Category
-
-                            </label>
-
-                            <select
-                                id="vw-category"
-                                name="category" required>
-                                    <option value="" selected disabled>Select an option</option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="vw-field">
-
-                            <label for="vw-topic">
-
-                                Topic
-
-                            </label>
-
-                            <select
-                                id="vw-topic"
-                                name="topic" required>
-                                    <option value="" selected disabled>Select an option</option>
-                            </select>
-
-                        </div>
-
-                        <div
-                            class="vw-field"
-                            id="vw-custom-topic-wrapper"
-                            hidden>
-
-                            <label for="vw-custom-topic">
-
-                                Custom Topic
-
-                            </label>
-
-                            <input
-                                id="vw-custom-topic"
-                                name="customTopic"
-                                type="text"
-                                maxlength="100"
-                                placeholder="Enter custom topic (max 100 characters)">
-
-                        </div>
-
-
-
-                        <div class="vw-field">
-
-                            <label for="vw-goal">
-
-                                Goal
-
-                            </label>
-
-                            <select
-                                id="vw-goal"
-                                name="goal" required>
-                                    <option value="" selected disabled>Select an option</option>
-                            </select>
-
-                        </div>
-
-                        <div class="vw-field">
-
-                            <label for="vw-style">
-
-                                Content Style
-
-                            </label>
-
-                            <select
-                                id="vw-style"
-                                name="style" required>
-                                    <option value="" selected disabled>Select an option</option>
-                            </select>
-
-                        </div>
-
-                        <div class="vw-field">
-
-                            <label for="vw-tone">
-
-                                Tone
-
-                            </label>
-
-                            <select
-                                id="vw-tone"
-                                name="tone" required>
-                                    <option value="" selected disabled>Select an option</option>
-                            </select>
-
-                        </div>
-
-
-                        <div class="vw-field">
-
-                            <label for="vw-audience">
-
-                                Audience
-
-                            </label>
-
-                            <select
-                                id="vw-audience"
-                                name="audience" required>
-                                    <option value="" selected disabled>Select an option</option>
-                            </select>
-
-                        </div>
-
-                        <div class="vw-field">
-
-                            <label for="vw-length">
-
-                                Length
-
-                            </label>
-
-                            <select
-                                id="vw-length"
-                                name="length" required>
-                                    <option value="" selected disabled>Select an option</option>
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                    <details
-                        id="vw-advanced">
-
-                        <summary>
-
-                            Advanced Options
-
-                        </summary>
 
                         <div class="vw-form-grid">
 
+
                             <div class="vw-field">
 
-                                <label for="vw-platform">
+                                <label for="vw-purpose">
 
-                                    Platform
+                                    Purpose
 
                                 </label>
 
                                 <select
-                                    id="vw-platform"
-                                    name="platform">
+                                    id="vw-purpose"
+                                    name="purpose"
+                                    required>
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
                                 </select>
 
                             </div>
 
+
+
+
                             <div class="vw-field">
 
-                                <label for="vw-language">
+                                <label for="vw-category">
 
-                                    Language
+                                    Category
 
                                 </label>
 
                                 <select
-                                    id="vw-language"
-                                    name="language">
+                                    id="vw-category"
+                                    name="category"
+                                    required>
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
                                 </select>
 
                             </div>
 
+
+
+
                             <div class="vw-field">
 
-                                <label for="vw-creativity">
+                                <label for="vw-topic">
 
-                                    Creativity
+                                    Topic
 
                                 </label>
 
                                 <select
-                                    id="vw-creativity"
-                                    name="creativity">
+                                    id="vw-topic"
+                                    name="topic"
+                                    required>
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
                                 </select>
 
                             </div>
 
-                            <div class="vw-field">
 
-                                <label for="vw-emoji">
 
-                                    Emoji
+
+                            <div
+                                class="vw-field"
+                                id="vw-custom-topic-wrapper"
+                                hidden>
+
+
+                                <label for="vw-custom-topic">
+
+                                    Custom Topic
 
                                 </label>
 
-                                <select
-                                    id="vw-emoji"
-                                    name="emoji">
-                                </select>
+
+                                <input
+                                    id="vw-custom-topic"
+                                    name="customTopic"
+                                    type="text"
+                                    maxlength="100"
+                                    placeholder="Enter custom topic (max 100 characters)">
+
 
                             </div>
+
+
+
 
                             <div class="vw-field">
 
-                                <label for="vw-cta">
+                                <label for="vw-goal">
 
-                                    Call To Action
+                                    Goal
 
                                 </label>
 
+
                                 <select
-                                    id="vw-cta"
-                                    name="cta">
+                                    id="vw-goal"
+                                    name="goal"
+                                    required>
+
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
+
                                 </select>
 
                             </div>
+
+
+
+
+                            <div class="vw-field">
+
+                                <label for="vw-style">
+
+                                    Content Style
+
+                                </label>
+
+
+                                <select
+                                    id="vw-style"
+                                    name="style"
+                                    required>
+
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
+
+
+
+                            <div class="vw-field">
+
+                                <label for="vw-tone">
+
+                                    Tone
+
+                                </label>
+
+
+                                <select
+                                    id="vw-tone"
+                                    name="tone"
+                                    required>
+
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
+
+
+
+                            <div class="vw-field">
+
+                                <label for="vw-audience">
+
+                                    Audience
+
+                                </label>
+
+
+                                <select
+                                    id="vw-audience"
+                                    name="audience"
+                                    required>
+
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
+
+
+
+                            <div class="vw-field">
+
+                                <label for="vw-length">
+
+                                    Length
+
+                                </label>
+
+
+                                <select
+                                    id="vw-length"
+                                    name="length"
+                                    required>
+
+
+                                    <option
+                                        value=""
+                                        selected
+                                        disabled>
+
+                                        Select an option
+
+                                    </option>
+
+
+                                </select>
+
+
+                            </div>
+
 
                         </div>
 
-                    </details>
 
-                    <div class="vw-actions">
 
-                        <button
-                            id="vw-generate-btn"
-                            type="submit">
 
-                            Generate Content
 
-                        </button>
+                        <details
+                            id="vw-advanced">
 
-                    </div>
 
-                </form>
+                            <summary>
+
+                                Advanced Options
+
+                            </summary>
+
+
+
+
+                            <div class="vw-form-grid">
+
+
+
+                                <div class="vw-field">
+
+                                    <label for="vw-platform">
+
+                                        Platform
+
+                                    </label>
+
+
+                                    <select
+                                        id="vw-platform"
+                                        name="platform">
+
+                                    </select>
+
+
+                                </div>
+
+
+
+
+                                <div class="vw-field">
+
+                                    <label for="vw-language">
+
+                                        Language
+
+                                    </label>
+
+
+                                    <select
+                                        id="vw-language"
+                                        name="language">
+
+                                    </select>
+
+
+                                </div>
+
+
+
+
+                                <div class="vw-field">
+
+                                    <label for="vw-creativity">
+
+                                        Creativity
+
+                                    </label>
+
+
+                                    <select
+                                        id="vw-creativity"
+                                        name="creativity">
+
+                                    </select>
+
+
+                                </div>
+
+
+
+
+                                <div class="vw-field">
+
+                                    <label for="vw-emoji">
+
+                                        Emoji
+
+                                    </label>
+
+
+                                    <select
+                                        id="vw-emoji"
+                                        name="emoji">
+
+                                    </select>
+
+
+                                </div>
+
+
+
+
+                                <div class="vw-field">
+
+                                    <label for="vw-cta">
+
+                                        Call To Action
+
+                                    </label>
+
+
+                                    <select
+                                        id="vw-cta"
+                                        name="cta">
+
+                                    </select>
+
+
+                                </div>
+
+
+
+                            </div>
+
+
+
+                        </details>
+
+
+
+
+
+                        <div class="vw-actions">
+
+
+                            <button
+                                id="vw-generate-btn"
+                                type="submit">
+
+
+                                Generate Content
+
+
+                            </button>
+
+
+                        </div>
+
+
+
+                    </form>
+
+
+
+                </details>
+
+
 
             </section>
-
 
             <!-- =================================================
                  OUTPUT
