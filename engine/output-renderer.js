@@ -46,7 +46,6 @@ function render(content = "") {
 
         html || EMPTY_TEMPLATE;
 
-    output.focus();
 
     output.scrollTop = 0;
 
