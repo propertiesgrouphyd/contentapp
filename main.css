@@ -916,17 +916,35 @@ summary h2::before{
 
     position:fixed;
 
-    inset:0;
+    top:0;
 
-    display:grid;
+    left:0;
 
-    place-items:center;
+    right:0;
+
+    bottom:0;
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
 
     background:rgba(0,0,0,.45);
 
+
     z-index:9997;
 
-    padding:24px;
+
+    padding:16px;
+
+
+    overflow:hidden;
+
+
+    overscroll-behavior:none;
 
 }
 
@@ -1216,16 +1234,12 @@ summary h2::before{
 
         opacity:0;
 
-        transform:translateY(15px) scale(.98);
-
     }
 
 
     to{
 
         opacity:1;
-
-        transform:translateY(0) scale(1);
 
     }
 
@@ -1829,5 +1843,60 @@ summary h2::before{
         font-size:14px;
 
     }
+
+}
+
+
+/* =========================================================
+   MOBILE PAYMENT MODAL FIX
+   Android PWA / Razorpay compatibility
+   ========================================================= */
+
+
+@media(max-width:640px){
+
+
+    .vw-modal{
+
+        padding:12px;
+
+        align-items:flex-end;
+
+    }
+
+
+
+    .vw-modal-card{
+
+        width:100%;
+
+        max-width:none;
+
+        border-radius:20px 20px 0 0;
+
+        padding:24px;
+
+        animation:none;
+
+    }
+
+
+
+    .vw-modal-actions{
+
+        flex-direction:column;
+
+        width:100%;
+
+    }
+
+
+
+    .vw-modal-actions button{
+
+        width:100%;
+
+    }
+
 
 }
