@@ -247,7 +247,7 @@ const PaymentManager = {
 
             let completed=false;
 
-            let opened=false;
+        
 
             let paymentReceived=false;
 
@@ -489,7 +489,6 @@ const PaymentManager = {
             try{
 
 
-
                 if(
 
                     typeof Razorpay ===
@@ -509,15 +508,13 @@ const PaymentManager = {
 
 
 
-
-
-                const razorpay=
+                const razorpay =
 
                 new Razorpay(options);
 
 
 
-                window.vwRazorpay=
+                window.vwRazorpay =
 
                 razorpay;
 
@@ -555,20 +552,29 @@ const PaymentManager = {
 
 
 
+                /*
+                    IMPORTANT FOR MOBILE PWA
+
+                    Open Razorpay immediately.
+                    Do not use setTimeout.
+                    Do not delay.
+
+                */
+
+
+                razorpay.open();
+
+                razorpay.open();
+
 
                 setTimeout(()=>{
 
+                    window.scrollTo(
+                        0,
+                        0
+                    );
 
-                    opened=true;
-
-
-                    razorpay.open();
-
-
-
-                },500);
-
-
+                },100);
 
 
 
