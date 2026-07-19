@@ -161,16 +161,17 @@ const App = {
 
 
                         /*
-                            Close VIDHWAAN modal first
+                            Close VIDHWAAN modal
 
-                            Important for Android PWA
-                            Prevent popup stacking
+                            Immediately start Razorpay.
+                            Do not delay.
+                            Required for Android PWA
                         */
+
 
                         this.hideModal(
                             e.paymentModal
                         );
-
 
 
                         this.updateStatus(
@@ -179,28 +180,9 @@ const App = {
 
 
 
-                        /*
-                            Give browser time
-                            to remove modal layer
-                        */
-
-                        await new Promise(
-
-                            resolve =>
-
-                            setTimeout(
-                                resolve,
-                                300
-                            )
-
-                        );
-
-
-
                         const result =
 
                             await PaymentManager.start();
-
 
 
                         Storage.saveSubscription(
