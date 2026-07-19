@@ -680,6 +680,78 @@ button:active{
 }
 
 
+
+/* =========================================================
+   COLLAPSIBLE GENERATOR
+   ========================================================= */
+
+
+.vw-collapsible-card details{
+
+    width:100%;
+
+}
+
+
+.vw-collapsible-card summary{
+
+    cursor:pointer;
+
+    list-style:none;
+
+    margin-bottom:24px;
+
+}
+
+
+.vw-collapsible-card summary::-webkit-details-marker{
+
+    display:none;
+
+}
+
+
+.vw-collapsible-card summary h2{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.vw-collapsible-card summary h2::before{
+
+    content:"▼";
+
+    font-size:14px;
+
+    transition:.2s ease;
+
+}
+
+
+
+.vw-collapsible-card details:not([open])
+summary h2::before{
+
+    content:"▶";
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 /* ========================================================================
    OUTPUT
    ======================================================================== */
@@ -922,49 +994,43 @@ button:active{
 
 @media (max-width:640px){
 
-    h1{
-
-        font-size:1.6rem;
-
-    }
-
-    #vw-main{
-
-        padding:16px;
-
-    }
-
-    .vw-card{
-
-        padding:20px;
-
-    }
-
-    .vw-actions{
-
-        justify-content:stretch;
-
-    }
-
-    #vw-generate-btn{
-
-        width:100%;
-
-    }
 
     .vw-output-actions{
 
-        flex-direction:column;
+        display:flex;
 
-    }
+        flex-direction:row;
 
-    .vw-output-actions button{
+        flex-wrap:nowrap;
+
+        gap:8px;
 
         width:100%;
 
     }
 
+
+
+    .vw-output-actions button{
+
+        flex:1;
+
+        width:auto;
+
+        min-width:0;
+
+        padding:0 10px;
+
+        font-size:14px;
+
+        white-space:nowrap;
+
+    }
+
+
 }
+
+
 
 /* ========================================================================
    PRINT
