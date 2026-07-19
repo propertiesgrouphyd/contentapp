@@ -1,7 +1,7 @@
 "use strict";
 
 
-const CACHE_NAME = "vidhwaan-ai-v3";
+const CACHE_NAME = "vidhwaan-ai-v4";
 
 
 const APP_FILES = [
@@ -26,6 +26,8 @@ const APP_FILES = [
 
 
 
+
+
 self.addEventListener(
 
 "install",
@@ -39,7 +41,7 @@ event=>{
 
         .then(
 
-            cache=>
+            cache =>
 
             cache.addAll(APP_FILES)
 
@@ -52,6 +54,8 @@ event=>{
 
 
 });
+
+
 
 
 
@@ -70,7 +74,7 @@ event=>{
 
         .then(
 
-            keys=>
+            keys =>
 
             Promise.all(
 
@@ -111,6 +115,7 @@ event=>{
 
 
 
+
 self.addEventListener(
 
 "fetch",
@@ -127,14 +132,44 @@ event=>{
 
 
     /*
-       Never cache API requests
+        NEVER INTERCEPT:
+
+        - Payment Worker
+        - Razorpay
+        - AI APIs
+        - External services
     */
+
 
     if(
 
-        url.pathname.includes("/api/") ||
+        url.hostname.includes(
+            "workers.dev"
+        )
 
-        url.hostname.includes("groq")
+        ||
+
+        url.hostname.includes(
+            "razorpay.com"
+        )
+
+        ||
+
+        url.hostname.includes(
+            "api.razorpay.com"
+        )
+
+        ||
+
+        url.hostname.includes(
+            "groq.com"
+        )
+
+        ||
+
+        url.pathname.includes(
+            "/api/"
+        )
 
     ){
 
@@ -145,6 +180,34 @@ event=>{
 
 
 
+    /*
+        Never handle non GET requests
+
+        Important for payments
+    */
+
+
+    if(
+
+        event.request.method !== "GET"
+
+    ){
+
+        return;
+
+    }
+
+
+
+
+    /*
+        Network first
+
+        Cache only fallback
+
+    */
+
+
     event.respondWith(
 
 
@@ -152,7 +215,14 @@ event=>{
 
         .catch(
 
-            ()=>caches.match(event.request)
+            ()=>
+
+
+            caches.match(
+
+                event.request
+
+            )
 
         )
 
