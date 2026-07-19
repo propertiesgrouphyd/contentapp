@@ -1,0 +1,212 @@
+name: VIDHWAAN Frontend Protection Build
+
+
+on:
+  push:
+    branches:
+      - main
+
+
+permissions:
+  contents: read
+
+
+jobs:
+
+
+  protect-build:
+
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+
+          node-version: 24
+
+
+
+      - name: Install protection tools
+        run: |
+
+          npm install -g \
+          terser \
+          javascript-obfuscator \
+          html-minifier-terser \
+          clean-css-cli
+
+
+
+      - name: Create production folder
+        run: |
+
+          mkdir dist
+
+
+
+      - name: Copy static assets
+        run: |
+
+          cp -r assets dist/ || true
+
+          cp -r icons dist/ || true
+
+          cp manifest.json dist/ || true
+
+          cp sw.js dist/ || true
+
+
+
+      ########################################
+      # HTML PROTECTION
+      ########################################
+
+
+      - name: Minify HTML
+        run: |
+
+          html-minifier-terser \
+          index.html \
+          -o dist/index.html \
+          --collapse-whitespace \
+          --remove-comments \
+          --remove-redundant-attributes \
+          --remove-script-type-attributes \
+          --remove-style-link-type-attributes
+
+
+
+      ########################################
+      # CSS PROTECTION
+      ########################################
+
+
+      - name: Minify CSS
+        run: |
+
+          cleancss \
+          -O2 \
+          -o dist/main.css \
+          main.css
+
+
+
+      ########################################
+      # JAVASCRIPT MINIFICATION
+      ########################################
+
+
+      - name: Minify JavaScript files
+        run: |
+
+          mkdir protected-js
+
+
+          find . \
+          -maxdepth 2 \
+          -name "*.js" \
+          ! -path "./node_modules/*" \
+          -exec sh -c '
+
+          file="$1"
+
+          name=$(basename "$file")
+
+          terser "$file" \
+          --compress \
+          --mangle \
+          --comments false \
+          -o "protected-js/$name"
+
+          ' sh {} \;
+
+
+
+      ########################################
+      # JAVASCRIPT OBFUSCATION
+      ########################################
+
+
+      - name: Obfuscate JavaScript
+        run: |
+
+          mkdir dist/js
+
+
+          for file in protected-js/*.js
+
+          do
+
+          javascript-obfuscator "$file" \
+          --output "dist/js/$(basename "$file")" \
+          --compact true \
+          --control-flow-flattening true \
+          --control-flow-flattening-threshold 0.75 \
+          --dead-code-injection true \
+          --dead-code-injection-threshold 0.2 \
+          --string-array true \
+          --string-array-encoding base64 \
+          --split-strings true \
+          --self-defending true \
+          --disable-console-output true
+
+          done
+
+
+
+      ########################################
+      # REMOVE SOURCE MAPS
+      ########################################
+
+
+      - name: Remove maps
+        run: |
+
+          find dist \
+          -name "*.map" \
+          -delete
+
+
+
+      ########################################
+      # CREATE BUILD HASH
+      ########################################
+
+
+      - name: Generate integrity hashes
+        run: |
+
+          cd dist
+
+          sha256sum $(find . -type f) > integrity.txt
+
+
+
+      ########################################
+      # DEPLOY
+      ########################################
+
+
+      - name: Deploy to Cloudflare Pages
+        run: |
+
+          npx wrangler pages deploy dist \
+          --project-name vidhwaan-ai-writer
+
+        env:
+
+          CLOUDFLARE_API_TOKEN:
+            ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+          CLOUDFLARE_ACCOUNT_ID:
+            ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
