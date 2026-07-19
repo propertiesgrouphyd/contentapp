@@ -255,25 +255,40 @@ const PaymentManager = {
 
             const finish=(fn,value)=>{
 
-
                 if(completed){
 
                     return;
 
                 }
 
-
                 completed=true;
-
 
                 this.processing=false;
 
+                try{
+
+                    if(window.vwRazorpay){
+
+                        window.vwRazorpay.close();
+
+                    }
+
+                }
+
+                catch(error){
+
+                    console.warn(
+                        "Razorpay cleanup:",
+                        error
+                    );
+
+                }
 
                 window.vwRazorpay=null;
 
+                document.body.style.overflow="";
 
                 fn(value);
-
 
             };
 
@@ -564,17 +579,7 @@ const PaymentManager = {
 
                 razorpay.open();
 
-                razorpay.open();
 
-
-                setTimeout(()=>{
-
-                    window.scrollTo(
-                        0,
-                        0
-                    );
-
-                },100);
 
 
 
