@@ -271,7 +271,7 @@ const ContentRenderer = {
 
             }
 
-            return `<p>${block.replace(/\n/g,"<br>")}</p>`;
+            return `<p>${block.replace(/\n/g," ")}</p>`;
 
         }).join("\n");
 
