@@ -1,7 +1,8 @@
 "use strict";
 
 
-const CACHE_NAME = "vidhwaan-ai-v11";
+const CACHE_NAME = "vidhwaan-ai-v12";
+
 
 
 const APP_FILES = [
@@ -37,6 +38,7 @@ event=>{
 
     event.waitUntil(
 
+
         caches.open(CACHE_NAME)
 
         .then(
@@ -46,6 +48,7 @@ event=>{
             cache.addAll(APP_FILES)
 
         )
+
 
     );
 
@@ -70,13 +73,16 @@ event=>{
 
     event.waitUntil(
 
+
         caches.keys()
 
         .then(
 
             keys =>
 
+
             Promise.all(
+
 
                 keys.map(
 
@@ -98,9 +104,12 @@ event=>{
 
                 )
 
+
             )
 
+
         )
+
 
     );
 
@@ -109,6 +118,8 @@ event=>{
 
 
 });
+
+
 
 
 
@@ -131,59 +142,96 @@ event=>{
 
 
 
-    /*
-        NEVER INTERCEPT:
 
-        - Payment Worker
-        - Razorpay
-        - AI APIs
-        - External services
+
+    /*
+        NEVER INTERCEPT
+
+        Payment Worker
+        Razorpay
+        AI APIs
+        External APIs
+
     */
 
 
     if(
 
+
         url.hostname.includes(
+
             "workers.dev"
+
         )
 
+
         ||
+
 
         url.hostname.includes(
-            "razorpay.com"
+
+            "razorpay"
+
         )
 
+
         ||
+
 
         url.hostname.includes(
-            "api.razorpay.com"
+
+            "groq"
+
         )
+
 
         ||
 
-        url.hostname.includes(
-            "groq.com"
-        )
-
-        ||
 
         url.pathname.includes(
+
             "/api/"
+
         )
+
+
+        ||
+
+
+        url.pathname.includes(
+
+            "/create-order"
+
+        )
+
+
+        ||
+
+
+        url.pathname.includes(
+
+            "/verify-payment"
+
+        )
+
 
     ){
 
+
         return;
+
 
     }
 
 
 
 
-    /*
-        Never handle non GET requests
 
-        Important for payments
+
+
+    /*
+        Never handle non GET
+
     */
 
 
@@ -193,17 +241,24 @@ event=>{
 
     ){
 
+
         return;
+
 
     }
 
 
 
 
-    /*
-        Network first
 
-        Cache only fallback
+
+
+    /*
+        Network First
+
+        Fresh app always
+
+        Offline fallback
 
     */
 
@@ -211,9 +266,28 @@ event=>{
     event.respondWith(
 
 
-        fetch(event.request)
+        fetch(
+
+            event.request
+
+        )
+
+
+        .then(
+
+            response=>{
+
+
+                return response;
+
+
+            }
+
+        )
+
 
         .catch(
+
 
             ()=>
 
@@ -224,10 +298,12 @@ event=>{
 
             )
 
+
         )
 
 
     );
+
 
 
 });
