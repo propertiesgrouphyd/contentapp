@@ -1,6 +1,5 @@
 "use strict";
 
-
 /* ==========================================================================
    VIDHWAAN AI Writer
 
@@ -8,8 +7,9 @@
 
    Creates clean AI generation context
 
-   ========================================================================== */
+   Production Version
 
+   ========================================================================== */
 
 
 function buildContext(values = {}) {
@@ -32,7 +32,17 @@ function buildContext(values = {}) {
 
         topic:
 
-        values.topic || "",
+        values.topic ||
+
+        values.customTopic ||
+
+        "",
+
+
+
+        customTopic:
+
+        values.customTopic || "",
 
 
 
