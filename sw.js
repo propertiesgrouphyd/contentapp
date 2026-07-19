@@ -1,7 +1,7 @@
 "use strict";
 
 
-const CACHE_NAME = "vidhwaan-ai-v5";
+const CACHE_NAME = "vidhwaan-ai-v6";
 
 
 const APP_FILES = [
