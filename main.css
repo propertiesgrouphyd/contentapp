@@ -1179,7 +1179,7 @@ button:active{
 
     width:100%;
 
-    max-width:900px;
+    max-width:none;
 
     min-height:520px;
 
@@ -1302,7 +1302,7 @@ button:active{
 
     margin:
 
-    0 0 18px;
+    0 0 12px;
 
 
     color:#1f2937;
@@ -1570,7 +1570,9 @@ button:active{
         font-size:16px;
 
 
-        line-height:1.7;
+        line-height:1.65;
+
+        letter-spacing:0;
 
 
         border-radius:16px;
