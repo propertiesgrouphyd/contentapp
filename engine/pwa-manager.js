@@ -1,9 +1,12 @@
 "use strict";
 
+
 /* ==========================================================================
    VIDHWAAN AI Writer
 
    PWA Install Manager
+
+   Production Version
 
    ========================================================================== */
 
@@ -18,10 +21,13 @@ const PWAManager = {
     init(){
 
 
+
         const button =
 
         document.getElementById(
+
             "vw-install-btn"
+
         );
 
 
@@ -33,6 +39,28 @@ const PWAManager = {
         }
 
 
+
+
+        /*
+            Hide initially
+
+            Show only when browser
+            supports installation
+
+        */
+
+
+        button.hidden = true;
+
+
+
+
+
+
+        /*
+            Android install prompt
+
+        */
 
 
         window.addEventListener(
@@ -48,7 +76,9 @@ const PWAManager = {
                 deferredPrompt = event;
 
 
+
                 button.hidden = false;
+
 
 
             }
@@ -58,6 +88,15 @@ const PWAManager = {
 
 
 
+
+
+
+
+
+        /*
+            Install button click
+
+        */
 
 
         button.addEventListener(
@@ -75,35 +114,53 @@ const PWAManager = {
 
 
 
-                deferredPrompt.prompt();
+                const promptEvent =
 
-
-
-
-                const choice =
-
-                await deferredPrompt.userChoice;
-
-
-
-                if(
-
-                    choice.outcome === "accepted"
-
-                ){
-
-                    console.log(
-                        "VIDHWAAN installed"
-                    );
-
-                }
+                deferredPrompt;
 
 
 
                 deferredPrompt = null;
 
 
+
+
+                await promptEvent.prompt();
+
+
+
+
+
+                const result =
+
+                await promptEvent.userChoice;
+
+
+
+
+
+                if(
+
+                    result.outcome === "accepted"
+
+                ){
+
+
+                    console.log(
+
+                        "VIDHWAAN installed"
+
+                    );
+
+
+                }
+
+
+
+
+
                 button.hidden = true;
+
 
 
             }
@@ -113,6 +170,14 @@ const PWAManager = {
 
 
 
+
+
+
+
+        /*
+            Installed successfully
+
+        */
 
 
         window.addEventListener(
@@ -122,15 +187,26 @@ const PWAManager = {
             ()=>{
 
 
+                deferredPrompt = null;
+
+
                 button.hidden = true;
 
 
-                deferredPrompt = null;
+
+                console.log(
+
+                    "VIDHWAAN PWA installed"
+
+                );
 
 
             }
 
         );
+
+
+
 
 
     }
