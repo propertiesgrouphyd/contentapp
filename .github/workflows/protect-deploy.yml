@@ -94,7 +94,12 @@ jobs:
 
           mkdir dist
 
-          cp -r ./* dist/
+          rsync -av \
+          --exclude dist \
+          --exclude .git \
+          --exclude .github \
+          --exclude node_modules \
+          ./ dist/
 
 
 
