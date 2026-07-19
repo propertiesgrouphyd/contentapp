@@ -144,39 +144,104 @@ const App = {
 
                 async () => {
 
+
                     if (e.paymentButton.disabled) {
 
                         return;
 
                     }
 
+
+
                     try {
+
 
                         e.paymentButton.disabled = true;
 
-                        this.updateStatus("Processing Payment...");
+
+
+                        /*
+                            Close VIDHWAAN modal first
+
+                            Important for Android PWA
+                            Prevent popup stacking
+                        */
+
+                        this.hideModal(
+                            e.paymentModal
+                        );
+
+
+
+                        this.updateStatus(
+                            "Opening Payment..."
+                        );
+
+
+
+                        /*
+                            Give browser time
+                            to remove modal layer
+                        */
+
+                        await new Promise(
+
+                            resolve =>
+
+                            setTimeout(
+                                resolve,
+                                300
+                            )
+
+                        );
+
+
 
                         const result =
 
                             await PaymentManager.start();
 
-                        Storage.saveSubscription(result);
 
-                        this.hideModal(e.paymentModal);
+
+                        Storage.saveSubscription(
+                            result
+                        );
+
+
 
                         await this.refreshSubscriptionUI();
 
-                        this.updateStatus("Subscription Activated");
 
-                        alert("Subscription activated successfully.");
+
+                        this.updateStatus(
+                            "Subscription Activated"
+                        );
+
+
+
+                        alert(
+                            "Subscription activated successfully."
+                        );
+
 
                     }
 
-                    catch (error) {
 
-                        console.error(error);
+                    catch(error){
 
-                        this.updateStatus("Payment Failed");
+
+                        console.error(
+                            "Payment error:",
+                            error
+                        );
+
+
+
+                        this.updateStatus(
+                            "Payment Failed"
+                        );
+
+
 
                         alert(
 
@@ -186,13 +251,18 @@ const App = {
 
                         );
 
+
                     }
 
-                    finally {
+
+                    finally{
+
 
                         e.paymentButton.disabled = false;
 
+
                     }
+
 
                 }
 
