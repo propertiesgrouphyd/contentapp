@@ -383,9 +383,13 @@ const PaymentManager = {
                     modal:{
 
 
+                        escape:false,
+
+
+                        backdropclose:false,
+
 
                         ondismiss(){
-
 
 
                             localStorage.removeItem(
@@ -393,7 +397,6 @@ const PaymentManager = {
                                 "vidhwaan_payment_pending"
 
                             );
-
 
 
                             finish(
@@ -410,7 +413,6 @@ const PaymentManager = {
 
 
                         }
-
 
 
                     }
@@ -486,7 +488,13 @@ const PaymentManager = {
 
 
 
-                    razorpay.open();
+                    setTimeout(()=>{
+
+
+                        razorpay.open();
+
+
+                    },100);
 
 
 
