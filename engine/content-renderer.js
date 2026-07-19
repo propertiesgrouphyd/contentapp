@@ -254,8 +254,11 @@ const ContentRenderer = {
            Paragraphs
         ------------------------------------------------------------------ */
 
+        html = html.replace(/\n{3,}/g,"\n\n");
+
+
         const blocks = html
-            .split(/\n{2,}/)
+            .split(/\n\s*\n/)
             .map(x=>x.trim())
             .filter(Boolean);
 
