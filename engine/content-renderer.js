@@ -275,6 +275,7 @@ const ContentRenderer = {
 
         }).join("\n");
 
+        html = html.replace(/\n{3,}/g,"\n\n");
         return html;
 
     }
