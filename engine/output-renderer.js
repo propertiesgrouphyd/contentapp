@@ -151,21 +151,33 @@ function getText() {
 
     const output = getOutputElement();
 
+
     if (!output) {
 
         return "";
 
     }
 
-    return (
+
+    let text =
 
         output.innerText ||
 
         output.textContent ||
 
-        ""
+        "";
 
-    ).trim();
+
+    text = text
+
+        .replace(/\r\n/g, "\n")
+
+        .replace(/\n{3,}/g, "\n\n")
+
+        .trim();
+
+
+    return text;
 
 }
 
