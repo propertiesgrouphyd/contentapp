@@ -82,7 +82,7 @@ const PaymentManager = {
 
                 body:JSON.stringify({
 
-                    device:
+                    deviceId:
 
                     crypto.randomUUID()
 
