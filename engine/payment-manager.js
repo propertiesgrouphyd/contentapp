@@ -1,59 +1,107 @@
 "use strict";
 
-/* ==========================================================================
-   VIDHWAAN AI Writer
+/*
+==========================================================================
 
-   Payment Manager
+VIDHWAAN AI Writer
 
-   Production Payment Flow:
+Production Payment Manager
 
-   Frontend
-      |
-      |
-   Worker /create-order
-      |
-      |
-   Razorpay Checkout
-      |
-      |
-   UPI / Card / Netbanking
-      |
-      |
-   Worker /verify-payment
-      |
-      |
-   Receive uniqueId + expiry
+Flow:
 
-   ========================================================================== */
+Create Order
+      |
+Razorpay Checkout
+      |
+PhonePe / UPI
+      |
+Capture Payment Response
+      |
+Verify With Worker
+      |
+Receive Subscription
+      |
+Save Locally
+
+==========================================================================
+
+*/
 
 
 const PaymentManager = {
+
+
+    processing:false,
 
 
 
     async start(){
 
 
-        const order =
+        if(this.processing){
 
-        await this.createOrder();
+            throw new Error(
+                "Payment already processing"
+            );
+
+        }
 
 
-
-        localStorage.setItem(
-
-            "vidhwaan_payment_pending",
-
-            Date.now().toString()
-
-        );
+        this.processing=true;
 
 
 
-        return await this.openRazorpay(order);
+        try{
+
+
+            const order =
+
+            await this.createOrder();
+
+
+
+
+            localStorage.setItem(
+
+                "vidhwaan_pending_payment",
+
+                JSON.stringify({
+
+                    orderId:
+                    order.orderId,
+
+
+                    created:
+                    Date.now()
+
+                })
+
+            );
+
+
+
+            return this.openRazorpay(order);
+
+
+
+        }
+
+
+        catch(error){
+
+
+            this.processing=false;
+
+
+            throw error;
+
+
+        }
 
 
     },
+
+
 
 
 
@@ -83,6 +131,7 @@ const PaymentManager = {
 
 
         try {
+
 
 
             const response =
@@ -134,7 +183,6 @@ const PaymentManager = {
 
 
 
-
             const data =
 
             await response.json();
@@ -143,20 +191,25 @@ const PaymentManager = {
 
 
 
-            if(!response.ok || !data.success){
+            if(
+
+                !response.ok ||
+
+                !data.success
+
+            ){
 
 
                 throw new Error(
 
                     data.error ||
 
-                    "Unable to create payment order"
+                    "Payment order failed"
 
                 );
 
 
             }
-
 
 
 
@@ -167,25 +220,11 @@ const PaymentManager = {
 
         }
 
+
         catch(error){
 
 
             clearTimeout(timer);
-
-
-
-            if(error.name === "AbortError"){
-
-
-                throw new Error(
-
-                    "Payment server timeout"
-
-                );
-
-
-            }
-
 
 
             throw error;
@@ -207,213 +246,125 @@ const PaymentManager = {
     openRazorpay(order){
 
 
+
         return new Promise(
 
-            (resolve,reject)=>{
+        (resolve,reject)=>{
 
 
 
-                let completed = false;
+            let completed=false;
 
 
 
-                const finish =
 
-                (callback,value)=>{
+            const finish=(callback,value)=>{
 
 
-                    if(completed){
+                if(completed){
+
+                    return;
+
+                }
+
+
+                completed=true;
+
+
+                this.processing=false;
+
+
+                window.vwRazorpay=null;
+
+
+                callback(value);
+
+
+            };
+
+
+
+
+
+
+
+
+            const options={
+
+
+
+
+
+                key:
+
+                order.key,
+
+
+
+                amount:
+
+                order.amount,
+
+
+
+                currency:
+
+                "INR",
+
+
+
+                name:
+
+                "VIDHWAAN AI Writer",
+
+
+
+                description:
+
+                "Monthly Subscription",
+
+
+
+                order_id:
+
+                order.orderId,
+
+
+
+
+
+
+
+                handler:(response)=>{
+
+
+
+                    if(
+
+                        !response.razorpay_payment_id ||
+
+                        !response.razorpay_order_id ||
+
+                        !response.razorpay_signature
+
+                    ){
+
+
+                        finish(
+
+                            reject,
+
+                            new Error(
+
+                                "Invalid payment response"
+
+                            )
+
+                        );
+
 
                         return;
 
-                    }
-
-
-                    completed = true;
-
-
-                    window.vwRazorpay = null;
-
-
-                    callback(value);
-
-
-                };
-
-
-
-
-
-
-
-                const options = {
-
-
-
-                    key:
-
-                    order.key,
-
-
-
-                    amount:
-
-                    order.amount,
-
-
-
-                    currency:
-
-                    "INR",
-
-
-
-                    name:
-
-                    "VIDHWAAN AI Writer",
-
-
-
-                    description:
-
-                    "Monthly AI Writer Subscription",
-
-
-
-                    order_id:
-
-                    order.orderId,
-
-
-
-
-
-
-
-                    handler:
-
-                    async(response)=>{
-
-
-                        try{
-
-
-                            if(
-
-                                !response.razorpay_payment_id ||
-
-                                !response.razorpay_order_id ||
-
-                                !response.razorpay_signature
-
-                            ){
-
-
-                                throw new Error(
-
-                                    "Invalid payment response"
-
-                                );
-
-
-                            }
-
-
-
-
-
-                            const result =
-
-                            await this.verifyPayment(
-
-                                response
-
-                            );
-
-
-
-
-
-                            localStorage.removeItem(
-
-                                "vidhwaan_payment_pending"
-
-                            );
-
-
-
-
-
-                            finish(
-
-                                resolve,
-
-                                result
-
-                            );
-
-
-
-                        }
-
-
-                        catch(error){
-
-
-                            finish(
-
-                                reject,
-
-                                error
-
-                            );
-
-
-                        }
-
-
-                    },
-
-
-
-
-
-
-
-                    modal:{
-
-
-                        escape:false,
-
-
-                        backdropclose:false,
-
-
-                        ondismiss(){
-
-
-                            localStorage.removeItem(
-
-                                "vidhwaan_payment_pending"
-
-                            );
-
-
-                            finish(
-
-                                reject,
-
-                                new Error(
-
-                                    "Payment cancelled"
-
-                                )
-
-                            );
-
-
-                        }
-
 
                     }
 
@@ -421,65 +372,18 @@ const PaymentManager = {
 
 
 
-                };
+                    /*
+                       Backup payment response
+
+                       Recovery if app closes
+                    */
 
 
+                    localStorage.setItem(
 
+                        "vidhwaan_payment_response",
 
-
-
-
-                try {
-
-
-
-                    const razorpay =
-
-                    new Razorpay(options);
-
-
-
-
-
-                    window.vwRazorpay = razorpay;
-
-
-
-
-
-
-
-                    razorpay.on(
-
-                        "payment.failed",
-
-                        error=>{
-
-
-                            localStorage.removeItem(
-
-                                "vidhwaan_payment_pending"
-
-                            );
-
-
-
-                            finish(
-
-                                reject,
-
-                                new Error(
-
-                                    error?.error?.description ||
-
-                                    "Payment failed"
-
-                                )
-
-                            );
-
-
-                        }
+                        JSON.stringify(response)
 
                     );
 
@@ -487,39 +391,252 @@ const PaymentManager = {
 
 
 
+                    /*
+                       Verify after payment
 
-                    setTimeout(()=>{
-
-
-                        razorpay.open();
-
-
-                    },100);
+                       Razorpay UI is already done
+                    */
 
 
+                    this.verifyPayment(response)
+
+                    .then(
+
+                    result=>{
+
+
+                        localStorage.removeItem(
+
+                            "vidhwaan_payment_response"
+
+                        );
+
+
+                        localStorage.removeItem(
+
+                            "vidhwaan_pending_payment"
+
+                        );
+
+
+
+                        finish(
+
+                            resolve,
+
+                            result
+
+                        );
+
+
+                    })
+
+
+                    .catch(
+
+                    error=>{
+
+
+                        finish(
+
+                            reject,
+
+                            error
+
+                        );
+
+
+                    });
+
+
+                },
+
+
+
+
+
+
+
+                modal:{
+
+
+
+                    escape:true,
+
+
+
+                    backdropclose:true,
+
+
+
+                    ondismiss(){
+
+
+
+                        localStorage.removeItem(
+
+                            "vidhwaan_pending_payment"
+
+                        );
+
+
+
+                        finish(
+
+                            reject,
+
+                            new Error(
+
+                                "Payment cancelled"
+
+                            )
+
+                        );
+
+
+                    }
+
+
+
+                },
+
+
+
+
+
+
+
+                retry:{
+
+
+                    enabled:false
 
 
                 }
 
-                catch(error){
 
 
-                    finish(
 
-                        reject,
 
-                        error
+            };
+
+
+
+
+
+
+
+
+
+            try {
+
+
+
+                if(
+
+                    typeof Razorpay ===
+
+                    "undefined"
+
+                ){
+
+
+                    throw new Error(
+
+                        "Payment gateway unavailable"
 
                     );
 
 
                 }
+
+
+
+
+
+                const razorpay=
+
+                new Razorpay(options);
+
+
+
+                window.vwRazorpay=
+
+                razorpay;
+
+
+
+
+
+
+
+                razorpay.on(
+
+                    "payment.failed",
+
+                    error=>{
+
+
+                        finish(
+
+                            reject,
+
+                            new Error(
+
+                                error?.error?.description ||
+
+                                "Payment failed"
+
+                            )
+
+                        );
+
+
+                    }
+
+                );
+
+
+
+
+
+
+
+                setTimeout(()=>{
+
+
+                    razorpay.open();
+
+
+
+                },200);
+
+
+
 
 
 
             }
 
-        );
+
+            catch(error){
+
+
+                finish(
+
+                    reject,
+
+                    error
+
+                );
+
+
+            }
+
+
+
+        });
+
 
 
     },
@@ -554,7 +671,6 @@ const PaymentManager = {
 
 
 
-
         try {
 
 
@@ -563,11 +679,9 @@ const PaymentManager = {
 
             await fetch(
 
-
                 VW_CONFIG.PAYMENT.WORKER_URL +
 
                 VW_CONFIG.PAYMENT.VERIFY_PAYMENT,
-
 
 
                 {
@@ -589,7 +703,6 @@ const PaymentManager = {
                     signal:
 
                     controller.signal,
-
 
 
                     body:JSON.stringify({
@@ -618,15 +731,11 @@ const PaymentManager = {
 
                 }
 
-
-
             );
 
 
 
-
             clearTimeout(timer);
-
 
 
 
@@ -638,9 +747,13 @@ const PaymentManager = {
 
 
 
+            if(
 
+                !result.ok ||
 
-            if(!result.ok || !data.success){
+                !data.success
+
+            ){
 
 
                 throw new Error(
@@ -672,12 +785,12 @@ const PaymentManager = {
                 data.expires
 
 
-
             };
 
 
 
         }
+
 
         catch(error){
 
@@ -685,13 +798,12 @@ const PaymentManager = {
             clearTimeout(timer);
 
 
-
-            if(error.name === "AbortError"){
+            if(error.name==="AbortError"){
 
 
                 throw new Error(
 
-                    "Payment verification timeout"
+                    "Verification timeout"
 
                 );
 
@@ -708,6 +820,8 @@ const PaymentManager = {
 
 
     }
+
+
 
 
 
