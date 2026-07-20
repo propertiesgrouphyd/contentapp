@@ -1177,7 +1177,13 @@ summary h2::before{
 
 
 
+/* Hide all elements with the HTML hidden attribute */
 
+[hidden]{
+
+    display:none !important;
+
+}
 
 
 
