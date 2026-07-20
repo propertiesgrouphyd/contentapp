@@ -64,6 +64,8 @@ const App = {
 
             paymentCancelButton: $("vw-payment-cancel-btn"),
 
+            paymentCloseButton: $("vw-payment-close-btn"),
+
             paymentModal: $("vw-payment-modal"),
 
             subscriptionButton: $("vw-subscription-btn"),
@@ -122,13 +124,20 @@ const App = {
 
                     if (sub.active) {
 
-                        alert("Your subscription is already active.");
+                        this.showToast( "Subscription already active." );
+                        return;
+
+                    }
+
+                    if (this.state.generating) {
 
                         return;
 
                     }
 
-                    this.showModal(e.paymentModal);
+                    this.showModal(
+                        e.paymentModal
+                    );
 
                 }
 
@@ -169,21 +178,19 @@ const App = {
                         */
 
 
-                        this.hideModal(
-                            e.paymentModal
-                        );
-
+                        e.paymentButton.textContent =
+                            "Creating Order...";
 
                         this.updateStatus(
-                            "Opening Payment..."
+                            "Creating Order..."
                         );
-
-
 
                         const result =
 
                             await PaymentManager.start();
 
+                        e.paymentButton.textContent =
+                            "Activating...";
 
                         Storage.saveSubscription(
                             result
@@ -191,10 +198,16 @@ const App = {
 
                         await this.refreshSubscriptionUI();
 
+                        this.hideModal(
+                            e.paymentModal
+                        );
+
+                        e.paymentButton.textContent =
+                            "Continue";
+
                         this.updateStatus(
                             "Subscription Activated"
                         );
-
 
                         this.showToast(
                             "Subscription activated successfully."
@@ -202,29 +215,24 @@ const App = {
 
 
 
-
-
-
                     }
 
 
-                    catch(error){
-
+                    catch (error) {
 
                         console.error(
                             "Payment error:",
                             error
                         );
 
-
+                        e.paymentButton.textContent =
+                            "Continue";
 
                         this.updateStatus(
                             "Payment Failed"
                         );
 
-
-
-                        alert(
+                        this.showToast(
 
                             error.message ||
 
@@ -232,15 +240,19 @@ const App = {
 
                         );
 
-
                     }
 
 
-                    finally{
+                    finally {
 
+                        if (e.paymentButton) {
 
-                        e.paymentButton.disabled = false;
+                            e.paymentButton.disabled = false;
 
+                            e.paymentButton.textContent =
+                                "Continue";
+
+                        }
 
                     }
 
@@ -259,13 +271,46 @@ const App = {
 
                 () => {
 
-                    this.hideModal(e.paymentModal);
+                    if (PaymentManager.processing) {
+
+                        return;
+
+                    }
+
+                    this.hideModal(
+                        e.paymentModal
+                    );
+                }
+
+            );
+
+        }
+
+        if (e.paymentCloseButton) {
+
+            e.paymentCloseButton.addEventListener(
+
+                "click",
+
+                () => {
+
+                    if (PaymentManager.processing) {
+
+                        return;
+
+                    }
+
+                    this.hideModal(
+                        e.paymentModal
+                    );
 
                 }
 
             );
 
         }
+
+
 
         if (e.copyButton) {
 
@@ -373,7 +418,9 @@ const App = {
 
                     if (!key) {
 
-                        alert("Enter your API key.");
+                        this.showToast(
+                            "Enter your API key."
+                        );
 
                         return;
 
@@ -441,13 +488,18 @@ const App = {
 
             if (!subscription.active) {
 
-                this.showModal(e.paymentModal);
+                this.showModal(
+                    e.paymentModal
+                );
 
-                this.updateStatus("Subscription Required");
+                this.updateStatus(
+                    "Subscription Required"
+                );
 
                 return;
 
             }
+
 
             this.updateStatus("Preparing Prompt...");
 
@@ -499,7 +551,7 @@ const App = {
 
             this.updateStatus("Generation Failed");
 
-            alert(
+            this.showToast(
 
                 error.message ||
 
