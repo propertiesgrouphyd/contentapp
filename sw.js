@@ -1,7 +1,7 @@
 "use strict";
 
 
-const CACHE_NAME = "vidhwaan-ai-runtime-v7";
+const CACHE_NAME = "vidhwaan-ai-runtime-v8";
 
 
 
