@@ -92,6 +92,7 @@ const ContentRenderer = {
 
 /* ------------------------------------------------------------------
            Italic
+
 ------------------------------------------------------------------ */
 
         html = html.replace(
@@ -111,7 +112,22 @@ const ContentRenderer = {
 
             /\[(.*?)\]\((.*?)\)/g,
 
-            '<a href="$2" target="_blank" rel="noopener">$1</a>'
+            (match,text,url)=>{
+
+
+                if(
+                    !/^https?:\/\//i.test(url)
+                ){
+
+                    return text;
+
+                }
+
+
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+
+
+            }
 
         );
 
@@ -161,9 +177,14 @@ html = html.replace(
             .split(/\r?\n/)
             .map(line => {
 
-                return `<li>${
-                    line.replace(/^\d+\.\s/, "")
-                }</li>`;
+                const text =
+                    line.replace(
+                        /^\d+\.\s/,
+                        ""
+                    ).trim();
+
+
+                return `<li>${text}</li>`;
 
             })
             .join("");
@@ -184,23 +205,36 @@ html = html.replace(
 
     (match) => {
 
-        const items = match
-            .trim()
-            .split(/\r?\n/)
-            .map(line => {
 
-                return `<li>${
-                    line.replace(/^[-*]\s/, "")
-                }</li>`;
+        const items =
+            match
+                .trim()
+                .split(/\r?\n/)
+                .map(line=>{
 
-            })
-            .join("");
+
+                    const text =
+                        line.replace(
+                            /^[-*]\s/,
+                            ""
+                        ).trim();
+
+
+                    return `<li>${text}</li>`;
+
+
+                })
+                .join("");
+
+
 
         return `<ul>${items}</ul>`;
+
 
     }
 
 );
+
         /* ------------------------------------------------------------------
            Tables
         ------------------------------------------------------------------ */
@@ -216,37 +250,83 @@ html = html.replace(
 
                 if(!table.length) return;
 
-                output.push("<table>");
+                output.push("<table><thead>");
 
                 table.forEach((row,index)=>{
+
 
                     const cols = row
                         .split("|")
                         .filter(Boolean)
-                        .map(c=>c.trim());
-
-                    output.push("<tr>");
-
-                    cols.forEach(col=>{
-
-                        output.push(
-
-                            index===0
-
-                            ? `<th>${col}</th>`
-
-                            : `<td>${col}</td>`
-
+                        .map(
+                            c=>c.trim()
                         );
 
-                    });
 
-                    output.push("</tr>");
+                    if(index === 0){
+
+                        output.push("<tr>");
+
+
+                        cols.forEach(col=>{
+
+
+                            output.push(
+
+                                `<th>${col}</th>`
+
+                            );
+
+
+                        });
+
+
+                        output.push("</tr>");
+
+
+                    }
+
 
                 });
 
-                output.push("</table>");
 
+                output.push("</thead><tbody>");
+
+
+                table.slice(1).forEach(row=>{
+
+
+                    const cols = row
+                        .split("|")
+                        .filter(Boolean)
+                        .map(
+                            c=>c.trim()
+                        );
+
+
+                    output.push("<tr>");
+
+
+                    cols.forEach(col=>{
+
+
+                        output.push(
+
+                            `<td>${col}</td>`
+
+                        );
+
+
+                    });
+
+
+                    output.push("</tr>");
+
+
+                });
+
+
+                output.push("</tbody></table>");
                 table=[];
 
             };
@@ -313,7 +393,6 @@ html = html.replace(
 
             return `<p>${
                 block
-                    .replace(/\n/g, "<br>")
                     .trim()
             }</p>`;
 
@@ -346,7 +425,19 @@ html = html.replace(
 
         });
 
-        return html;
+        html = html.replace(
+            /<p>\s*<\/p>/g,
+            ""
+        );
+
+
+        html = html.replace(
+            /\n{3,}/g,
+            "\n\n"
+        );
+
+
+        return html.trim();
 
     }
 
