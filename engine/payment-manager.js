@@ -337,24 +337,45 @@ const PaymentManager = {
 
                 handler:(response)=>{
 
-
-                    paymentReceived=true;
-
-
+                    paymentReceived = true;
 
                     localStorage.setItem(
-
                         "vidhwaan_payment_response",
-
                         JSON.stringify(response)
-
                     );
 
+                    try{
 
+                        if(window.vwRazorpay){
+                            window.vwRazorpay.close();
+                        }
 
+                    }catch(error){}
 
+                    window.vwRazorpay = null;
+
+                    document.body.style.overflow = "";
+
+                    this.processing = false;
 
                     this.verifyPayment(response)
+
+                    .then(result=>{
+
+                        localStorage.removeItem("vidhwaan_pending_payment");
+                        localStorage.removeItem("vidhwaan_payment_response");
+
+                        resolve(result);
+
+                    })
+
+                    .catch(error=>{
+
+                        reject(error);
+
+                    });
+
+                },
 
                     .then(
 
@@ -648,7 +669,7 @@ const PaymentManager = {
 
             ()=>controller.abort(),
 
-            20000
+            10000
 
         );
 
