@@ -794,27 +794,7 @@ const App = {
 
     },
 
-        if(!modal){
 
-            console.error(
-         
-
-
-        modal.removeAttribute(
-            "hidden"
-        );
-
-
-        modal.hidden = false;
-
-
-        modal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-    },
 
     hideModal(modal) {
 
