@@ -82,8 +82,7 @@ ol{
     /* Status */
 
     --vw-success:#16a34a;
-    --vw-warning:#d97706;
-    --vw-danger:#dc2626;
+
 
     /* Background */
 
@@ -104,15 +103,13 @@ ol{
     --vw-radius-sm:8px;
     --vw-radius-md:12px;
     --vw-radius-lg:18px;
-    --vw-radius-xl:24px;
+
 
     /* Shadows */
 
+
     --vw-shadow-sm:
         0 1px 2px rgba(0,0,0,.05);
-
-    --vw-shadow-md:
-        0 8px 20px rgba(0,0,0,.08);
 
     --vw-shadow-lg:
         0 16px 40px rgba(0,0,0,.10);
@@ -146,14 +143,6 @@ body{
     background:var(--vw-bg);
 
     color:var(--vw-text);
-
-    font-family:
-        Inter,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
 
     line-height:1.6;
 }
@@ -535,13 +524,7 @@ strong{
 
 }
 
-.vw-field input:hover,
-.vw-field select:hover,
-.vw-field textarea:hover{
 
-    border-color:#cbd5e1;
-
-}
 
 .vw-field input:focus,
 .vw-field select:focus,
@@ -796,17 +779,7 @@ summary h2::before{
 
 }
 
-#vw-generated-content{
 
-    white-space:pre-wrap;
-
-    word-break:break-word;
-
-    line-height:1.8;
-
-    font-size:1rem;
-
-}
 
 .vw-output-actions{
 
@@ -861,8 +834,6 @@ summary h2::before{
     place-items:center;
 
     background:rgba(255,255,255,.75);
-
-    backdrop-filter:blur(4px);
 
     z-index:9998;
 
@@ -954,25 +925,7 @@ summary h2::before{
 
 }
 
-.vw-modal-content{
 
-    width:min(100%,520px);
-
-    background:#fff;
-
-    border-radius:var(--vw-radius-lg);
-
-    padding:32px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:20px;
-
-    box-shadow:var(--vw-shadow-lg);
-
-}
 
 /* ========================================================================
    RESPONSIVE
@@ -1096,7 +1049,7 @@ summary h2::before{
 
     background:#ffffff;
 
-    color:#111827;
+    color:var(--vw-text);
 
     border-radius:var(--vw-radius-lg);
 
@@ -1112,7 +1065,7 @@ summary h2::before{
 
     position:relative;
 
-    animation:vw-modal-show .2s ease;
+
 
 }
 
@@ -1126,7 +1079,7 @@ summary h2::before{
 
     font-weight:700;
 
-    color:#111827;
+    color:var(--vw-text);
 
 }
 
@@ -1136,7 +1089,7 @@ summary h2::before{
 
     margin:0;
 
-    color:#6b7280;
+    color:var(--vw-text-soft);
 
     line-height:1.5;
 
@@ -1148,17 +1101,13 @@ summary h2::before{
 
     width:100%;
 
-    box-sizing:border-box;
-
     padding:14px 16px;
 
-    border:1px solid #d1d5db;
+    border:1px solid var(--vw-border);
 
     border-radius:12px;
 
     font-size:16px;
-
-    outline:none;
 
 }
 
@@ -1166,7 +1115,7 @@ summary h2::before{
 
 .vw-modal-card input:focus{
 
-    border-color:#111827;
+    border-color:var(--vw-primary);
 
 }
 
@@ -1192,11 +1141,11 @@ summary h2::before{
 
     padding:12px 18px;
 
-    border:none;
+
 
     border-radius:12px;
 
-    cursor:pointer;
+   
 
     font-size:15px;
 
@@ -1209,7 +1158,7 @@ summary h2::before{
 #vw-save-api-btn,
 #vw-payment-btn{
 
-    background:#111827;
+    background:var(--vw-primary);
 
     color:#ffffff;
 
@@ -1222,28 +1171,13 @@ summary h2::before{
 
     background:#f3f4f6;
 
-    color:#111827;
+    color:var(--vw-text);
 
 }
 
 
 
-@keyframes vw-modal-show{
 
-    from{
-
-        opacity:0;
-
-    }
-
-
-    to{
-
-        opacity:1;
-
-    }
-
-}
 
 
 
@@ -1271,11 +1205,9 @@ summary h2::before{
 
     border-radius:var(--vw-radius-lg);
 
-    outline:none;
+    outline:0;
 
     resize:none;
-
-    cursor:text;
 
     overflow-wrap:anywhere;
 
@@ -1284,29 +1216,23 @@ summary h2::before{
     white-space:pre-wrap;
 
 
-    font-family:
-        Inter,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
+
 
 
     font-size:17px;
 
     font-weight:400;
 
-    line-height:1.75;
+    line-height:1.6;
 
     letter-spacing:.01em;
 
-    color:#1f2937;
+    color:var(--vw-text);
 
 
     text-rendering:optimizeLegibility;
 
-    -webkit-font-smoothing:antialiased;
+
 
 
     box-shadow:
@@ -1316,7 +1242,6 @@ summary h2::before{
 
     transition:
 
-        box-shadow .18s ease,
 
         border-color .18s ease;
 
@@ -1327,10 +1252,6 @@ summary h2::before{
 #vw-output:focus{
 
     border-color:#cbd5e1;
-
-    box-shadow:
-
-        0 4px 20px rgba(0,0,0,.06);
 
 }
 
@@ -1410,7 +1331,7 @@ summary h2::before{
     line-height:1.25;
 
 
-    color:#111827;
+    color:var(--vw-text);
 
 }
 
@@ -1432,7 +1353,7 @@ summary h2::before{
     line-height:1.35;
 
 
-    color:#111827;
+    color:var(--vw-text);
 
 }
 
@@ -1454,7 +1375,7 @@ summary h2::before{
     line-height:1.4;
 
 
-    color:#111827;
+    color:var(--vw-text);
 
 }
 
@@ -1607,7 +1528,7 @@ summary h2::before{
 
     font-weight:700;
 
-    color:#111827;
+    color:var(--vw-text);
 
 }
 
@@ -1752,13 +1673,7 @@ summary h2::before{
 
 }
 
-/* Hide all elements with the HTML hidden attribute */
 
-[hidden]{
-
-    display:none !important;
-
-}
 
 
 
@@ -1781,7 +1696,7 @@ summary h2::before{
     padding:14px 20px;
 
 
-    border:none;
+
 
     border-radius:999px;
 
@@ -1796,16 +1711,14 @@ summary h2::before{
     font-weight:600;
 
 
-    cursor:pointer;
+ 
 
 
     box-shadow:
-    0 8px 25px rgba(0,0,0,.25);
+    0 4px 12px rgba(0,0,0,.18);
 
 
-    transition:
-    transform .2s ease,
-    opacity .2s ease;
+ 
 
 }
 
