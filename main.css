@@ -1832,3 +1832,218 @@ body.vw-payment-open{
     touch-action:none;
 
 }
+
+
+
+/* =========================================================
+   EDITOR TOOLBAR - PREMIUM
+   ========================================================= */
+
+
+.vw-editor-tools{
+
+    margin:16px 0;
+
+    border:1px solid var(--vw-border);
+
+    border-radius:16px;
+
+    background:var(--vw-surface);
+
+    overflow:hidden;
+
+}
+
+
+
+.vw-editor-tools summary{
+
+    padding:12px 16px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    color:var(--vw-text);
+
+    user-select:none;
+
+    list-style:none;
+
+}
+
+
+
+.vw-editor-tools summary::-webkit-details-marker{
+
+    display:none;
+
+}
+
+
+
+.vw-editor-tools summary::before{
+
+    content:"＋";
+
+    margin-right:8px;
+
+    font-weight:700;
+
+}
+
+
+
+.vw-editor-tools[open] summary::before{
+
+    content:"−";
+
+}
+
+
+
+
+.vw-editor-toolbar{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    flex-wrap:nowrap;
+
+    overflow-x:auto;
+
+    overflow-y:hidden;
+
+    white-space:nowrap;
+
+    scrollbar-width:none;
+
+    padding:12px 16px 16px;
+
+    border-top:1px solid var(--vw-border);
+
+}
+
+
+.vw-editor-toolbar::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+
+
+
+.vw-editor-tools{
+
+    position:relative;
+
+    z-index:20;
+
+}
+
+
+.vw-editor-toolbar button{
+
+    min-width:42px;
+
+    height:40px;
+
+    padding:0 12px;
+
+    border-radius:10px;
+
+    border:1px solid var(--vw-border);
+
+    background:#fff;
+
+    color:var(--vw-text);
+
+    font-size:16px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:transform .15s ease,
+               background .15s ease;
+
+}
+
+
+
+.vw-editor-toolbar button:hover{
+
+    background:#f3f4f6;
+
+}
+
+
+
+.vw-editor-toolbar button:active{
+
+    transform:scale(.96);
+
+}
+
+
+
+.vw-editor-toolbar button.active{
+
+    background:var(--vw-primary);
+
+    color:#fff;
+
+    border-color:var(--vw-primary);
+
+}
+
+
+
+.vw-editor-toolbar input[type="color"]{
+
+    width:42px;
+
+    height:40px;
+
+    padding:3px;
+
+    border-radius:10px;
+
+    border:1px solid var(--vw-border);
+
+    cursor:pointer;
+
+    background:#fff;
+
+}
+
+
+
+
+/* Mobile */
+
+@media(max-width:600px){
+
+    .vw-editor-toolbar{
+
+        gap:6px;
+
+        padding:10px;
+
+    }
+
+
+    .vw-editor-toolbar button,
+    .vw-editor-toolbar input[type="color"]{
+
+        min-width:38px;
+
+        height:38px;
+
+    }
+
+}
