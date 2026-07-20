@@ -468,7 +468,7 @@ const App = {
 
         }
 
-        this.state.generating = true;
+        this.setGenerating(true);
 
         const e = this.elements;
 
@@ -480,7 +480,14 @@ const App = {
 
             if (!apiKey) {
 
-                this.showModal(e.apiModal);
+
+                this.setGenerating(false);
+
+
+                this.showModal(
+                    e.apiModal
+                );
+
 
                 return;
 
@@ -494,13 +501,19 @@ const App = {
 
             if (!subscription.active) {
 
+
+                this.setGenerating(false);
+
+
                 this.showModal(
                     e.paymentModal
                 );
 
+
                 this.updateStatus(
                     "Subscription Required"
                 );
+
 
                 return;
 
@@ -753,21 +766,31 @@ const App = {
 
     showModal(modal) {
 
-        if (!modal) {
+
+        if(!modal){
+
+            console.error(
+                "Modal element missing"
+            );
 
             return;
 
         }
 
+
+        modal.removeAttribute(
+            "hidden"
+        );
+
+
         modal.hidden = false;
 
+
         modal.setAttribute(
-
             "aria-hidden",
-
             "false"
-
         );
+
 
     },
 
