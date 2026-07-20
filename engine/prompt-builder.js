@@ -162,6 +162,12 @@ const PromptBuilder = {
             "- Use headings only when they improve readability.",
 
 
+            "- Match content length and structure to the selected platform.",
+
+
+            "- Do not over-format short-form content such as captions, replies, and social posts.",
+
+
             "- Use bullet points for lists.",
 
 
