@@ -63,63 +63,138 @@ function clear() {
 
 async function copy() {
 
-    const output = getOutputElement();
 
-    if (!output) {
-
-        return false;
-
-    }
+    const output =
+        getOutputElement();
 
 
-    if (output.querySelector(".vw-empty-state")) {
+    if(!output){
 
         return false;
 
     }
 
 
-    try {
+    if(
+        output.querySelector(
+            ".vw-empty-state"
+        )
+    ){
 
-        const range = document.createRange();
+        return false;
 
-        range.selectNodeContents(output);
-
-
-        const selection = window.getSelection();
-
-        if (!selection) {
-
-            return false;
-
-        }
-
-        selection.removeAllRanges();
-
-        selection.addRange(range);
+    }
 
 
-        const copied = document.execCommand(
-            "copy"
-        );
+    try{
 
 
-        selection.removeAllRanges();
+        const html =
+            output.innerHTML.trim();
 
 
-        if (!copied) {
+        const text =
+            output.innerText ||
+            output.textContent ||
+            "";
 
-            throw new Error(
-                "Copy failed"
+
+
+        if(
+            navigator.clipboard &&
+            window.ClipboardItem
+        ){
+
+
+            const item =
+                new ClipboardItem({
+
+                    "text/html":
+
+                        new Blob(
+                            [
+                                html
+                            ],
+                            {
+                                type:
+                                "text/html"
+                            }
+                        ),
+
+
+                    "text/plain":
+
+                        new Blob(
+                            [
+                                text
+                            ],
+                            {
+                                type:
+                                "text/plain"
+                            }
+                        )
+
+                });
+
+
+
+            await navigator.clipboard.write(
+                [
+                    item
+                ]
             );
 
+
         }
+        else{
+
+
+            const range =
+                document.createRange();
+
+
+            range.selectNodeContents(
+                output
+            );
+
+
+            const selection =
+                window.getSelection();
+
+
+            if(!selection){
+
+                return false;
+
+            }
+
+
+            selection.removeAllRanges();
+
+
+            selection.addRange(
+                range
+            );
+
+
+            document.execCommand(
+                "copy"
+            );
+
+
+            selection.removeAllRanges();
+
+
+        }
+
 
 
         return true;
 
 
-    } catch (error) {
+    }
+    catch(error){
+
 
         console.error(
             "Clipboard copy failed:",
@@ -129,10 +204,11 @@ async function copy() {
 
         return false;
 
+
     }
 
-}
 
+}
 
 
 function getText() {
