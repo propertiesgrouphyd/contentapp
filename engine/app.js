@@ -201,13 +201,7 @@ const App = {
 
 
 
-                        setTimeout(()=>{
 
-
-                            this.refreshSubscriptionUI();
-
-
-                        },1000);
 
 
                     }
@@ -839,4 +833,22 @@ document.addEventListener(
     }
 
 );
+
+
+window.addEventListener("pagehide",()=>{
+
+    if(window.vwRazorpay){
+
+        try{
+
+            window.vwRazorpay.close();
+
+        }catch(error){}
+
+        window.vwRazorpay = null;
+
+    }
+
+});
+
 
