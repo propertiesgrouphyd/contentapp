@@ -836,19 +836,7 @@ document.addEventListener(
 );
 
 
-window.addEventListener("pagehide",()=>{
 
-    if(window.vwRazorpay){
-
-        try{
-
-            window.vwRazorpay.close();
-
-        }catch(error){}
-
-        window.vwRazorpay = null;
-
-    }
 
 });
 
