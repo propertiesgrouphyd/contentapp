@@ -1172,33 +1172,57 @@ const EditorManager = {
     rgbToHex(rgb){
 
 
-        const result =
-            rgb.match(
-                /\d+/g
-            );
-
-
-        if(!result || result.length < 3){
+        if(
+            typeof rgb !== "string"
+        ){
 
             return "#000000";
 
         }
 
 
-        return "#" +
+        const result =
+            rgb.match(
+                /\d+/g
+            );
 
-            (
-                1 << 24 |
-                Number(result[0]) << 16 |
-                Number(result[1]) << 8 |
+
+        if(
+            !result ||
+            result.length < 3
+        ){
+
+            return "#000000";
+
+        }
+
+
+        return (
+
+            "#" +
+
+            [
+                Number(result[0]),
+                Number(result[1]),
                 Number(result[2])
+            ]
+
+            .map(
+
+                value =>
+
+                value
+                .toString(16)
+                .padStart(2,"0")
+
             )
-            .toString(16)
-            .slice(1);
+
+            .join("")
+
+        );
 
 
     },
-
 
 
     updateToolbarState(){
