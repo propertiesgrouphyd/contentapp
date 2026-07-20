@@ -19,6 +19,7 @@ import PromptBuilder from "./prompt-builder.js";
 import ContentRenderer from "./content-renderer.js";
 import * as OutputRenderer from "./output-renderer.js";
 import PWAManager from "./pwa-manager.js";
+import EditorManager from "./editor-manager.js";
 
 const App = {
 
@@ -43,6 +44,8 @@ const App = {
         this.bindEvents();
 
         PWAManager.init();
+
+        EditorManager.init();
 
         await this.refreshSubscriptionUI();
 
@@ -348,6 +351,9 @@ const App = {
 
                 () => {
 
+
+                    EditorManager.reset();
+
                     OutputRenderer.clear();
 
                     this.updateWordCount("");
@@ -525,6 +531,9 @@ const App = {
 
                 );
 
+            EditorManager.reset();
+
+
             const html =
 
                 ContentRenderer.render(
@@ -533,7 +542,12 @@ const App = {
 
                 );
 
+
             OutputRenderer.render(html);
+
+
+            EditorManager.saveDraft();
+
 
             this.updateWordCount(
 
