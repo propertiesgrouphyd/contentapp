@@ -61,33 +61,36 @@ function clear() {
 
 async function copy() {
 
-    const text = getText();
+    const output = getOutputElement();
 
-    if (!text) {
-
+    if (!output) {
         return false;
-
     }
+
+    const html = output.innerHTML;
+    const text = output.innerText;
 
     try {
 
-        if (
+        if (navigator.clipboard && window.ClipboardItem) {
 
-            navigator.clipboard &&
+            const clipboardItem = new ClipboardItem({
 
-            window.isSecureContext
+                "text/html": new Blob(
+                    [html],
+                    { type: "text/html" }
+                ),
 
-        ) {
+                "text/plain": new Blob(
+                    [text],
+                    { type: "text/plain" }
+                )
 
-            await navigator.clipboard.writeText(
+            });
 
-                text
+            await navigator.clipboard.write([clipboardItem]);
 
-            );
-
-        }
-
-        else {
+        } else {
 
             fallbackCopy(text);
 
@@ -95,27 +98,17 @@ async function copy() {
 
         return true;
 
-    }
+    } catch (error) {
 
-    catch (error) {
+        fallbackCopy(text);
 
-        try {
-
-            fallbackCopy(text);
-
-            return true;
-
-        }
-
-        catch {
-
-            return false;
-
-        }
+        return true;
 
     }
 
 }
+
+
 
 function fallbackCopy(text) {
 
