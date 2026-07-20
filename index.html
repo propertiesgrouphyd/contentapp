@@ -913,14 +913,96 @@
 
                 </div>
 
+
+                <details
+                    id="vw-editor-tools"
+                    class="vw-editor-tools">
+
+                    <summary>
+                        Editor Tools
+                    </summary>
+
+
+                    <div class="vw-editor-toolbar">
+
+
+                        <input
+                            id="vw-text-color"
+                            type="color"
+                            value="#000000"
+                            title="Text Color">
+
+
+                        <button
+                            id="vw-font-increase"
+                            type="button"
+                            title="Increase Font Size">
+                            A+
+                        </button>
+
+
+                        <button
+                            id="vw-font-decrease"
+                            type="button"
+                            title="Decrease Font Size">
+                            A-
+                        </button>
+
+
+                        <button
+                            id="vw-bold-btn"
+                            type="button"
+                            title="Bold">
+                            B
+                        </button>
+
+
+                        <button
+                            id="vw-italic-btn"
+                            type="button"
+                            title="Italic">
+                            I
+                        </button>
+
+
+                        <button
+                            id="vw-highlight-btn"
+                            type="button"
+                            title="Highlight">
+                            🟨
+                        </button>
+
+
+                        <button
+                            id="vw-undo-btn"
+                            type="button"
+                            title="Undo">
+                            ↶
+                        </button>
+
+
+                        <button
+                            id="vw-redo-btn"
+                            type="button"
+                            title="Redo">
+                            ↷
+                        </button>
+
+
+                    </div>
+
+
+                </details>
+
                 <article
                     id="vw-output"
                     contenteditable="true"
                     spellcheck="true"
                     tabindex="0"
-                    aria-live="polite">
+                    aria-live="polite"
+                    data-placeholder="Ready to Generate">
 
-                    <div id="vw-output-placeholder" class="vw-empty-state">
+                    <div class="vw-empty-state">
 
                         <h3>
                             Ready to Generate
