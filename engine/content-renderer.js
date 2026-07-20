@@ -17,6 +17,9 @@ const ContentRenderer = {
 
         let html = text.trim();
 
+        const codeBlocks = [];
+        const inlineCodes = [];
+
         /* ------------------------------------------------------------------
            Escape HTML
         ------------------------------------------------------------------ */
@@ -26,53 +29,80 @@ const ContentRenderer = {
             .replace(/</g,"&lt;")
             .replace(/>/g,"&gt;");
 
-        /* ------------------------------------------------------------------
-           Code Blocks
-        ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------
+   Code Blocks
+------------------------------------------------------------------ */
 
         html = html.replace(
 
-            /```([\s\S]*?)```/g,
+            /```([a-zA-Z0-9_-]+)?\n?([\s\S]*?)```/g,
 
-            (_,code)=>`<pre><code>${code.trim()}</code></pre>`
+            (_, language = "", code) => {
+
+                const lang = language.trim();
+
+                const cls = lang
+                    ? ` class="language-${lang}"`
+                    : "";
+
+                const token = `@@CODEBLOCK_${codeBlocks.length}@@`;
+
+                codeBlocks.push(
+                    `<pre><code${cls}>${code.trim()}</code></pre>`
+                );
+
+                return token;
+
+            }
 
         );
 
-        /* ------------------------------------------------------------------
-           Inline Code
-        ------------------------------------------------------------------ */
 
-        html = html.replace(
+/* ------------------------------------------------------------------
+   Inline Code
+------------------------------------------------------------------ */
 
-            /`([^`]+)`/g,
+html = html.replace(
 
-            "<code>$1</code>"
+    /`([^`]+)`/g,
 
+    (match, code) => {
+
+        const token = `@@INLINECODE_${inlineCodes.length}@@`;
+
+        inlineCodes.push(
+            `<code>${code}</code>`
         );
 
-        /* ------------------------------------------------------------------
-           Bold
-        ------------------------------------------------------------------ */
+        return token;
+
+    }
+
+);
+/* ------------------------------------------------------------------
+   Bold
+------------------------------------------------------------------ */
 
         html = html.replace(
 
-            /\*\*(.*?)\*\*/g,
+            /\*\*([^\n*]+?)\*\*/g,
 
             "<strong>$1</strong>"
 
         );
 
-        /* ------------------------------------------------------------------
+/* ------------------------------------------------------------------
            Italic
-        ------------------------------------------------------------------ */
+------------------------------------------------------------------ */
 
         html = html.replace(
 
-            /\*(.*?)\*/g,
+            /(^|[^\*])\*([^\n*]+?)\*(?!\*)/gm,
 
-            "<em>$1</em>"
-
+            "$1<em>$2</em>"
+    
         );
+
 
         /* ------------------------------------------------------------------
            Links
@@ -117,68 +147,66 @@ const ContentRenderer = {
             "<hr>"
 
         );
-
         /* ------------------------------------------------------------------
            Numbered Lists
         ------------------------------------------------------------------ */
 
-        html = html.replace(
+html = html.replace(
 
-            /^\d+\.\s(.*)$/gm,
+    /((?:^\d+\.\s.*(?:\r?\n|$))+)/gm,
 
-            "<li>$1</li>"
+    (match) => {
 
-        );
+        const items = match
+            .trim()
+            .split(/\r?\n/)
+            .map(line => {
 
-        html = html.replace(
+                return `<li>${
+                    line.replace(/^\d+\.\s/, "")
+                }</li>`;
 
-            /(<li>.*?<\/li>)/gs,
+            })
+            .join("");
 
-            "<ol>$1</ol>"
+        return `<ol>${items}</ol>`;
 
-        );
+    }
 
-        /* ------------------------------------------------------------------
-           Bullet Lists
-        ------------------------------------------------------------------ */
+);
 
-        html = html.replace(
+/* ------------------------------------------------------------------
+   Bullet Lists
+------------------------------------------------------------------ */
 
-            /^[-*]\s(.*)$/gm,
+html = html.replace(
 
-            "<li>$1</li>"
+    /((?:^[-*]\s.*(?:\r?\n|$))+)/gm,
 
-        );
+    (match) => {
 
-        html = html.replace(
+        const items = match
+            .trim()
+            .split(/\r?\n/)
+            .map(line => {
 
-            /<ol>([\s\S]*?)<\/ol>\s*<ol>/g,
+                return `<li>${
+                    line.replace(/^[-*]\s/, "")
+                }</li>`;
 
-            "<ol>$1"
+            })
+            .join("");
 
-        );
+        return `<ul>${items}</ul>`;
 
-        html = html.replace(
+    }
 
-            /(<li>.*?<\/li>)/gs,
-
-            "<ul>$1</ul>"
-
-        );
-
-        html = html.replace(
-
-            /<\/ul>\s*<ul>/g,
-
-            ""
-
-        );
-
+);
         /* ------------------------------------------------------------------
            Tables
         ------------------------------------------------------------------ */
 
-        if(html.includes("|")){
+        if (/^\|.*\|$/m.test(html)) {
 
             const lines = html.split("\n");
 
@@ -226,9 +254,9 @@ const ContentRenderer = {
 
             lines.forEach(line=>{
 
-                if(line.includes("|")){
+                if (/^\|.*\|$/.test(line.trim())) {
 
-                    if(!line.match(/^\|\-+/)){
+                    if (!/^\|?[\s:-]+\|/.test(line.trim())) {
 
                         table.push(line);
 
@@ -264,21 +292,61 @@ const ContentRenderer = {
 
         html = blocks.map(block=>{
 
-            if(
+            if (
 
-                /^<(h\d|ul|ol|pre|table|blockquote|hr)/.test(block)
+                /^<(h\d|ul|ol|pre|table|blockquote|hr|img|figure)/i.test(block)
 
-            ){
+            ) {
 
                 return block;
 
             }
 
-            return `<p>${block.replace(/\n/g,"<br>")}</p>`;
+            if (
+
+                /^<(p|div)/i.test(block)
+
+            ) {
+
+                return block;
+
+            }
+
+            return `<p>${
+                block
+                    .replace(/\n/g, "<br>")
+                    .trim()
+            }</p>`;
 
         }).join("\n");
 
-        html = html.replace(/\n{3,}/g,"\n\n");
+        html = html.replace(/\n{3,}/g, "\n\n");
+
+        codeBlocks.forEach((block, index) => {
+
+            html = html.replace(
+
+                `@@CODEBLOCK_${index}@@`,
+
+                block
+
+            );
+
+        });
+
+
+        inlineCodes.forEach((block, index) => {
+
+            html = html.replace(
+
+                `@@INLINECODE_${index}@@`,
+
+                block
+
+            );
+
+        });
+
         return html;
 
     }
