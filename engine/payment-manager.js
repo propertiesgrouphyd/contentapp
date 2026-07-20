@@ -340,47 +340,16 @@ const PaymentManager = {
                     paymentReceived = true;
 
                     localStorage.setItem(
+
                         "vidhwaan_payment_response",
+
                         JSON.stringify(response)
+
                     );
-
-                    try{
-
-                        if(window.vwRazorpay){
-                            window.vwRazorpay.close();
-                        }
-
-                    }catch(error){}
-
-                    window.vwRazorpay = null;
-
-                    document.body.style.overflow = "";
-
-                    this.processing = false;
 
                     this.verifyPayment(response)
 
                     .then(result=>{
-
-                        localStorage.removeItem("vidhwaan_pending_payment");
-                        localStorage.removeItem("vidhwaan_payment_response");
-
-                        resolve(result);
-
-                    })
-
-                    .catch(error=>{
-
-                        reject(error);
-
-                    });
-
-                },
-
-                    .then(
-
-                    result=>{
-
 
                         localStorage.removeItem(
 
@@ -388,14 +357,11 @@ const PaymentManager = {
 
                         );
 
-
                         localStorage.removeItem(
 
                             "vidhwaan_payment_response"
 
                         );
-
-
 
                         finish(
 
@@ -405,14 +371,9 @@ const PaymentManager = {
 
                         );
 
-
                     })
 
-
-                    .catch(
-
-                    error=>{
-
+                    .catch(error=>{
 
                         finish(
 
@@ -422,10 +383,7 @@ const PaymentManager = {
 
                         );
 
-
                     });
-
-
 
                 },
 
