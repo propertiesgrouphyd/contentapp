@@ -189,6 +189,7 @@ const App = {
                             result
                         );
 
+                        await this.refreshSubscriptionUI();
 
                         this.updateStatus(
                             "Subscription Activated"
