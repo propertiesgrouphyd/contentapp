@@ -64,6 +64,56 @@ function clear() {
 
 
 
+
+function createClipboardHTML(output){
+
+
+    const clone =
+        output.cloneNode(true);
+
+
+
+    clone
+    .querySelectorAll(
+        ".vw-paragraph"
+    )
+    .forEach(block=>{
+
+
+        const p =
+            document.createElement(
+                "p"
+            );
+
+
+        p.innerHTML =
+            block.innerHTML;
+
+
+        block.replaceWith(
+            p
+        );
+
+
+    });
+
+
+
+    return Array.from(
+        clone.children
+    )
+    .map(
+        block =>
+            block.outerHTML
+    )
+    .join("\n\n")
+    .trim();
+
+}
+
+
+
+
 async function copy() {
 
     const output =
@@ -106,8 +156,9 @@ async function copy() {
 
 
         const html =
-            clone.innerHTML
-                .trim();
+            createClipboardHTML(
+                output
+            );
 
 
 
