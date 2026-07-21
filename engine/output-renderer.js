@@ -61,8 +61,10 @@ function clear() {
 
 }
 
-async function copy() {
 
+
+
+async function copy() {
 
     const output =
         getOutputElement();
@@ -89,14 +91,39 @@ async function copy() {
     try{
 
 
+        const clone =
+            output.cloneNode(true);
+
+
+
+        /*
+            Create stable clipboard formats
+            for HTML and plain text
+        */
+
+
+
+
+
         const html =
-            output.innerHTML.trim();
+            clone.innerHTML
+                .trim();
+
 
 
         const text =
-            output.innerText ||
-            output.textContent ||
-            "";
+            Array.from(
+                clone.children
+            )
+            .map(
+                item =>
+                    item.textContent
+                        .replace(/\s+/g," ")
+                        .trim()
+            )
+            .filter(Boolean)
+            .join("\n\n");
+
 
 
 
@@ -111,31 +138,30 @@ async function copy() {
 
                     "text/html":
 
-                        new Blob(
-                            [
-                                html
-                            ],
-                            {
-                                type:
-                                "text/html"
-                            }
-                        ),
+                    new Blob(
+                        [
+                            html
+                        ],
+                        {
+                            type:
+                            "text/html"
+                        }
+                    ),
 
 
                     "text/plain":
 
-                        new Blob(
-                            [
-                                text
-                            ],
-                            {
-                                type:
-                                "text/plain"
-                            }
-                        )
+                    new Blob(
+                        [
+                            text
+                        ],
+                        {
+                            type:
+                            "text/plain"
+                        }
+                    )
 
                 });
-
 
 
             await navigator.clipboard.write(
@@ -162,15 +188,7 @@ async function copy() {
                 window.getSelection();
 
 
-            if(!selection){
-
-                return false;
-
-            }
-
-
             selection.removeAllRanges();
-
 
             selection.addRange(
                 range
