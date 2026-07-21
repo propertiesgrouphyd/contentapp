@@ -127,10 +127,20 @@ const PaymentManager = {
         try {
 
             const order = await this.request(
-
                 VW_CONFIG.PAYMENT.CREATE_ORDER
-
             );
+
+
+            if(
+                !order ||
+                typeof order !== "object"
+            ){
+
+                throw new Error(
+                    "Unable to create payment order."
+                );
+
+            }
 
             if (
 
@@ -166,11 +176,58 @@ const PaymentManager = {
 
     openCheckout(order) {
 
+
+        if(
+            !order ||
+            !order.key ||
+            !order.orderId
+        ){
+
+            return Promise.reject(
+                new Error(
+                    "Invalid payment order."
+                )
+            );
+
+        }
+
+
+        if(this.processing){
+
+            return Promise.reject(
+                new Error(
+                    "Payment already opening."
+                )
+            );
+
+        }
+
+
         return new Promise(
 
             (resolve, reject) => {
 
                 let finished = false;
+
+                if(
+                    typeof Razorpay === "undefined"
+                ){
+
+                    this.processing = false;
+
+
+                    reject(
+                        new Error(
+                            "Payment service unavailable. Please refresh and try again."
+                        )
+                    );
+
+
+                    return;
+
+                }
+
+
 
                 const checkout = new Razorpay({
 
@@ -286,6 +343,20 @@ const PaymentManager = {
 
 
     async verifyPayment(paymentResponse) {
+
+
+        if(
+            !paymentResponse ||
+            !paymentResponse.razorpay_payment_id ||
+            !paymentResponse.razorpay_order_id ||
+            !paymentResponse.razorpay_signature
+        ){
+
+            throw new Error(
+                "Invalid payment response."
+            );
+
+        }
 
         try {
 
