@@ -20,6 +20,7 @@ import ContentRenderer from "./content-renderer.js";
 import * as OutputRenderer from "./output-renderer.js";
 import PWAManager from "./pwa-manager.js";
 import EditorManager from "./editor-manager.js";
+import PDFExporter from "./pdf-exporter.js";
 
 const App = {
 
@@ -92,6 +93,8 @@ const App = {
             regenerateButton: $("vw-regenerate-btn"),
 
             clearButton: $("vw-clear-btn"),
+
+            pdfButton: $("vw-pdf-btn"),
 
             wordCount: $("vw-word-count"),
 
@@ -337,6 +340,47 @@ const App = {
             );
 
         }
+
+
+
+        if (e.pdfButton) {
+
+            e.pdfButton.addEventListener(
+
+                "click",
+
+                async()=>{
+
+                    try {
+
+                        await PDFExporter.download();
+
+                        this.updateStatus(
+                            "PDF Downloaded"
+                        );
+
+                    }
+
+                    catch(error){
+
+                        console.error(
+                            "PDF error:",
+                            error
+                        );
+
+                        this.showToast(
+                            "PDF creation failed."
+                        );
+
+                    }
+
+                }
+
+            );
+
+        }
+
+
 
         if (e.regenerateButton) {
 
