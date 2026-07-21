@@ -47,9 +47,11 @@ const App = {
 
         EditorManager.init();
 
-        await this.refreshSubscriptionUI();
+        this.refreshSubscriptionUI();
 
-        this.updateStatus("Ready");
+        this.updateStatus(
+            "Ready"
+        );
 
     },
 
@@ -188,6 +190,12 @@ const App = {
                             "Creating Order..."
                         );
 
+
+                        this.hideModal(
+                            e.paymentModal
+                        );
+
+
                         const result =
 
                             await PaymentManager.start();
@@ -199,14 +207,9 @@ const App = {
                             result
                         );
 
-                        await this.refreshSubscriptionUI();
-
                         this.hideModal(
                             e.paymentModal
                         );
-
-                        e.paymentButton.textContent =
-                            "Continue";
 
                         this.updateStatus(
                             "Subscription Activated"
@@ -422,10 +425,13 @@ const App = {
 
                         e.apiInput.value.trim();
 
-                    if (!key) {
+                    if(
+                        !key ||
+                        key.length < 30
+                    ){
 
                         this.showToast(
-                            "Enter your API key."
+                            "Enter a valid API key."
                         );
 
                         return;
