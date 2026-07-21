@@ -104,6 +104,22 @@ const SubscriptionManager = {
 
         try {
 
+
+            const controller =
+                new AbortController();
+
+
+            const timeout =
+                setTimeout(
+
+                    () => controller.abort(),
+
+                    8000
+
+                );
+
+
+
             const response = await fetch(
 
                 url,
@@ -112,10 +128,18 @@ const SubscriptionManager = {
 
                     method: "GET",
 
-                    cache: "no-store"
+                    cache: "no-store",
+
+                    signal:
+                        controller.signal
 
                 }
 
+            );
+
+
+            clearTimeout(
+                timeout
             );
 
             /*
@@ -153,7 +177,26 @@ const SubscriptionManager = {
 
             const data = await response.json();
 
-            const expires = Number(data.expires || 0);
+            const expires = Number(
+                data.expires || 0
+            );
+
+
+            if(
+                !Number.isFinite(expires)
+            ){
+
+                return {
+
+                    active:false,
+
+                    uniqueId,
+
+                    expires:null
+
+                };
+
+            }
 
             const valid =
 
@@ -197,13 +240,16 @@ const SubscriptionManager = {
 
         catch (error) {
 
-            console.error(
+            if(
+                error.name !== "AbortError"
+            ){
 
-                "Subscription check failed:",
+                console.error(
+                    "Subscription check failed:",
+                    error
+                );
 
-                error
-
-            );
+            }
 
             /*
              * Offline or temporary server problem.
