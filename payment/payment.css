@@ -1,0 +1,414 @@
+/* ==========================================================================
+   VIDHWAAN AI Writer
+   Payment Page
+   Premium Production Design
+   ========================================================================== */
+
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+
+
+body{
+
+    margin:0;
+
+    min-height:100vh;
+
+    font-family:
+
+    Inter,
+
+    Arial,
+
+    Helvetica,
+
+    sans-serif;
+
+    background:
+
+    #050505;
+
+    color:#ffffff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:20px;
+
+}
+
+
+
+.payment-container{
+
+    width:100%;
+
+    max-width:520px;
+
+}
+
+
+
+.payment-card{
+
+    background:
+
+    #111111;
+
+    border:
+
+    1px solid rgba(255,255,255,0.12);
+
+    border-radius:24px;
+
+    padding:32px 26px;
+
+    box-shadow:
+
+    0 20px 60px rgba(0,0,0,0.5);
+
+}
+
+
+
+h1{
+
+    text-align:center;
+
+    margin:0;
+
+    font-size:32px;
+
+    color:#d4af37;
+
+}
+
+
+
+h2{
+
+    text-align:center;
+
+    margin:12px 0 10px;
+
+    font-size:22px;
+
+}
+
+
+
+.description{
+
+    text-align:center;
+
+    color:#b8b8b8;
+
+    line-height:1.6;
+
+    margin-bottom:28px;
+
+}
+
+
+
+/* Price */
+
+
+.price-box{
+
+    background:
+
+    #181818;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    margin-bottom:24px;
+
+}
+
+
+
+.price-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:10px 0;
+
+    color:#dddddd;
+
+}
+
+
+
+.price-row strong{
+
+    color:#ffffff;
+
+}
+
+
+
+.price-row.total{
+
+    margin-top:10px;
+
+    padding-top:18px;
+
+    border-top:
+
+    1px solid rgba(255,255,255,0.15);
+
+    font-size:20px;
+
+}
+
+
+
+.price-row.total strong{
+
+    color:#d4af37;
+
+}
+
+
+
+/* Terms */
+
+
+.terms-box{
+
+    background:
+
+    #151515;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    margin-bottom:22px;
+
+}
+
+
+
+.terms-box h3{
+
+    margin-top:0;
+
+    color:#d4af37;
+
+}
+
+
+
+.terms-box ul{
+
+    padding-left:20px;
+
+    margin:0;
+
+}
+
+
+
+.terms-box li{
+
+    margin-bottom:10px;
+
+    color:#cccccc;
+
+    line-height:1.5;
+
+}
+
+
+
+/* Checkbox */
+
+
+.accept-box{
+
+    display:flex;
+
+    gap:12px;
+
+    align-items:flex-start;
+
+    cursor:pointer;
+
+    color:#dddddd;
+
+    line-height:1.5;
+
+    margin-bottom:22px;
+
+}
+
+
+
+.accept-box input{
+
+    width:20px;
+
+    height:20px;
+
+    margin-top:3px;
+
+}
+
+
+
+/* Buttons */
+
+
+button{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:15px;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+
+
+#payButton{
+
+    background:
+
+    #d4af37;
+
+    color:#000000;
+
+}
+
+
+
+#payButton:disabled{
+
+    opacity:0.45;
+
+    cursor:not-allowed;
+
+}
+
+
+
+.back-button{
+
+    margin-top:12px;
+
+    background:
+
+    transparent;
+
+    color:#ffffff;
+
+    border:
+
+    1px solid rgba(255,255,255,0.25);
+
+}
+
+
+
+.back-button:hover{
+
+    background:
+
+    rgba(255,255,255,0.08);
+
+}
+
+
+
+/* Support */
+
+
+.support{
+
+    margin-top:28px;
+
+    text-align:center;
+
+    color:#aaaaaa;
+
+    font-size:14px;
+
+}
+
+
+
+.support a{
+
+    color:#d4af37;
+
+    text-decoration:none;
+
+}
+
+
+
+/* Mobile */
+
+
+@media(max-width:600px){
+
+
+    body{
+
+        padding:14px;
+
+        align-items:flex-start;
+
+    }
+
+
+
+    .payment-card{
+
+        padding:24px 18px;
+
+        border-radius:20px;
+
+    }
+
+
+
+    h1{
+
+        font-size:28px;
+
+    }
+
+
+
+    h2{
+
+        font-size:20px;
+
+    }
+
+
+}
