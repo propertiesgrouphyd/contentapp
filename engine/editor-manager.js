@@ -1225,6 +1225,77 @@ const EditorManager = {
     },
 
 
+
+    updateCounts(){
+
+
+        if(!this.output){
+
+            return;
+
+        }
+
+
+        const text =
+
+            this.output.innerText ||
+
+            this.output.textContent ||
+
+            "";
+
+
+
+        const words =
+
+            text.trim()
+
+                ? text.trim()
+                    .split(/\s+/)
+                    .length
+
+                : 0;
+
+
+
+        const characters =
+            text.length;
+
+
+
+        const wordCount =
+            document.getElementById(
+                "vw-word-count"
+            );
+
+
+        const characterCount =
+            document.getElementById(
+                "vw-character-count"
+            );
+
+
+
+        if(wordCount){
+
+            wordCount.textContent =
+                words;
+
+        }
+
+
+
+        if(characterCount){
+
+            characterCount.textContent =
+                characters;
+
+        }
+
+
+    },
+
+
     updateToolbarState(){
 
 
