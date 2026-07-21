@@ -5,10 +5,12 @@
 
    Tone Library
 
+   Production Version
+
    ========================================================================== */
 
 
-export default Object.freeze([
+const VW_TONES = Object.freeze([
 
 
     {
@@ -191,7 +193,7 @@ export default Object.freeze([
         id: "optimistic",
         label: "Optimistic",
         description:
-            "Positive and future-focused tone that highlights possibilities and growth."
+            "Positive and future-focused tone highlighting possibilities and growth."
     },
 
 
@@ -208,7 +210,45 @@ export default Object.freeze([
         label: "Neutral",
         description:
             "Balanced and objective tone suitable for general communication."
+    },
+
+
+    {
+        id: "marketing",
+        label: "Marketing",
+        description:
+            "Brand-focused tone designed for campaigns, promotions, and audience engagement."
+    },
+
+
+    {
+        id: "sales",
+        label: "Sales",
+        description:
+            "Conversion-focused tone designed to encourage customer decisions and action."
+    },
+
+
+    {
+        id: "journalistic",
+        label: "Journalistic",
+        description:
+            "Fact-focused tone suitable for news, reports, and informative articles."
+    },
+
+
+    {
+        id: "minimalist",
+        label: "Minimalist",
+        description:
+            "Clean and concise tone focused on simplicity and clarity."
     }
 
 
 ]);
+
+
+Object.freeze(VW_TONES);
+
+
+export default VW_TONES;
