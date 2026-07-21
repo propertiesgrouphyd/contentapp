@@ -4,7 +4,13 @@
    VIDHWAAN AI Writer
 
    AI Client
-   Optimized Production Version
+   Production Version
+
+   Optimized:
+   - Premium content quality
+   - Controlled token usage
+   - Stable API handling
+   - Better natural writing
 
    ========================================================================== */
 
@@ -12,7 +18,9 @@
 const DEFAULT_TIMEOUT = 60000;
 
 
+
 const AIClient = {
+
 
 
     async generate(
@@ -22,6 +30,7 @@ const AIClient = {
         apiKey
 
     ){
+
 
 
         if(
@@ -57,6 +66,7 @@ const AIClient = {
 
 
 
+
         const controller =
 
         new AbortController();
@@ -64,13 +74,21 @@ const AIClient = {
 
 
 
+
         const timeout =
 
-        setTimeout(()=>{
+        setTimeout(
 
-            controller.abort();
+            ()=>{
 
-        }, DEFAULT_TIMEOUT);
+                controller.abort();
+
+            },
+
+            DEFAULT_TIMEOUT
+
+        );
+
 
 
 
@@ -79,13 +97,18 @@ const AIClient = {
         try{
 
 
+
             const response =
 
             await fetch(
 
+
+
                 VW_CONFIG.API.BASE_URL +
 
                 VW_CONFIG.API.CHAT_ENDPOINT,
+
+
 
                 {
 
@@ -93,20 +116,29 @@ const AIClient = {
                     method:"POST",
 
 
+
                     signal:controller.signal,
 
+
+
                     cache:"no-store",
+
 
 
                     headers:{
 
 
+
                         "Content-Type":
+
                         "application/json",
 
 
+
                         "Authorization":
+
                         `Bearer ${apiKey.trim()}`
+
 
 
                     },
@@ -114,6 +146,7 @@ const AIClient = {
 
 
                     body:JSON.stringify({
+
 
 
                         model:
@@ -125,25 +158,24 @@ const AIClient = {
                         messages:[
 
 
+
                             {
 
-
                                 role:"user",
-
 
                                 content:
 
                                 prompt.trim()
 
-
                             }
+
 
 
                         ],
 
 
 
-                        temperature:0.75,
+                        temperature:0.8,
 
 
 
@@ -151,20 +183,34 @@ const AIClient = {
 
 
 
-                        top_p:0.9
+                        top_p:0.9,
+
+
+                        frequency_penalty:0.2,
+
+
+                        presence_penalty:0.1
+
 
 
                     })
 
 
+
                 }
+
+
 
             );
 
 
 
 
+
+
             clearTimeout(timeout);
+
+
 
 
 
@@ -185,22 +231,35 @@ const AIClient = {
 
 
 
+
             let data;
 
-            try {
+
+
+            try{
+
 
                 data =
-                    await response.json();
+
+                await response.json();
+
 
             }
 
-            catch {
+
+            catch{
+
 
                 throw new Error(
+
                     "Invalid AI server response."
+
                 );
 
+
             }
+
+
 
 
 
@@ -222,6 +281,8 @@ const AIClient = {
 
 
 
+
+
             if(
 
                 typeof content !== "string" ||
@@ -230,11 +291,13 @@ const AIClient = {
 
             ){
 
+
                 throw new Error(
 
                     "AI returned an empty response."
 
                 );
+
 
             }
 
@@ -242,7 +305,12 @@ const AIClient = {
 
 
 
+
+
             return content.trim();
+
+
+
 
 
         }
@@ -258,11 +326,13 @@ const AIClient = {
 
 
 
+
             if(
 
                 error.name === "AbortError"
 
             ){
+
 
                 throw new Error(
 
@@ -270,7 +340,10 @@ const AIClient = {
 
                 );
 
+
             }
+
+
 
 
 
@@ -281,13 +354,18 @@ const AIClient = {
 
             ){
 
+
                 throw new Error(
 
                     "Unable to connect to AI service."
 
                 );
 
+
             }
+
+
+
 
 
 
@@ -295,10 +373,15 @@ const AIClient = {
 
 
 
+
         }
 
 
+
     },
+
+
+
 
 
 
@@ -315,12 +398,17 @@ const AIClient = {
 
 
 
+
+
+
         try{
+
 
 
             const json =
 
             await response.json();
+
 
 
 
@@ -343,13 +431,20 @@ const AIClient = {
             message;
 
 
+
         }
+
 
 
         catch{
 
 
+
         }
+
+
+
+
 
 
 
@@ -357,72 +452,117 @@ const AIClient = {
         switch(response.status){
 
 
+
             case 400:
 
+
                 return new Error(
+
                     "Invalid request."
+
                 );
+
+
 
 
 
             case 401:
 
+
                 return new Error(
+
                     "Invalid API key."
+
                 );
+
+
 
 
 
             case 403:
 
+
                 return new Error(
+
                     "Access denied."
+
                 );
+
+
 
 
 
             case 404:
 
+
                 return new Error(
+
                     "AI service unavailable."
+
                 );
+
+
 
 
 
             case 429:
 
+
                 return new Error(
+
                     "Too many requests. Please wait."
+
                 );
+
+
 
 
 
             case 500:
 
+
             case 502:
+
 
             case 503:
 
+
             case 504:
 
+
+
                 return new Error(
+
                     "AI service temporarily unavailable."
+
                 );
+
+
 
 
 
             default:
 
-                return new Error(message);
+
+                return new Error(
+
+                    message
+
+                );
+
 
 
         }
 
 
+
     }
 
 
+
 };
+
+
 
 
 
