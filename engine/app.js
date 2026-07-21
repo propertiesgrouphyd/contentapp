@@ -174,18 +174,6 @@ const App = {
 
 
 
-                        /*
-                            Close VIDHWAAN modal
-
-                            Immediately start Razorpay.
-                            Do not delay.
-                            Required for Android PWA
-                        */
-
-
-                        this.hideModal(
-                            e.paymentModal
-                        );
 
 
                         const result =
@@ -195,6 +183,10 @@ const App = {
 
                         Storage.saveSubscription(
                             result
+                        );
+
+                        this.hideModal(
+                            e.paymentModal
                         );
 
 
