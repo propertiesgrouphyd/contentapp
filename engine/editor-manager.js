@@ -87,6 +87,12 @@ const EditorManager = {
 
     initialized:false,
 
+    history:[],
+
+    historyIndex:-1,
+
+    historyTimer:null,
+
 
     init(){
 
@@ -121,6 +127,8 @@ const EditorManager = {
 
 
             this.restoreDraft();
+
+            this.saveHistory();
 
 
             this.updateCounts();
@@ -166,6 +174,8 @@ const EditorManager = {
                 this.updateCounts();
 
                 this.saveDraft();
+
+                this.saveHistory();
 
                 this.dispatchChange();
 
@@ -242,12 +252,11 @@ const EditorManager = {
                     event.preventDefault();
 
 
-                    document.execCommand(
-                        "undo"
-                    );
+                    this.undo();
 
 
-                    this.saveSelection();
+
+   
 
 
                     this.updateToolbarState();
@@ -275,12 +284,11 @@ const EditorManager = {
                     event.preventDefault();
 
 
-                    document.execCommand(
-                        "redo"
-                    );
+                    this.redo();
 
 
-                    this.saveSelection();
+
+
 
 
                     this.updateToolbarState();
@@ -332,6 +340,8 @@ const EditorManager = {
 
                 this.saveDraft();
 
+                this.saveHistory();
+
 
                 this.dispatchChange();
 
@@ -340,79 +350,7 @@ const EditorManager = {
 
 
 
-        this.output.addEventListener(
-            "copy",
-            (event)=>{
-
-
-                const selection =
-                    window.getSelection();
-
-
-                if(
-                    !selection ||
-                    !selection.rangeCount
-                ){
-
-                    return;
-
-                }
-
-
-                const container =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                container.appendChild(
-
-                    selection
-                        .getRangeAt(0)
-                        .cloneContents()
-
-                );
-
-
-                const html =
-                    container.innerHTML;
-
-
-                const text =
-                    selection.toString();
-
-
-
-                if(event.clipboardData){
-
-
-                    event.clipboardData.setData(
-
-                        "text/html",
-
-                        html
-
-                    );
-
-
-                    event.clipboardData.setData(
-
-                        "text/plain",
-
-                        text
-
-                    );
-
-
-                    event.preventDefault();
-
-
-                }
-
-
-            }
-        );
-
+ 
 
         const color =
             document.getElementById(
@@ -580,29 +518,7 @@ const EditorManager = {
             "click",
             ()=>{
 
-                this.restoreSelection();
-
-
-                document.execCommand(
-                    "undo"
-                );
-
-
-                this.saveSelection();
-
-
-
-                this.updateCounts();
-
-
-                this.updateToolbarState();
-
-
-                this.saveDraft();
-
-
-                this.dispatchChange();
-
+                this.undo();
 
             }
         );
@@ -613,32 +529,10 @@ const EditorManager = {
             "click",
             ()=>{
 
-                this.restoreSelection();
-
-
-                document.execCommand(
-                    "redo"
-                );
-
-
-                this.saveSelection();
-
-
-                this.updateCounts();
-
-
-                this.updateToolbarState();
-
-
-                this.saveDraft();
-
-
-                this.dispatchChange();
-
+                this.redo();
 
             }
         );
-
 
     },
 
@@ -666,6 +560,9 @@ const EditorManager = {
 
 
         this.saveDraft();
+
+
+        this.saveHistory();
 
 
         this.dispatchChange();
@@ -765,6 +662,8 @@ const EditorManager = {
 
         this.saveDraft();
 
+        this.saveHistory();
+
 
         this.dispatchChange();
 
@@ -861,6 +760,8 @@ const EditorManager = {
 
 
         this.saveDraft();
+
+        this.saveHistory();
 
 
         this.dispatchChange();
@@ -1057,6 +958,8 @@ const EditorManager = {
 
             this.saveDraft();
 
+            this.saveHistory();
+
 
             this.dispatchChange();
 
@@ -1082,6 +985,8 @@ const EditorManager = {
             this.updateCounts();
 
             this.saveDraft();
+
+            this.saveHistory();
 
 
             this.dispatchChange();
@@ -1311,14 +1216,57 @@ const EditorManager = {
             );
 
 
+        const selection =
+            window.getSelection();
+
+
+        if(
+            !selection ||
+            !selection.rangeCount
+        ){
+
+            return;
+
+        }
+
+
+        let element =
+            selection
+            .getRangeAt(0)
+            .commonAncestorContainer;
+
+
+        if(
+            element.nodeType === 3
+        ){
+
+            element =
+                element.parentElement;
+
+        }
+
+
+        if(!element){
+
+            return;
+
+        }
+
+
+
+        const style =
+            window.getComputedStyle(
+                element
+            );
+
+
 
         if(bold){
 
             bold.classList.toggle(
                 "active",
-                document.queryCommandState(
-                    "bold"
-                )
+                style.fontWeight === "bold" ||
+                Number(style.fontWeight) >= 700
             );
 
         }
@@ -1329,9 +1277,7 @@ const EditorManager = {
 
             italic.classList.toggle(
                 "active",
-                document.queryCommandState(
-                    "italic"
-                )
+                style.fontStyle === "italic"
             );
 
         }
@@ -1340,6 +1286,167 @@ const EditorManager = {
     },
 
 
+
+    saveHistory(){
+
+        if(!this.output){
+
+            return;
+
+        }
+
+
+        const html =
+            this.output.innerHTML;
+
+
+        if(
+            this.history[
+                this.historyIndex
+            ] === html
+        ){
+
+            return;
+
+        }
+
+
+        this.history =
+            this.history.slice(
+                0,
+                this.historyIndex + 1
+            );
+
+
+        this.history.push(
+            html
+        );
+
+
+        this.historyIndex =
+            this.history.length - 1;
+
+
+        if(this.history.length > 50){
+
+            this.history.shift();
+
+            this.historyIndex--;
+
+        }
+
+
+    },
+
+
+
+
+
+    undo(){
+
+
+        if(
+            this.historyIndex <= 0
+        ){
+
+            return;
+
+        }
+
+
+        this.historyIndex--;
+
+
+        this.output.innerHTML =
+
+            this.history[
+                this.historyIndex
+            ];
+
+
+
+        this.savedRange = null;
+
+
+        const selection =
+            window.getSelection();
+
+
+        if(selection){
+
+            selection.removeAllRanges();
+
+        }
+
+
+
+        this.updateCounts();
+
+        this.updateToolbarState();
+
+        this.updateColorState();
+
+
+        this.saveDraft();
+
+        this.dispatchChange();
+
+
+    },
+
+
+
+    redo(){
+
+
+        if(
+            this.historyIndex >=
+            this.history.length - 1
+        ){
+
+            return;
+
+        }
+
+
+        this.historyIndex++;
+
+
+        this.output.innerHTML =
+
+            this.history[
+                this.historyIndex
+            ];
+
+
+        this.savedRange = null;
+
+
+        const selection =
+            window.getSelection();
+
+
+        if(selection){
+
+            selection.removeAllRanges();
+
+        }
+
+
+
+        this.updateCounts();
+
+        this.updateToolbarState();
+
+        this.updateColorState();
+
+
+        this.saveDraft();
+
+        this.dispatchChange();
+
+
+    },
 
 
 
@@ -1606,6 +1713,12 @@ const EditorManager = {
                     draft
                 );
 
+
+            this.history = [];
+
+            this.historyIndex = -1;
+
+            this.saveHistory();
 
 
             this.savedRange = null;
