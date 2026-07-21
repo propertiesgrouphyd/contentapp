@@ -373,7 +373,7 @@ html = html.replace(
 
             if (
 
-                /^<(h\d|ul|ol|pre|table|blockquote|hr|img|figure|div)/i.test(block)
+                /^<(h\d|ul|ol|pre|table|blockquote|hr|img|figure|p)/i.test(block)
 
             ) {
 
@@ -382,10 +382,10 @@ html = html.replace(
             }
 
 
-            return `<div class="vw-paragraph">${
+            return `<p>${
                 block
                     .trim()
-            }</div>`;
+            }</p>`;
 
         }).join("\n");
 
@@ -419,12 +419,6 @@ html = html.replace(
         html = html.replace(
             /<p>\s*<\/p>/g,
             ""
-        );
-
-
-        html = html.replace(
-            /\n{3,}/g,
-            "\n\n"
         );
 
 
