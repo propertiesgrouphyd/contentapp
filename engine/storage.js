@@ -162,48 +162,33 @@ const Storage = {
 
         if(data.uniqueId){
 
-
             this.setString(
-
-                VW_CONFIG.STORAGE_KEYS.UNIQUE_ID,
-
+                "vw_unique_id",
                 data.uniqueId
-
             );
 
-
         }
-
 
 
         if(data.expires){
 
-
             this.setString(
-
-                VW_CONFIG.STORAGE_KEYS.EXPIRY,
-
+                "vw_expiry",
                 data.expires
-
             );
-
 
         }
 
 
-
-
         this.setString(
-
-            VW_CONFIG.STORAGE_KEYS.LAST_CHECK,
-
+            "vw_last_check",
             Date.now()
-
         );
 
 
-    }
+        return true;
 
+    }
 
 
 
