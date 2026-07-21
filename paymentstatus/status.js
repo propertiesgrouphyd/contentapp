@@ -243,15 +243,21 @@ const StatusPage = {
         if(backButton){
 
 
-            backButton.onclick = ()=>{
+            backButton.addEventListener(
+
+                "click",
+
+                ()=>{
 
 
-                window.location.href =
+                    window.location.href =
 
-                "https://create.vidhwaan.com";
+                    "https://create.vidhwaan.com";
 
 
-            };
+                }
+
+            );
 
 
         }
