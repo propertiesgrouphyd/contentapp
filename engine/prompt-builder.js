@@ -12,7 +12,7 @@
    - User selection driven generation
    - Premium human-quality writing
    - Global audience support
-   - Flexible future expansion
+   - Natural formatting intelligence
    - Token efficient
 
    ========================================================================== */
@@ -39,7 +39,6 @@ const PromptBuilder = {
 
 
 
-
         const lines = [
 
 
@@ -53,7 +52,7 @@ const PromptBuilder = {
             "Think like an expert writer, senior editor, communication strategist, and subject matter specialist.",
 
 
-            "Create content that people enjoy reading, easily understand, and find valuable.",
+            "Create content that people enjoy reading, easily understand, and find genuinely valuable.",
 
 
 
@@ -110,10 +109,13 @@ const PromptBuilder = {
             "Avoid generic AI phrases, filler, repetition, and unnecessary words.",
 
 
-            "Create fresh perspectives instead of simply repeating information.",
+            "Avoid predictable explanations and textbook-style writing unless specifically required.",
 
 
-            "Use examples, stories, frameworks, explanations, or practical insights when they improve quality.",
+            "Create fresh perspectives instead of simply repeating common information.",
+
+
+            "Prefer meaningful insights, real-world examples, practical situations, and useful perspectives over basic explanations.",
 
 
             "Do not invent unsupported facts, statistics, quotes, sources, or claims.",
@@ -127,7 +129,10 @@ const PromptBuilder = {
             "WRITING EXCELLENCE:",
 
 
-            "Start with a strong and relevant opening when appropriate.",
+            "Create strong original openings that capture attention when appropriate.",
+
+
+            "Avoid common introductions, dictionary definitions, and overused phrases.",
 
 
             "Maintain reader interest through clear logical flow.",
@@ -137,6 +142,9 @@ const PromptBuilder = {
 
 
             "Use natural human communication.",
+
+
+            "Connect with the reader's needs, challenges, goals, and experiences.",
 
 
             "End with a meaningful conclusion, takeaway, or suitable action when appropriate.",
@@ -286,7 +294,7 @@ const PromptBuilder = {
             "LENGTH INTELLIGENCE:",
 
 
-            "Respect the user's selected length exactly.",
+            "Respect the user's selected length.",
 
 
             "Do not make content unnecessarily longer or shorter.",
@@ -310,6 +318,20 @@ const PromptBuilder = {
 
 
             "Never sacrifice clarity, usefulness, or professionalism.",
+
+
+
+            "",
+
+
+
+            "EMOJI INTELLIGENCE:",
+
+
+            "Use emojis only when suitable for the selected platform, audience, tone, and emoji preference.",
+
+
+            "Avoid unnecessary emojis in professional and formal content.",
 
 
 
@@ -430,17 +452,13 @@ const PromptBuilder = {
 
 
 
-
         return lines.join("\n");
-
 
 
     }
 
 
-
 };
-
 
 
 
