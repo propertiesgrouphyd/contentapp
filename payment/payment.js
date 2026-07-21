@@ -53,12 +53,18 @@ const PaymentPage = {
 
         if(accept && payButton){
 
-            accept.onchange = ()=>{
+            accept.addEventListener(
 
-                payButton.disabled =
-                    !accept.checked;
+                "change",
 
-            };
+                ()=>{
+
+                    payButton.disabled =
+                        !accept.checked;
+
+                }
+
+            );
 
         }
 
@@ -66,12 +72,18 @@ const PaymentPage = {
 
         if(backButton){
 
-            backButton.onclick = ()=>{
+            backButton.addEventListener(
 
-                location.href =
-                "https://create.vidhwaan.com";
+                "click",
 
-            };
+                ()=>{
+
+                    location.href =
+                    "https://create.vidhwaan.com";
+
+                }
+
+            );
 
         }
 
@@ -79,11 +91,17 @@ const PaymentPage = {
 
         if(payButton){
 
-            payButton.onclick = ()=>{
+            payButton.addEventListener(
 
-                this.pay();
+                "click",
 
-            };
+                ()=>{
+
+                    this.pay();
+
+                }
+
+            );
 
         }
 
