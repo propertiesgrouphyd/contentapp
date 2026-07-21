@@ -12,7 +12,6 @@ import {
 } from "./ui-manager.js";
 
 import Storage from "./storage.js";
-import PaymentManager from "./payment-manager.js";
 import SubscriptionManager from "./subscription-manager.js";
 import AIClient from "./ai-client.js";
 import PromptBuilder from "./prompt-builder.js";
@@ -159,80 +158,11 @@ const App = {
 
                 "click",
 
-                async () => {
+                () => {
 
 
-                    if (e.paymentButton.disabled) {
-
-                        return;
-
-                    }
-
-
-
-                    try {
-
-
-                        e.paymentButton.disabled = true;
-
-
-
-
-
-                        const result =
-
-                            await PaymentManager.start();
-
-
-                        Storage.saveSubscription(
-                            result
-                        );
-
-                        this.hideModal(
-                            e.paymentModal
-                        );
-
-
-                    }
-
-
-                    catch (error) {
-
-                        console.error(
-                            "Payment error:",
-                            error
-                        );
-
-                        e.paymentButton.textContent =
-                            "Continue";
-
-                        this.updateStatus(
-                            "Payment Failed"
-                        );
-
-                        this.showToast(
-
-                            error.message ||
-
-                            "Payment failed."
-
-                        );
-
-                    }
-
-
-                    finally {
-
-                        if (e.paymentButton) {
-
-                            e.paymentButton.disabled = false;
-
-                            e.paymentButton.textContent =
-                                "Continue";
-
-                        }
-
-                    }
+                    window.location.href =
+                        "https://create.vidhwaan.com/payment";
 
 
                 }
@@ -240,6 +170,7 @@ const App = {
             );
 
         }
+
 
         if (e.paymentCancelButton) {
 
@@ -249,15 +180,10 @@ const App = {
 
                 () => {
 
-                    if (PaymentManager.processing) {
-
-                        return;
-
-                    }
-
                     this.hideModal(
                         e.paymentModal
                     );
+
                 }
 
             );
@@ -271,12 +197,6 @@ const App = {
                 "click",
 
                 () => {
-
-                    if (PaymentManager.processing) {
-
-                        return;
-
-                    }
 
                     this.hideModal(
                         e.paymentModal
