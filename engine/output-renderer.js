@@ -169,11 +169,10 @@ async function copy() {
             .map(
                 item =>
                     item.textContent
-                        .replace(/\s+/g," ")
                         .trim()
             )
             .filter(Boolean)
-            .join("\n\n");
+            .join("\n\n\n");
 
 
 
@@ -187,19 +186,6 @@ async function copy() {
             const item =
                 new ClipboardItem({
 
-                    "text/html":
-
-                    new Blob(
-                        [
-                            html
-                        ],
-                        {
-                            type:
-                            "text/html"
-                        }
-                    ),
-
-
                     "text/plain":
 
                     new Blob(
@@ -209,6 +195,19 @@ async function copy() {
                         {
                             type:
                             "text/plain"
+                        }
+                    ),
+
+
+                    "text/html":
+
+                    new Blob(
+                        [
+                            html
+                        ],
+                        {
+                            type:
+                            "text/html"
                         }
                     )
 
