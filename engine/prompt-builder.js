@@ -21,44 +21,6 @@
 
 const PromptBuilder = {
 
-
-    getLengthRule(length){
-
-
-        const rules = {
-
-
-            "Very Short":
-            "Create a concise complete message. Include only essential information. Avoid unnecessary explanation.",
-
-
-            "Short":
-            "Create brief but complete content. Keep it focused, clear, valuable, and easy to read.",
-
-
-            "Medium":
-            "Create balanced professional content with enough explanation, useful details, and a meaningful conclusion.",
-
-
-            "Long":
-            "Create detailed content with deeper explanations, examples, and structured sections where useful.",
-
-
-            "Detailed":
-            "Create comprehensive content with insights, examples, analysis, and practical value.",
-
-
-            "Very Detailed":
-            "Create complete long-form content with deep analysis, frameworks, examples, and extensive useful information."
-
-        };
-
-
-        return rules[length] || rules["Medium"];
-
-    },
-
-
     build(context = {}){
 
 
