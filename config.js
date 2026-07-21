@@ -45,7 +45,7 @@ window.VW_CONFIG = Object.freeze({
             "/verify-payment",
 
         AMOUNT:
-            3540,
+            100,
 
         PAYMENT_PAGE:
             "https://create.vidhwaan.com/payment",
