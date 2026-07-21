@@ -183,14 +183,6 @@ const App = {
                         */
 
 
-                        e.paymentButton.textContent =
-                            "Creating Order...";
-
-                        this.updateStatus(
-                            "Creating Order..."
-                        );
-
-
                         this.hideModal(
                             e.paymentModal
                         );
@@ -200,25 +192,10 @@ const App = {
 
                             await PaymentManager.start();
 
-                        e.paymentButton.textContent =
-                            "Activating...";
 
                         Storage.saveSubscription(
                             result
                         );
-
-                        this.hideModal(
-                            e.paymentModal
-                        );
-
-                        this.updateStatus(
-                            "Subscription Activated"
-                        );
-
-                        this.showToast(
-                            "Subscription activated successfully."
-                        );
-
 
 
                     }
@@ -931,6 +908,5 @@ document.addEventListener(
     }
 
 );
-
 
 
