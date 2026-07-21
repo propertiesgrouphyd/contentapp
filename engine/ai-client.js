@@ -9,7 +9,7 @@
    ========================================================================== */
 
 
-const DEFAULT_TIMEOUT = 120000;
+const DEFAULT_TIMEOUT = 60000;
 
 
 const AIClient = {
@@ -94,6 +94,8 @@ const AIClient = {
 
 
                     signal:controller.signal,
+
+                    cache:"no-store",
 
 
                     headers:{
@@ -183,9 +185,22 @@ const AIClient = {
 
 
 
-            const data =
+            let data;
 
-            await response.json();
+            try {
+
+                data =
+                    await response.json();
+
+            }
+
+            catch {
+
+                throw new Error(
+                    "Invalid AI server response."
+                );
+
+            }
 
 
 
