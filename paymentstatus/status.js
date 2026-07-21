@@ -5,6 +5,10 @@
 
    Payment Status Controller
 
+   Saves:
+   - Subscription ID
+   - Expiry locally
+
    ========================================================================== */
 
 
@@ -13,7 +17,6 @@ import Storage from "../storage.js";
 
 
 const StatusPage = {
-
 
 
     init(){
@@ -29,17 +32,19 @@ const StatusPage = {
 
         const status =
 
-            params.get(
-                "status"
-            );
+            params.get("status");
 
 
 
         const uniqueId =
 
-            params.get(
-                "id"
-            );
+            params.get("id");
+
+
+
+        const expires =
+
+            params.get("expires");
 
 
 
@@ -64,6 +69,20 @@ const StatusPage = {
             );
 
 
+        const subscriptionId =
+
+            document.getElementById(
+                "subscriptionId"
+            );
+
+
+        const expiryDate =
+
+            document.getElementById(
+                "expiryDate"
+            );
+
+
         const subscriptionBox =
 
             document.getElementById(
@@ -78,62 +97,68 @@ const StatusPage = {
             );
 
 
-        const subscriptionId =
-
-            document.getElementById(
-                "subscriptionId"
-            );
-
-
 
         if(
             status === "success"
         ){
 
 
+
             if(statusIcon){
 
                 statusIcon.textContent =
-                    "✓";
+                "✓";
 
             }
+
 
 
             if(statusTitle){
 
                 statusTitle.textContent =
-                    "Payment Successful";
+                "Payment Successful";
 
             }
+
 
 
             if(statusMessage){
 
                 statusMessage.textContent =
-                    "Your VIDHWAAN AI Writer subscription is now activated.";
+                "Your VIDHWAAN AI Writer subscription is active. You can continue creating content.";
 
             }
+
 
 
             if(subscriptionId){
 
                 subscriptionId.textContent =
-                    uniqueId || "-";
+                uniqueId || "-";
 
             }
 
 
 
-            /*
-                Save subscription locally
-
-                Worker should return
-                expiry information in
-                future enhancement.
-            */
+            if(expiryDate && expires){
 
 
-            if(uniqueId){
+                expiryDate.textContent =
+
+                new Date(
+                    Number(expires)
+                )
+                .toLocaleDateString();
+
+
+            }
+
+
+
+            if(
+                uniqueId &&
+                expires
+            ){
 
 
                 Storage.saveSubscription({
@@ -143,9 +168,9 @@ const StatusPage = {
                     uniqueId,
 
 
-                    active:
+                    expires:
 
-                    true
+                    Number(expires)
 
                 });
 
@@ -161,39 +186,43 @@ const StatusPage = {
             if(statusIcon){
 
                 statusIcon.textContent =
-                    "×";
+                "×";
 
             }
+
 
 
             if(statusTitle){
 
                 statusTitle.textContent =
-                    "Payment Failed";
+                "Payment Failed";
 
             }
+
 
 
             if(statusMessage){
 
                 statusMessage.textContent =
-                    "Payment was not completed.";
+                "Payment was not completed.";
 
             }
+
 
 
             if(subscriptionBox){
 
                 subscriptionBox.hidden =
-                    true;
+                true;
 
             }
+
 
 
             if(failedBox){
 
                 failedBox.hidden =
-                    false;
+                false;
 
             }
 
@@ -214,21 +243,15 @@ const StatusPage = {
         if(backButton){
 
 
-            backButton.addEventListener(
-
-                "click",
-
-                ()=>{
+            backButton.onclick = ()=>{
 
 
-                    window.location.href =
+                window.location.href =
 
-                    "https://create.vidhwaan.com";
+                "https://create.vidhwaan.com";
 
 
-                }
-
-            );
+            };
 
 
         }
@@ -238,6 +261,7 @@ const StatusPage = {
 
 
 };
+
 
 
 
