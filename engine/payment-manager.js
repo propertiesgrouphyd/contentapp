@@ -192,15 +192,7 @@ const PaymentManager = {
         }
 
 
-        if(this.processing){
 
-            return Promise.reject(
-                new Error(
-                    "Payment already opening."
-                )
-            );
-
-        }
 
 
         return new Promise(
