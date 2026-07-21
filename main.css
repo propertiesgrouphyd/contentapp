@@ -1319,6 +1319,16 @@ summary h2::before{
 
 }
 
+#vw-output .vw-paragraph{
+
+    margin:0 0 16px;
+
+    color:#1f2937;
+
+    line-height:1.75;
+
+}
+
 
 
 #vw-output h1{
@@ -1591,6 +1601,12 @@ summary h2::before{
     #vw-output p{
 
         margin-bottom:8px;
+
+    }
+
+    #vw-output .vw-paragraph{
+
+        margin-bottom:12px;
 
     }
 
