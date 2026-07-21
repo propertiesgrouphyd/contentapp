@@ -17,45 +17,6 @@
 
 const PromptBuilder = {
 
-
-    getLengthRule(length){
-
-
-        const rules = {
-
-
-            "Very Short":
-            "Maximum 300 characters. Create a complete concise message with clear meaning. Do not add unnecessary details.",
-
-
-            "Short":
-            "300-700 characters. Create a complete concise piece of content with a clear opening and ending. Keep only valuable information.",
-
-
-            "Medium":
-            "700-1200 characters. Create a complete professional post with an engaging opening, useful main content, and meaningful conclusion. Stay within this limit.",
-
-
-            "Long":
-            "1200-2000 characters. Create detailed structured content with explanation, useful examples, and a proper conclusion.",
-
-
-            "Detailed":
-            "2000-3500 characters. Create comprehensive content with deeper explanations, examples, insights, and a strong conclusion.",
-
-
-            "Very Detailed":
-            "3500-6000 characters. Create complete long-form content with detailed analysis, examples, sections, and conclusion."
-
-        };
-
-
-        return rules[length] || rules["Medium"];
-
-    },
-
-
-
     build(context = {}){
 
 
