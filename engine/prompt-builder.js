@@ -18,6 +18,44 @@
 const PromptBuilder = {
 
 
+    getLengthRule(length){
+
+
+        const rules = {
+
+
+            "Very Short":
+            "Maximum 300 characters. Create a complete concise message with clear meaning. Do not add unnecessary details.",
+
+
+            "Short":
+            "300-700 characters. Create a complete concise piece of content with a clear opening and ending. Keep only valuable information.",
+
+
+            "Medium":
+            "700-1200 characters. Create a complete professional post with an engaging opening, useful main content, and meaningful conclusion. Stay within this limit.",
+
+
+            "Long":
+            "1200-2000 characters. Create detailed structured content with explanation, useful examples, and a proper conclusion.",
+
+
+            "Detailed":
+            "2000-3500 characters. Create comprehensive content with deeper explanations, examples, insights, and a strong conclusion.",
+
+
+            "Very Detailed":
+            "3500-6000 characters. Create complete long-form content with detailed analysis, examples, sections, and conclusion."
+
+        };
+
+
+        return rules[length] || rules["Medium"];
+
+    },
+
+
+
     build(context = {}){
 
 
@@ -168,7 +206,7 @@ const PromptBuilder = {
             "- Do not over-format short-form content such as captions, replies, and social posts.",
 
 
-            "- Use bullet points for lists.",
+            "- Use bullet points, numbered lists, or arrows when they improve clarity. Do not force plain paragraphs when structured formatting is better.",
 
 
             "- Use numbered steps for processes and instructions.",
@@ -177,7 +215,7 @@ const PromptBuilder = {
             "- Use tables only when comparisons become clearer.",
 
 
-            "- Keep paragraphs clean and readable.",
+            "- Keep paragraphs short and readable. Complete every section before ending.",
 
 
             "- Optimize for both mobile and desktop reading.",
@@ -269,7 +307,7 @@ const PromptBuilder = {
 
 
 
-            `Length: ${context.length || "Medium"}`,
+            `Length: ${this.getLengthRule(context.length)}`,
 
 
 
