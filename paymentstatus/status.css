@@ -1,0 +1,403 @@
+/* ==========================================================================
+   VIDHWAAN AI Writer
+   Payment Status Page
+   Premium Production Design
+   ========================================================================== */
+
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+
+
+body{
+
+    margin:0;
+
+    min-height:100vh;
+
+    padding:20px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+
+    font-family:
+
+    Inter,
+
+    Arial,
+
+    Helvetica,
+
+    sans-serif;
+
+
+    background:#050505;
+
+    color:#ffffff;
+
+}
+
+
+
+.status-container{
+
+    width:100%;
+
+    max-width:520px;
+
+}
+
+
+
+.status-card{
+
+    background:#111111;
+
+
+    border:
+
+    1px solid rgba(255,255,255,0.12);
+
+
+    border-radius:24px;
+
+
+    padding:35px 28px;
+
+
+    text-align:center;
+
+
+    box-shadow:
+
+    0 20px 60px rgba(0,0,0,0.5);
+
+}
+
+
+
+
+.status-icon{
+
+    width:80px;
+
+    height:80px;
+
+
+    margin:0 auto 20px;
+
+
+    border-radius:50%;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    font-size:42px;
+
+
+    font-weight:bold;
+
+
+    background:#d4af37;
+
+
+    color:#000000;
+
+}
+
+
+
+
+
+h1{
+
+    margin:0 0 15px;
+
+
+    font-size:30px;
+
+
+    color:#d4af37;
+
+}
+
+
+
+
+
+#statusMessage{
+
+    color:#cccccc;
+
+
+    line-height:1.6;
+
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+
+.subscription-box{
+
+
+    background:#181818;
+
+
+    border-radius:18px;
+
+
+    padding:20px;
+
+
+    margin-bottom:24px;
+
+
+    text-align:left;
+
+}
+
+
+
+
+.row{
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    gap:15px;
+
+
+    padding:12px 0;
+
+
+    border-bottom:
+
+    1px solid rgba(255,255,255,0.08);
+
+}
+
+
+
+.row:last-child{
+
+    border-bottom:none;
+
+}
+
+
+
+.row span{
+
+    color:#aaaaaa;
+
+}
+
+
+
+.row strong{
+
+    color:#ffffff;
+
+    word-break:break-word;
+
+}
+
+
+
+
+
+.failed-box{
+
+
+    background:
+
+    rgba(255,0,0,0.08);
+
+
+    border:
+
+    1px solid rgba(255,0,0,0.25);
+
+
+    border-radius:16px;
+
+
+    padding:20px;
+
+
+    margin-bottom:22px;
+
+}
+
+
+
+.failed-box h3{
+
+    color:#ff7777;
+
+}
+
+
+
+.failed-box p{
+
+    color:#cccccc;
+
+    line-height:1.5;
+
+}
+
+
+
+.failed-box a{
+
+    color:#d4af37;
+
+    text-decoration:none;
+
+}
+
+
+
+
+
+.company-box{
+
+
+    margin-bottom:25px;
+
+
+    color:#bbbbbb;
+
+
+}
+
+
+
+.company-box a{
+
+
+    color:#d4af37;
+
+
+    text-decoration:none;
+
+
+}
+
+
+
+
+
+button{
+
+
+    width:100%;
+
+
+    padding:15px;
+
+
+    border:none;
+
+
+    border-radius:14px;
+
+
+    background:#d4af37;
+
+
+    color:#000000;
+
+
+    font-size:17px;
+
+
+    font-weight:600;
+
+
+    cursor:pointer;
+
+}
+
+
+
+
+
+button:hover{
+
+
+    opacity:0.9;
+
+
+}
+
+
+
+
+
+@media(max-width:600px){
+
+
+
+    body{
+
+        padding:14px;
+
+        align-items:flex-start;
+
+    }
+
+
+
+    .status-card{
+
+        padding:28px 18px;
+
+        border-radius:20px;
+
+    }
+
+
+
+    h1{
+
+        font-size:26px;
+
+    }
+
+
+
+    .row{
+
+        flex-direction:column;
+
+        gap:5px;
+
+    }
+
+
+}
