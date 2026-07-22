@@ -5,22 +5,18 @@
 
    Professional PDF Exporter
 
-   Production Version
-
    Features:
    - A4 PDF
-   - Real HTML rendering
-   - Proper page breaks
-   - Preserves editor formatting
+   - Preserves editor appearance
    - Headings
    - Bold
    - Italic
    - Colors
    - Highlights
+   - Font sizes
    - Lists
    - Paragraph spacing
    - Mobile safe
-
    ========================================================================== */
 
 
@@ -33,61 +29,36 @@ const PDFExporter = {
         const output =
 
             document.getElementById(
-
                 "vw-output"
-
             );
 
 
 
         if(!output){
 
-            throw new Error(
-
-                "Editor content not found."
-
-            );
-
-        }
-
-
-
-        const text =
-
-            output.innerText ||
-
-            "";
-
-
-
-        if(
-
-            !text.trim()
-
-        ){
-
-            throw new Error(
-
-                "Nothing to export."
-
-            );
+            return false;
 
         }
 
 
 
         if(
+            !output.innerText.trim()
+        ){
 
-            !window.jspdf ||
+            return false;
 
-            !window.jspdf.jsPDF
+        }
 
+
+
+        if(
+            !window.html2canvas ||
+            !window.jspdf
         ){
 
             throw new Error(
-
-                "PDF library not loaded."
-
+                "PDF libraries not loaded."
             );
 
         }
@@ -95,104 +66,29 @@ const PDFExporter = {
 
 
         const {
-
             jsPDF
-
-        } = window.jspdf;
-
-
-
-        try{
-
-
-            const pdf =
-
-                new jsPDF(
-
-                    {
-
-                        orientation:"portrait",
-
-                        unit:"mm",
-
-                        format:"a4"
-
-                    }
-
-                );
+        } =
+        window.jspdf;
 
 
 
-            await pdf.html(
+        const canvas =
+
+            await html2canvas(
 
                 output,
 
                 {
 
+                    scale: 2,
 
-                    margin:[
+                    useCORS:true,
 
-                        12,
+                    allowTaint:false,
 
-                        12,
+                    backgroundColor:"#ffffff",
 
-                        12,
-
-                        12
-
-                    ],
-
-
-
-                    autoPaging:"text",
-
-
-
-                    html2canvas:{
-
-
-                        scale:2,
-
-
-                        useCORS:true,
-
-
-                        allowTaint:false,
-
-
-                        backgroundColor:"#ffffff",
-
-
-                        logging:false
-
-
-                    },
-
-
-
-                    callback:(doc)=>{
-
-
-                        const date =
-
-                            new Date()
-
-                            .toISOString()
-
-                            .split("T")[0];
-
-
-
-                        doc.save(
-
-                            `VIDHWAAN-AI-Writer-${date}.pdf`
-
-                        );
-
-
-                    }
-
-
+                    logging:false
 
                 }
 
@@ -200,41 +96,169 @@ const PDFExporter = {
 
 
 
-            return true;
+        const pdf =
 
+            new jsPDF(
 
-        }
+                "p",
 
+                "mm",
 
-        catch(error){
-
-
-
-            console.error(
-
-                "PDF export failed:",
-
-                error
+                "a4"
 
             );
 
 
 
-            throw new Error(
+        const pageWidth =
 
-                "Unable to create PDF."
+            pdf.internal.pageSize.getWidth();
+
+
+
+        const pageHeight =
+
+            pdf.internal.pageSize.getHeight();
+
+
+
+        const margin = 10;
+
+
+
+        const contentWidth =
+
+            pageWidth -
+            (
+                margin * 2
+            );
+
+
+
+        const imageHeight =
+
+            canvas.height *
+            contentWidth /
+            canvas.width;
+
+
+
+        const imageData =
+
+            canvas.toDataURL(
+                "image/png",
+                1.0
+            );
+
+
+
+        let heightLeft =
+            imageHeight;
+
+
+
+        let position =
+            margin;
+
+
+
+        pdf.addImage(
+
+            imageData,
+
+            "PNG",
+
+            margin,
+
+            position,
+
+            contentWidth,
+
+            imageHeight
+
+        );
+
+
+
+        heightLeft -=
+
+            pageHeight -
+            (
+                margin * 2
+            );
+
+
+
+        while(
+            heightLeft > 0
+        ){
+
+
+            position =
+
+                heightLeft -
+                imageHeight +
+                margin;
+
+
+
+            pdf.addPage();
+
+
+
+            pdf.addImage(
+
+                imageData,
+
+                "PNG",
+
+                margin,
+
+                position,
+
+                contentWidth,
+
+                imageHeight
 
             );
 
 
+
+            heightLeft -=
+
+                pageHeight -
+                (
+                    margin * 2
+                );
+
+
         }
+
+
+
+        const date =
+
+            new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+
+        pdf.save(
+
+            `VIDHWAAN-AI-Writer-${date}.pdf`
+
+        );
+
+
+
+        return true;
 
 
     }
 
 
 };
-
 
 
 export default PDFExporter;
