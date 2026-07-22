@@ -1236,7 +1236,7 @@ summary h2::before{
 
     font-weight:400;
 
-    line-height:1.9;
+    line-height:1.75;
 
     letter-spacing:0;
 
@@ -1302,23 +1302,23 @@ summary h2::before{
 
 #vw-output p{
 
-    margin:0 0 26px;
+    margin:0 0 22px;
 
     color:#222222;
 
     font-size:inherit;
 
-    line-height:inherit;
+    line-height:1.8;
 
 }
 
 #vw-output .vw-paragraph{
 
-    margin:0 0 16px;
+    margin:0 0 20px;
 
     color:#1f2937;
 
-    line-height:1.75;
+    line-height:1.8;
 
 }
 
@@ -1328,7 +1328,7 @@ summary h2::before{
 
     margin:
 
-    32px 0 18px;
+    34px 0 18px;
 
 
     font-size:2rem;
@@ -1372,7 +1372,7 @@ summary h2::before{
 
     margin:
 
-    22px 0 12px;
+     22px 0 12px;
 
 
     font-size:1.2rem;
@@ -1406,9 +1406,9 @@ summary h2::before{
 
 #vw-output li{
 
-    margin-bottom:10px;
+    margin-bottom:12px;
 
-    line-height:1.75;
+    line-height:1.8;
 
 }
 
@@ -1571,8 +1571,6 @@ summary h2::before{
 
     #vw-output{
 
-    #vw-output{
-
         min-height:300px;
 
         width:100%;
@@ -1583,7 +1581,7 @@ summary h2::before{
 
         font-size:19px;
 
-        line-height:1.9;
+        line-height:1.75;
 
         border-radius:16px;
 
@@ -1593,7 +1591,7 @@ summary h2::before{
 
     #vw-output p{
 
-        margin-bottom:8px;
+        margin-bottom:18px;
 
     }
 
