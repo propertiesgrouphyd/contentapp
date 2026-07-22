@@ -4,29 +4,26 @@
    VIDHWAAN AI Writer
 
    Prompt Builder
-   Version : 2.0.0
+   Version : 3.0.0
 
    AI Instruction Engine
 
    Responsibilities
 
-   • Build compact high-quality prompts
-   • Convert UI selections into AI instructions
-   • Minimize prompt tokens
-   • Improve reasoning quality
-   • Keep prompts model-agnostic
+   • Convert complete user selections into AI instructions
+   • Use selection metadata intelligently
+   • Generate premium human-quality content
+   • Maintain global professional standards
+   • Keep prompts efficient and model-agnostic
 
    ========================================================================== */
 
 const PromptBuilder = {
 
-    /* ==============================================================
-       Public API
-       ============================================================== */
-
     build(input = {}) {
 
         const values = input.values || input;
+
         const context = input.context || {};
 
         const sections = [
@@ -45,20 +42,20 @@ const PromptBuilder = {
 
         ].filter(Boolean);
 
+
         return sections.join("\n\n");
 
     },
 
-    /* ==============================================================
-       Helpers
-       ============================================================== */
+
 
     normalize(value, fallback = "") {
 
-        return String(value || "")
-            .trim() || fallback;
+        return String(value || "").trim() || fallback;
 
     },
+
+
 
     getTopic(values) {
 
@@ -68,6 +65,7 @@ const PromptBuilder = {
 
         }
 
+
         if (values.topic === "custom-topic") {
 
             return this.normalize(
@@ -76,11 +74,14 @@ const PromptBuilder = {
 
         }
 
+
         return this.normalize(
             values.topic
         );
 
     },
+
+
 
     addInstruction(list, instruction) {
 
@@ -90,13 +91,16 @@ const PromptBuilder = {
 
         }
 
+
         const text = String(instruction).trim();
+
 
         if (!text) {
 
             return;
 
         }
+
 
         if (!list.includes(text)) {
 
@@ -106,6 +110,42 @@ const PromptBuilder = {
 
     },
 
+
+
+    addContextInstruction(list, title, item) {
+
+        if (!item) {
+
+            return;
+
+        }
+
+
+        this.addInstruction(
+
+            list,
+
+            `${title}: ${item.label || ""}`
+
+        );
+
+
+        if (item.description) {
+
+            this.addInstruction(
+
+                list,
+
+                item.description
+
+            );
+
+        }
+
+    },
+
+
+
     section(title, items) {
 
         if (!items.length) {
@@ -113,6 +153,7 @@ const PromptBuilder = {
             return "";
 
         }
+
 
         return [
 
@@ -126,9 +167,7 @@ const PromptBuilder = {
 
     },
 
-    /* ==============================================================
-       Mission
-       ============================================================== */
+
 
     buildMission() {
 
@@ -140,15 +179,11 @@ const PromptBuilder = {
 
             "Create exceptional human-quality content.",
 
-            "Fully satisfy the user's objective.",
+            "Understand the complete user intent before writing.",
 
-            "Think before writing.",
+            "Use every selected requirement intelligently.",
 
-            "Understand all user selections together.",
-
-            "Determine the best writing strategy before generating content.",
-
-            "Write naturally like an experienced human professional.",
+            "Think like an expert writer, editor, strategist, and subject specialist.",
 
             "Return only the final polished content."
 
@@ -156,197 +191,160 @@ const PromptBuilder = {
 
     },
 
-    /* ==============================================================
-       User Intent
-       ============================================================== */
+
 
     buildUserIntent(values = {}, context = {}) {
 
         const instructions = [];
 
-        const purpose = context.purpose;
-        const category = context.category;
-        const topic = context.topic;
-        const goal = context.goal;
-        const style = context.contentStyle;
-        const tone = context.tone;
-        const audience = context.audience;
-        const length = context.length;
-        const platform = context.platform;
-        const language = context.language;
-        const creativity = context.creativity;
-        const emoji = context.emoji;
-        const cta = context.cta;
 
-        /* ----------------------------------------------------------
-           Purpose
-           ---------------------------------------------------------- */
+        this.addContextInstruction(
 
-        if (purpose) {
+            instructions,
 
-            this.addInstruction(
+            "Purpose",
 
-                instructions,
+            context.purpose
 
-                `Primary objective: ${purpose.label}.`
+        );
 
-            );
 
-            if (purpose.description) {
+        this.addContextInstruction(
 
-                this.addInstruction(
+            instructions,
 
-                    instructions,
+            "Category",
 
-                    purpose.description
+            context.category
 
-                );
+        );
 
-            }
 
-        }
+        const topic = this.getTopic(values);
 
-        /* ----------------------------------------------------------
-           Category
-           ---------------------------------------------------------- */
 
-        if (category) {
+        if (topic) {
 
             this.addInstruction(
 
                 instructions,
 
-                `Focus exclusively on ${category.label}.`
-
-            );
-
-            if (category.description) {
-
-                this.addInstruction(
-
-                    instructions,
-
-                    category.description
-
-                );
-
-            }
-
-        }
-
-        /* ----------------------------------------------------------
-           Topic
-           ---------------------------------------------------------- */
-
-        const selectedTopic = this.getTopic(values);
-
-        if (selectedTopic) {
-
-            this.addInstruction(
-
-                instructions,
-
-                `The entire content must remain focused on "${selectedTopic}".`
+                `Topic focus: ${topic}`
 
             );
 
         }
 
-        if (topic?.description) {
 
-            this.addInstruction(
+        this.addContextInstruction(
 
-                instructions,
+            instructions,
 
-                topic.description
+            "Goal",
 
-            );
+            context.goal
 
-        }
+        );
 
-        /* ----------------------------------------------------------
-           Goal
-           ---------------------------------------------------------- */
 
-        if (goal) {
+        this.addContextInstruction(
 
-            this.addInstruction(
+            instructions,
 
-                instructions,
+            "Content Style",
 
-                `Primary goal: ${goal.label}.`
+            context.contentStyle
 
-            );
+        );
 
-            if (goal.description) {
 
-                this.addInstruction(
+        this.addContextInstruction(
 
-                    instructions,
+            instructions,
 
-                    goal.description
+            "Tone",
 
-                );
+            context.tone
 
-            }
+        );
 
-        }
 
-        /* ----------------------------------------------------------
-           Content Style
-           ---------------------------------------------------------- */
+        this.addContextInstruction(
 
-        if (style) {
+            instructions,
 
-            this.addInstruction(
+            "Audience",
 
-                instructions,
+            context.audience
 
-                `Writing style: ${style.label}.`
+        );
 
-            );
 
-            if (style.description) {
+        this.addContextInstruction(
 
-                this.addInstruction(
+            instructions,
 
-                    instructions,
+            "Length",
 
-                    style.description
+            context.length
 
-                );
+        );
 
-            }
 
-        }
+        this.addContextInstruction(
 
-        /* ----------------------------------------------------------
-           Tone
-           ---------------------------------------------------------- */
+            instructions,
 
-        if (tone) {
+            "Platform",
 
-            this.addInstruction(
+            context.platform
 
-                instructions,
+        );
 
-                `Maintain a ${tone.label.toLowerCase()} tone throughout.`
 
-            );
+        this.addContextInstruction(
 
-            if (tone.description) {
+            instructions,
 
-                this.addInstruction(
+            "Language",
 
-                    instructions,
+            context.language
 
-                    tone.description
+        );
 
-                );
 
-            }
+        this.addContextInstruction(
 
-        }
+            instructions,
+
+            "Creativity Level",
+
+            context.creativity
+
+        );
+
+
+        this.addContextInstruction(
+
+            instructions,
+
+            "Emoji Preference",
+
+            context.emoji
+
+        );
+
+
+        this.addContextInstruction(
+
+            instructions,
+
+            "Call To Action",
+
+            context.cta
+
+        );
+
 
         return this.section(
 
@@ -357,9 +355,8 @@ const PromptBuilder = {
         );
 
     },
-    /* ==============================================================
-       Writing Strategy
-       ============================================================== */
+
+
 
     buildWritingStrategy() {
 
@@ -369,35 +366,25 @@ const PromptBuilder = {
 
             "",
 
-            "Before writing, determine the best approach automatically.",
+            "Determine the best approach automatically.",
 
             "Choose the most effective structure for the requested content.",
 
-            "Create a strong opening that immediately captures attention.",
+            "Match the writing style to the selected audience and platform.",
 
-            "Maintain a logical flow from beginning to end.",
+            "Create valuable, original, and useful content.",
 
-            "Expand important ideas sufficiently without unnecessary repetition.",
+            "Use practical examples when they improve understanding.",
 
-            "Use clear transitions between sections.",
+            "Avoid filler, repetition, and generic statements.",
 
-            "Support explanations with practical examples whenever beneficial.",
-
-            "Prefer clarity over complexity.",
-
-            "Keep every sentence purposeful.",
-
-            "Remove filler, redundancy and generic statements.",
-
-            "Adapt naturally to the user's objective, audience and platform."
+            "Make every sentence meaningful."
 
         ].join("\n");
 
     },
 
-    /* ==============================================================
-       Formatting Rules
-       ============================================================== */
+
 
     buildFormattingRules() {
 
@@ -407,37 +394,29 @@ const PromptBuilder = {
 
             "",
 
-            "Optimize readability for both desktop and mobile.",
+            "Create an excellent reading experience.",
 
-            "Keep paragraphs short.",
+            "Use short readable paragraphs.",
 
-            "Normally use 1–3 sentences per paragraph.",
+            "Avoid large text blocks.",
 
-            "Separate ideas with appropriate spacing.",
+            "Use headings when useful.",
 
-            "Avoid large blocks of text.",
-
-            "Use headings only when they improve clarity.",
-
-            "Use bullet lists only when they improve understanding.",
+            "Use bullet points when information is list-based.",
 
             "Use numbered steps when sequence matters.",
 
-            "Use tables only when comparison is beneficial.",
+            "Use tables only for meaningful comparisons.",
 
-            "Use checklists, FAQs, timelines, quotes or examples only when they genuinely improve the content.",
+            "Use examples, FAQs, timelines, or checklists only when they improve clarity.",
 
-            "Never force formatting.",
-
-            "Let the content determine the presentation."
+            "Let the content decide the structure."
 
         ].join("\n");
 
     },
 
-    /* ==============================================================
-       Quality Review
-       ============================================================== */
+
 
     buildQualityReview() {
 
@@ -447,78 +426,102 @@ const PromptBuilder = {
 
             "",
 
-            "Before returning the response, silently review and improve the content.",
+            "Before returning content silently improve:",
 
-            "Check factual consistency.",
+            "- Accuracy",
 
-            "Improve clarity and readability.",
+            "- Grammar",
 
-            "Correct grammar and punctuation.",
+            "- Clarity",
 
-            "Improve sentence flow.",
+            "- Structure",
 
-            "Remove repetitive wording.",
+            "- Readability",
 
-            "Strengthen weak sections.",
+            "- Professional quality",
 
-            "Ensure the writing sounds natural and human.",
+            "- Human writing quality",
 
-            "Ensure every paragraph provides value.",
+            "",
 
-            "Return only the final polished content.",
+            "Return only the final content.",
 
-            "Do not explain your reasoning."
+            "Do not explain reasoning."
 
         ].join("\n");
 
     },
 
 
-    /* ==============================================================
-       User Request
-       ============================================================== */
 
     buildUserRequest(values = {}) {
 
         const lines = [];
 
+
         const topic = this.getTopic(values);
 
+
         lines.push("USER REQUEST");
+
+
         lines.push("");
+
+
 
         if (topic) {
 
-            lines.push(`Topic: ${topic}`);
+            lines.push(
+
+                `Topic: ${topic}`
+
+            );
 
         }
+
 
         if (values.instructions) {
 
             lines.push("");
-            lines.push("Additional Instructions:");
-            lines.push(values.instructions.trim());
+
+            lines.push(
+
+                "Additional Instructions:"
+
+            );
+
+
+            lines.push(
+
+                values.instructions.trim()
+
+            );
 
         }
+
 
         if (values.keywords) {
 
             lines.push("");
-            lines.push(`Keywords: ${values.keywords}`);
+
+            lines.push(
+
+                `Keywords: ${values.keywords}`
+
+            );
 
         }
+
 
         return lines.join("\n");
 
     }
 
+
 };
 
-/* ==========================================================================
-   Export
-   ========================================================================== */
 
 Object.freeze(PromptBuilder);
 
+
 export default PromptBuilder;
-   
