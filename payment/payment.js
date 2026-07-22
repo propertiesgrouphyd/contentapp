@@ -2,403 +2,555 @@
 
 /* ==========================================================================
    VIDHWAAN AI Writer
-
-   Simple Production Payment Controller
-
-   Flow:
-
-   Pay Button
-        ↓
-   Create Order
-        ↓
-   Razorpay
-        ↓
-   Verify
-        ↓
-   Payment Status
-
+   Production Payment Controller
    ========================================================================== */
-
 
 const PaymentPage = {
 
+    busy: false,
 
-    busy:false,
+    elements: {},
 
+    config: null,
 
-    init(){
+    init() {
 
+        this.config = window.VW_CONFIG.PAYMENT;
 
-        const accept =
+        this.cacheElements();
 
-            document.getElementById(
-                "acceptTerms"
-            );
-
-
-        const payButton =
-
-            document.getElementById(
-                "payButton"
-            );
-
-
-        const backButton =
-
-            document.getElementById(
-                "backButton"
-            );
-
-
-
-        if(accept && payButton){
-
-            accept.addEventListener(
-
-                "change",
-
-                ()=>{
-
-                    payButton.disabled =
-                        !accept.checked;
-
-                }
-
-            );
-
-        }
-
-
-
-        if(backButton){
-
-            backButton.addEventListener(
-
-                "click",
-
-                ()=>{
-
-                    location.href =
-                    "https://create.vidhwaan.com";
-
-                }
-
-            );
-
-        }
-
-
-
-        if(payButton){
-
-            payButton.addEventListener(
-
-                "click",
-
-                ()=>{
-
-                    this.pay();
-
-                }
-
-            );
-
-        }
-
+        this.bindEvents();
 
     },
 
+    cacheElements() {
 
+        const $ = id => document.getElementById(id);
 
-    async pay(){
+        this.elements = {
 
+            accept: $("acceptTerms"),
 
-        if(this.busy){
+            payButton: $("payButton"),
+
+            backButton: $("backButton")
+
+        };
+
+    },
+
+    bindEvents() {
+
+        const e = this.elements;
+
+        if (e.accept) {
+
+            e.accept.addEventListener(
+
+                "change",
+
+                () => {
+
+                    e.payButton.disabled =
+                        !e.accept.checked ||
+                        this.busy;
+
+                }
+
+            );
+
+        }
+
+        if (e.backButton) {
+
+            e.backButton.addEventListener(
+
+                "click",
+
+                () => {
+
+                    window.location.href =
+                        "https://create.vidhwaan.com";
+
+                }
+
+            );
+
+        }
+
+        if (e.payButton) {
+
+            e.payButton.addEventListener(
+
+                "click",
+
+                () => {
+
+                    this.startPayment();
+
+                }
+
+            );
+
+        }
+
+    },
+
+    setBusy(active, text) {
+
+        this.busy = active;
+
+        const button = this.elements.payButton;
+
+        if (!button) {
 
             return;
 
         }
 
+        button.disabled =
 
-        this.busy = true;
+            active ||
 
+            !this.elements.accept.checked;
 
+        if (text) {
 
-        const button =
+            button.textContent = text;
 
-            document.getElementById(
-                "payButton"
-            );
+        }
 
+    },
 
+    resetButton() {
 
-        button.disabled = true;
+        this.busy = false;
 
-        button.textContent =
-        "Preparing Payment...";
+        this.elements.payButton.disabled =
 
+            !this.elements.accept.checked;
 
+        this.elements.payButton.textContent =
 
-        try{
+            "Pay ₹35.40";
 
+    },
 
-            const config =
-            window.VW_CONFIG.PAYMENT;
+    async startPayment() {
 
+        if (this.busy) {
 
+            return;
 
-            const response =
+        }
 
-            await fetch(
+        this.setBusy(
 
-                config.WORKER_URL +
-                config.CREATE_ORDER,
+            true,
 
-                {
+            "Preparing Payment..."
 
-                    method:"POST",
+        );
 
-                    headers:{
-
-                        "Content-Type":
-                        "application/json"
-
-                    },
-
-                    body:JSON.stringify({
-
-                        amount:
-                        config.AMOUNT,
-
-                        currency:
-                        "INR"
-
-                    })
-
-                }
-
-            );
-
-
-
-            if(!response.ok){
-
-                throw new Error(
-                    "Unable to create payment order."
-                );
-
-            }
-
+        try {
 
             const order =
 
-            await response.json();
+                await this.createOrder();
 
+            this.openCheckout(order);
 
+        }
 
-            if(
-                !order.orderId
-            ){
+        catch (error) {
+
+            console.error(error);
+
+            alert(
+
+                error.message ||
+
+                "Unable to start payment."
+
+            );
+
+            this.resetButton();
+
+        }
+
+    },
+
+    async createOrder() {
+
+        const controller =
+
+            new AbortController();
+
+        const timer =
+
+            setTimeout(
+
+                () => controller.abort(),
+
+                15000
+
+            );
+
+        try {
+
+            const response =
+
+                await fetch(
+
+                    this.config.WORKER_URL +
+
+                    this.config.CREATE_ORDER,
+
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+
+                            "application/json"
+
+                        },
+
+                        body: JSON.stringify({
+
+                            amount:
+
+                            this.config.AMOUNT,
+
+                            currency: "INR"
+
+                        }),
+
+                        signal:
+
+                        controller.signal
+
+                    }
+
+                );
+
+            clearTimeout(timer);
+
+            if (!response.ok) {
 
                 throw new Error(
-                    "Order creation failed"
+
+                    "Unable to create payment order."
+
                 );
 
             }
 
+            const order =
 
+                await response.json();
 
+            if (
 
-            const razorpay =
+                !order ||
+
+                !order.orderId ||
+
+                !order.key
+
+            ) {
+
+                throw new Error(
+
+                    "Invalid payment response."
+
+                );
+
+            }
+
+            return order;
+
+        }
+
+        catch (error) {
+
+            clearTimeout(timer);
+
+            if (
+
+                error.name ===
+
+                "AbortError"
+
+            ) {
+
+                throw new Error(
+
+                    "Request timed out."
+
+                );
+
+            }
+
+            throw error;
+
+        }
+
+    },
+
+    openCheckout(order) {
+
+        this.setBusy(
+
+            true,
+
+            "Opening Secure Payment..."
+
+        );
+
+        const razorpay =
 
             new Razorpay({
-
 
                 key:
                 order.key,
 
-
                 amount:
                 order.amount,
-
 
                 currency:
                 order.currency,
 
+                order_id:
+                order.orderId,
 
                 name:
                 "VIDHWAAN AI Writer",
 
-
                 description:
-                "Subscription",
-
-
-                order_id:
-                order.orderId,
-
-
+                "Monthly Subscription",
 
                 handler:
 
                 async(payment)=>{
 
-
-                    button.textContent =
-                    "Verifying...";
-
-
-
-                    const verify =
-
-                    await fetch(
-
-                        config.WORKER_URL +
-                        config.VERIFY_PAYMENT,
-
-                        {
-
-                            method:"POST",
-
-                            headers:{
-
-                                "Content-Type":
-                                "application/json"
-
-                            },
-
-                            body:
-
-                            JSON.stringify(payment)
-
-                        }
-
+                    await this.verifyPayment(
+                        payment
                     );
-
-
-
-                    const data =
-
-                    await verify.json();
-
-
-
-                    if(
-                        data.uniqueId &&
-                        data.expires
-                    ){
-
-
-                        location.href =
-
-                        config.PAYMENT_STATUS +
-
-                        "?status=success&id=" +
-
-                        encodeURIComponent(
-                            data.uniqueId
-                        ) +
-
-                        "&expires=" +
-
-                        encodeURIComponent(
-                            data.expires
-                        );
-
-
-                    }
-                    else{
-
-
-                        location.href =
-
-                        config.PAYMENT_STATUS +
-
-                        "?status=failed";
-
-
-                    }
-
 
                 },
 
-
                 modal:{
 
+                    escape:true,
+
+                    backdropclose:false,
+
+                    confirm_close:true,
 
                     ondismiss:()=>{
 
-
-                        this.busy = false;
-
-
-                        button.disabled =
-                        false;
-
-
-                        button.textContent =
-                        "Pay ₹35.40";
-
+                        this.resetButton();
 
                     }
 
+                },
+
+                theme:{
+
+                    color:"#111827"
 
                 }
 
-
             });
 
+        razorpay.open();
+
+    },
 
 
-            razorpay.open();
 
+    async verifyPayment(payment){
 
+        this.setBusy(
+
+            true,
+
+            "Verifying Payment..."
+
+        );
+
+        const controller =
+
+            new AbortController();
+
+        const timer =
+
+            setTimeout(
+
+                ()=>controller.abort(),
+
+                20000
+
+            );
+
+        try{
+
+            const response =
+
+                await fetch(
+
+                    this.config.WORKER_URL +
+
+                    this.config.VERIFY_PAYMENT,
+
+                    {
+
+                        method:"POST",
+
+                        headers:{
+
+                            "Content-Type":
+                            "application/json"
+
+                        },
+
+                        body:
+
+                        JSON.stringify(
+                            payment
+                        ),
+
+                        signal:
+                        controller.signal
+
+                    }
+
+                );
+
+            clearTimeout(
+                timer
+            );
+
+            if(
+                !response.ok
+            ){
+
+                throw new Error(
+
+                    "Payment verification failed."
+
+                );
+
+            }
+
+            const data =
+
+                await response.json();
+
+            if(
+
+                data &&
+
+                data.uniqueId &&
+
+                data.expires
+
+            ){
+
+                this.redirectSuccess(
+
+                    data
+
+                );
+
+                return;
+
+            }
+
+            this.redirectFailure();
 
         }
 
         catch(error){
 
+            clearTimeout(
+                timer
+            );
 
             console.error(
                 error
             );
 
-
-            alert(
-                "Payment failed. Please try again."
-            );
-
-
-            this.busy = false;
-
-
-            button.disabled =
-            false;
-
-
-            button.textContent =
-            "Pay ₹35.40";
-
+            this.redirectFailure();
 
         }
 
+    },
+
+
+
+    redirectSuccess(data){
+
+        const url =
+
+            this.config.PAYMENT_STATUS +
+
+            "?status=success" +
+
+            "&id=" +
+
+            encodeURIComponent(
+
+                data.uniqueId
+
+            ) +
+
+            "&expires=" +
+
+            encodeURIComponent(
+
+                data.expires
+
+            );
+
+        window.location.replace(
+            url
+        );
+
+    },
+
+
+
+    redirectFailure(){
+
+        window.location.replace(
+
+            this.config.PAYMENT_STATUS +
+
+            "?status=failed"
+
+        );
 
     }
-
 
 };
 
 
 
-
 document.addEventListener(
 
-"DOMContentLoaded",
+    "DOMContentLoaded",
 
-()=>{
+    ()=>{
 
-    PaymentPage.init();
+        PaymentPage.init();
 
-}
+    }
 
 );
+
+
+   
