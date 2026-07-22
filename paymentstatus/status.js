@@ -2,15 +2,35 @@
 
 /* ==========================================================================
    VIDHWAAN AI Writer
-   Payment Status
+
+   Payment Status Controller
+
    Production
+
+   Responsibilities
+
+   • Display payment result
+   • Save subscription locally
+   • Store subscription ID
+   • Store expiry date
+   • Return user to application
+
    ========================================================================== */
+
+
+import Storage from "../engine/storage.js";
+
+
 
 const StatusPage = {
 
+
     elements:{},
 
+
+
     init(){
+
 
         this.cacheElements();
 
@@ -18,37 +38,66 @@ const StatusPage = {
 
         this.loadStatus();
 
+
     },
+
+
 
     cacheElements(){
 
-        const $ = id => document.getElementById(id);
 
-        this.elements={
+        const $ = id =>
+            document.getElementById(id);
 
-            icon: $("statusIcon"),
 
-            title: $("statusTitle"),
 
-            message: $("statusMessage"),
+        this.elements = {
 
-            subscriptionBox: $("subscriptionBox"),
 
-            subscriptionId: $("subscriptionId"),
+            icon:
+                $("statusIcon"),
 
-            expiryDate: $("expiryDate"),
 
-            failedBox: $("failedBox"),
+            title:
+                $("statusTitle"),
 
-            backButton: $("backButton")
+
+            message:
+                $("statusMessage"),
+
+
+            subscriptionBox:
+                $("subscriptionBox"),
+
+
+            subscriptionId:
+                $("subscriptionId"),
+
+
+            expiryDate:
+                $("expiryDate"),
+
+
+            failedBox:
+                $("failedBox"),
+
+
+            backButton:
+                $("backButton")
+
 
         };
 
+
     },
+
+
 
     bindEvents(){
 
+
         if(this.elements.backButton){
+
 
             this.elements.backButton.addEventListener(
 
@@ -56,19 +105,28 @@ const StatusPage = {
 
                 ()=>{
 
-                    window.location.href="https://create.vidhwaan.com";
+
+                    window.location.href =
+
+                    "https://create.vidhwaan.com";
+
 
                 }
 
             );
 
+
         }
+
 
     },
 
+
+
     loadStatus(){
 
-        const params=
+
+        const params =
 
             new URLSearchParams(
 
@@ -76,19 +134,28 @@ const StatusPage = {
 
             );
 
-        const status=
+
+
+        const status =
 
             params.get("status") || "failed";
 
-        const id=
 
-            params.get("id") || "-";
 
-        const expires=
+        const id =
 
-            params.get("expires") || "-";
+            params.get("id") || "";
 
-        if(status==="success"){
+
+
+        const expires =
+
+            params.get("expires") || "";
+
+
+
+        if(status === "success"){
+
 
             this.showSuccess(
 
@@ -98,75 +165,211 @@ const StatusPage = {
 
             );
 
+
         }
 
         else{
 
+
             this.showFailure();
+
 
         }
 
-    },
-
-    showSuccess(id,expires){
-
-        const e=this.elements;
-
-        e.icon.textContent="✓";
-
-        e.icon.classList.remove("failed");
-
-        e.title.textContent=
-
-            "Payment Successful";
-
-        e.message.textContent=
-
-            "Your subscription has been activated successfully. You can continue using VIDHWAAN AI Writer.";
-
-        e.subscriptionBox.hidden=false;
-
-        e.failedBox.hidden=true;
-
-        e.subscriptionId.textContent=id;
-
-        e.expiryDate.textContent=
-
-            this.formatDate(expires);
 
     },
+
+
+
+    showSuccess(id, expires){
+
+
+        const e = this.elements;
+
+
+
+        if(e.icon){
+
+
+            e.icon.textContent = "✓";
+
+            e.icon.classList.remove("failed");
+
+
+        }
+
+
+
+        if(e.title){
+
+
+            e.title.textContent =
+
+                "Payment Successful";
+
+
+        }
+
+
+
+        if(e.message){
+
+
+            e.message.textContent =
+
+                "Your VIDHWAAN AI Writer subscription is active. You can continue creating content.";
+
+
+        }
+
+
+
+        if(e.subscriptionBox){
+
+
+            e.subscriptionBox.hidden = false;
+
+
+        }
+
+
+
+        if(e.failedBox){
+
+
+            e.failedBox.hidden = true;
+
+
+        }
+
+
+
+        if(e.subscriptionId){
+
+
+            e.subscriptionId.textContent =
+
+                id || "-";
+
+
+        }
+
+
+
+        if(e.expiryDate){
+
+
+            e.expiryDate.textContent =
+
+                this.formatDate(expires);
+
+
+        }
+
+
+
+        /*
+            Save subscription locally
+
+            Required for main app access
+        */
+
+
+        if(id && expires){
+
+
+            Storage.saveSubscription({
+
+                uniqueId: id,
+
+                expires: Number(expires)
+
+            });
+
+
+        }
+
+
+    },
+
+
 
     showFailure(){
 
-        const e=this.elements;
 
-        e.icon.textContent="!";
+        const e = this.elements;
 
-        e.icon.classList.add("failed");
 
-        e.title.textContent=
 
-            "Payment Not Completed";
+        if(e.icon){
 
-        e.message.textContent=
 
-            "Your payment could not be verified.";
+            e.icon.textContent = "!";
 
-        e.subscriptionBox.hidden=true;
+            e.icon.classList.add("failed");
 
-        e.failedBox.hidden=false;
+
+        }
+
+
+
+        if(e.title){
+
+
+            e.title.textContent =
+
+                "Payment Not Completed";
+
+
+        }
+
+
+
+        if(e.message){
+
+
+            e.message.textContent =
+
+                "Your payment could not be verified.";
+
+
+        }
+
+
+
+        if(e.subscriptionBox){
+
+
+            e.subscriptionBox.hidden = true;
+
+
+        }
+
+
+
+        if(e.failedBox){
+
+
+            e.failedBox.hidden = false;
+
+
+        }
+
 
     },
 
+
+
     formatDate(value){
+
 
         if(
 
             !value ||
 
-            value==="-" ||
+            value === "-" ||
 
-            value==="null"
+            value === "null"
 
         ){
 
@@ -174,9 +377,17 @@ const StatusPage = {
 
         }
 
-        const date=
 
-            new Date(value);
+
+        const date =
+
+            new Date(
+
+                Number(value)
+
+            );
+
+
 
         if(
 
@@ -191,6 +402,8 @@ const StatusPage = {
             return value;
 
         }
+
+
 
         return date.toLocaleDateString(
 
@@ -208,9 +421,13 @@ const StatusPage = {
 
         );
 
+
     }
 
+
 };
+
+
 
 document.addEventListener(
 
@@ -218,7 +435,9 @@ document.addEventListener(
 
     ()=>{
 
+
         StatusPage.init();
+
 
     }
 
