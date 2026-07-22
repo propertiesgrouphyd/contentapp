@@ -48,10 +48,10 @@ window.VW_CONFIG = Object.freeze({
             100,
 
         PAYMENT_PAGE:
-            "https://create.vidhwaan.com/payment",
+            "https://writer.vidhwaan.com/payment",
 
         PAYMENT_STATUS:
-            "https://create.vidhwaan.com/paymentstatus"
+            "https://writer.vidhwaan.com/paymentstatus"
 
     }),
 
