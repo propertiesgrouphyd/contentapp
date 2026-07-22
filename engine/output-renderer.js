@@ -172,7 +172,7 @@ async function copy() {
                         .trim()
             )
             .filter(Boolean)
-            .join("\n\n\n");
+            .join("\n\n");
 
 
 
