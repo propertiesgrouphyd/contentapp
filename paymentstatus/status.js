@@ -2,274 +2,215 @@
 
 /* ==========================================================================
    VIDHWAAN AI Writer
-
-   Payment Status Controller
-
-   Saves:
-   - Subscription ID
-   - Expiry locally
-
+   Payment Status
+   Production
    ========================================================================== */
-
-
-import Storage from "../engine/storage.js";
-
-
 
 const StatusPage = {
 
+    elements:{},
 
     init(){
 
+        this.cacheElements();
 
-        const params =
+        this.bindEvents();
 
-            new URLSearchParams(
-                window.location.search
-            );
+        this.loadStatus();
 
+    },
 
+    cacheElements(){
 
-        const status =
+        const $ = id => document.getElementById(id);
 
-            params.get("status");
+        this.elements={
 
+            icon: $("statusIcon"),
 
+            title: $("statusTitle"),
 
-        const uniqueId =
+            message: $("statusMessage"),
 
-            params.get("id");
+            subscriptionBox: $("subscriptionBox"),
 
+            subscriptionId: $("subscriptionId"),
 
+            expiryDate: $("expiryDate"),
 
-        const expires =
+            failedBox: $("failedBox"),
 
-            params.get("expires");
+            backButton: $("backButton")
 
+        };
 
+    },
 
-        const statusIcon =
+    bindEvents(){
 
-            document.getElementById(
-                "statusIcon"
-            );
+        if(this.elements.backButton){
 
-
-        const statusTitle =
-
-            document.getElementById(
-                "statusTitle"
-            );
-
-
-        const statusMessage =
-
-            document.getElementById(
-                "statusMessage"
-            );
-
-
-        const subscriptionId =
-
-            document.getElementById(
-                "subscriptionId"
-            );
-
-
-        const expiryDate =
-
-            document.getElementById(
-                "expiryDate"
-            );
-
-
-        const subscriptionBox =
-
-            document.getElementById(
-                "subscriptionBox"
-            );
-
-
-        const failedBox =
-
-            document.getElementById(
-                "failedBox"
-            );
-
-
-
-        if(
-            status === "success"
-        ){
-
-
-
-            if(statusIcon){
-
-                statusIcon.textContent =
-                "✓";
-
-            }
-
-
-
-            if(statusTitle){
-
-                statusTitle.textContent =
-                "Payment Successful";
-
-            }
-
-
-
-            if(statusMessage){
-
-                statusMessage.textContent =
-                "Your VIDHWAAN AI Writer subscription is active. You can continue creating content.";
-
-            }
-
-
-
-            if(subscriptionId){
-
-                subscriptionId.textContent =
-                uniqueId || "-";
-
-            }
-
-
-
-            if(expiryDate && expires){
-
-
-                expiryDate.textContent =
-
-                new Date(
-                    Number(expires)
-                )
-                .toLocaleDateString();
-
-
-            }
-
-
-
-            if(
-                uniqueId &&
-                expires
-            ){
-
-
-                Storage.saveSubscription({
-
-                    uniqueId:
-
-                    uniqueId,
-
-
-                    expires:
-
-                    Number(expires)
-
-                });
-
-
-            }
-
-
-        }
-
-        else{
-
-
-            if(statusIcon){
-
-                statusIcon.textContent =
-                "×";
-
-            }
-
-
-
-            if(statusTitle){
-
-                statusTitle.textContent =
-                "Payment Failed";
-
-            }
-
-
-
-            if(statusMessage){
-
-                statusMessage.textContent =
-                "Payment was not completed.";
-
-            }
-
-
-
-            if(subscriptionBox){
-
-                subscriptionBox.hidden =
-                true;
-
-            }
-
-
-
-            if(failedBox){
-
-                failedBox.hidden =
-                false;
-
-            }
-
-
-        }
-
-
-
-
-        const backButton =
-
-            document.getElementById(
-                "backButton"
-            );
-
-
-
-        if(backButton){
-
-
-            backButton.addEventListener(
+            this.elements.backButton.addEventListener(
 
                 "click",
 
                 ()=>{
 
-
-                    window.location.href =
-
-                    "https://create.vidhwaan.com";
-
+                    window.location.href="https://create.vidhwaan.com";
 
                 }
 
             );
 
+        }
+
+    },
+
+    loadStatus(){
+
+        const params=
+
+            new URLSearchParams(
+
+                window.location.search
+
+            );
+
+        const status=
+
+            params.get("status") || "failed";
+
+        const id=
+
+            params.get("id") || "-";
+
+        const expires=
+
+            params.get("expires") || "-";
+
+        if(status==="success"){
+
+            this.showSuccess(
+
+                id,
+
+                expires
+
+            );
 
         }
 
+        else{
+
+            this.showFailure();
+
+        }
+
+    },
+
+    showSuccess(id,expires){
+
+        const e=this.elements;
+
+        e.icon.textContent="✓";
+
+        e.icon.classList.remove("failed");
+
+        e.title.textContent=
+
+            "Payment Successful";
+
+        e.message.textContent=
+
+            "Your subscription has been activated successfully. You can continue using VIDHWAAN AI Writer.";
+
+        e.subscriptionBox.hidden=false;
+
+        e.failedBox.hidden=true;
+
+        e.subscriptionId.textContent=id;
+
+        e.expiryDate.textContent=
+
+            this.formatDate(expires);
+
+    },
+
+    showFailure(){
+
+        const e=this.elements;
+
+        e.icon.textContent="!";
+
+        e.icon.classList.add("failed");
+
+        e.title.textContent=
+
+            "Payment Not Completed";
+
+        e.message.textContent=
+
+            "Your payment could not be verified.";
+
+        e.subscriptionBox.hidden=true;
+
+        e.failedBox.hidden=false;
+
+    },
+
+    formatDate(value){
+
+        if(
+
+            !value ||
+
+            value==="-" ||
+
+            value==="null"
+
+        ){
+
+            return "-";
+
+        }
+
+        const date=
+
+            new Date(value);
+
+        if(
+
+            Number.isNaN(
+
+                date.getTime()
+
+            )
+
+        ){
+
+            return value;
+
+        }
+
+        return date.toLocaleDateString(
+
+            undefined,
+
+            {
+
+                year:"numeric",
+
+                month:"long",
+
+                day:"numeric"
+
+            }
+
+        );
 
     }
 
-
 };
-
-
-
 
 document.addEventListener(
 
@@ -277,9 +218,7 @@ document.addEventListener(
 
     ()=>{
 
-
         StatusPage.init();
-
 
     }
 
