@@ -4,188 +4,205 @@
    VIDHWAAN AI Writer
 
    UI Manager
+   Version : 2.0.0
 
-   Handles:
-   - DOM references
-   - Dropdown initialization
-   - Cascading dropdowns
-   - Form values
+   Responsibilities
+
+   • Cache DOM elements
+   • Initialize dropdowns
+   • Handle cascading dropdowns
+   • Return form values
+   • Build rich selection context
+   • Never manipulate business logic
 
    ========================================================================== */
 
-
 import DropdownManager from "./dropdown-manager.js";
+import DataManager from "./data-manager.js";
 
+/* ==========================================================================
+   DOM Cache
+   ========================================================================== */
 
+const UI = Object.create(null);
 
+/* ==========================================================================
+   Internal Helpers
+   ========================================================================== */
 
+function $(id) {
 
-const UI = {};
-
-
-
-
-
-function loadUI(){
-
-
-    UI.purpose =
-
-    document.getElementById(
-        "vw-purpose"
-    );
-
-
-
-    UI.category =
-
-    document.getElementById(
-        "vw-category"
-    );
-
-
-
-    UI.topic =
-
-    document.getElementById(
-        "vw-topic"
-    );
-
-
-
-    UI.customTopic =
-
-    document.getElementById(
-        "vw-custom-topic"
-    );
-
-
-
-    UI.goal =
-
-    document.getElementById(
-        "vw-goal"
-    );
-
-
-
-    UI.contentStyle =
-
-    document.getElementById(
-        "vw-style"
-    );
-
-
-    UI.tone =
-
-    document.getElementById(
-        "vw-tone"
-    );
-
-
-
-    UI.audience =
-
-    document.getElementById(
-        "vw-audience"
-    );
-
-
-
-    UI.length =
-
-    document.getElementById(
-        "vw-length"
-    );
-
-
-
-    UI.platform =
-
-    document.getElementById(
-        "vw-platform"
-    );
-
-
-
-    UI.language =
-
-    document.getElementById(
-        "vw-language"
-    );
-
-
-
-    UI.creativity =
-
-    document.getElementById(
-        "vw-creativity"
-    );
-
-
-
-    UI.emoji =
-
-    document.getElementById(
-        "vw-emoji"
-    );
-
-
-
-    UI.cta =
-
-    document.getElementById(
-        "vw-cta"
-    );
-
-
+    return document.getElementById(id);
 
 }
 
+function cacheDOM() {
 
+    UI.purpose = $("vw-purpose");
 
+    UI.category = $("vw-category");
 
+    UI.topic = $("vw-topic");
 
+    UI.customTopic = $("vw-custom-topic");
 
+    UI.customTopicWrapper = $("vw-custom-topic-wrapper");
 
+    UI.goal = $("vw-goal");
 
+    UI.contentStyle = $("vw-style");
 
-function initializeDropdowns(){
+    UI.tone = $("vw-tone");
 
+    UI.audience = $("vw-audience");
 
-    if(!UI.purpose){
+    UI.length = $("vw-length");
 
-        loadUI();
+    UI.platform = $("vw-platform");
+
+    UI.language = $("vw-language");
+
+    UI.creativity = $("vw-creativity");
+
+    UI.emoji = $("vw-emoji");
+
+    UI.cta = $("vw-cta");
+
+}
+
+function ensureDOM() {
+
+    if (!UI.purpose) {
+
+        cacheDOM();
 
     }
 
+}
 
+/* ==========================================================================
+   Dropdown Initialization
+   ========================================================================== */
 
-    console.log(
-        "UI loaded",
-        UI
-    );
+function initializeDropdowns() {
 
-
-
+    ensureDOM();
 
     DropdownManager.populatePurposes(
-
         UI.purpose
-
     );
-
-
-
 
     DropdownManager.clearCategories(
-
         UI.category
-
     );
 
+    DropdownManager.clearTopics(
+        UI.topic
+    );
 
+    DropdownManager.populateGoals(
+        UI.goal
+    );
 
+    DropdownManager.populateContentStyles(
+        UI.contentStyle
+    );
+
+    DropdownManager.populateTones(
+        UI.tone
+    );
+
+    DropdownManager.populateAudiences(
+        UI.audience
+    );
+
+    DropdownManager.populateLengths(
+        UI.length
+    );
+
+    DropdownManager.populatePlatforms(
+        UI.platform
+    );
+
+    DropdownManager.populateLanguages(
+        UI.language
+    );
+
+    DropdownManager.populateCreativity(
+        UI.creativity
+    );
+
+    DropdownManager.populateEmojis(
+        UI.emoji
+    );
+
+    DropdownManager.populateCTAs(
+        UI.cta
+    );
+
+    if (UI.customTopicWrapper) {
+
+        UI.customTopicWrapper.hidden = true;
+
+    }
+
+    setupCascade();
+
+}
+
+/* ==========================================================================
+   Cascading Dropdowns
+   ========================================================================== */
+
+function setupCascade() {
+
+    ensureDOM();
+
+    /* ==========================================================
+       Purpose → Category
+       ========================================================== */
+
+    if (UI.purpose) {
+
+        UI.purpose.addEventListener("change", onPurposeChange);
+
+    }
+
+    /* ==========================================================
+       Category → Topic
+       ========================================================== */
+
+    if (UI.category) {
+
+        UI.category.addEventListener("change", onCategoryChange);
+
+    }
+
+    /* ==========================================================
+       Topic → Custom Topic
+       ========================================================== */
+
+    if (UI.topic) {
+
+        UI.topic.addEventListener("change", onTopicChange);
+
+    }
+
+}
+
+/* ==========================================================================
+   Event Handlers
+   ========================================================================== */
+
+function onPurposeChange() {
+
+    DropdownManager.populateCategoriesByPurpose(
+
+        UI.category,
+
+        UI.purpose.value
+
+    );
 
     DropdownManager.clearTopics(
 
@@ -193,396 +210,260 @@ function initializeDropdowns(){
 
     );
 
-
-
-
-
-    DropdownManager.populateGoals(
-
-        UI.goal
-
-    );
-
-
-
-    DropdownManager.populateContentStyles(
-
-        UI.contentStyle
-
-    );
-
-
-
-    DropdownManager.populateTones(
-
-        UI.tone
-
-    );
-
-
-
-    DropdownManager.populateAudiences(
-
-        UI.audience
-
-    );
-
-
-
-    DropdownManager.populateLengths(
-
-        UI.length
-
-    );
-
-
-
-    DropdownManager.populatePlatforms(
-
-        UI.platform
-
-    );
-
-
-
-    DropdownManager.populateLanguages(
-
-        UI.language
-
-    );
-
-
-
-    DropdownManager.populateCreativity(
-
-        UI.creativity
-
-    );
-
-
-
-    DropdownManager.populateEmojis(
-
-        UI.emoji
-
-    );
-
-
-
-    DropdownManager.populateCTAs(
-
-        UI.cta
-
-    );
-
-
-
-
-    console.log(
-
-        "Purpose options:",
-
-        UI.purpose?.options.length
-
-    );
-
-
-
-
-    setupCascade();
-
-    const wrapper = document.getElementById(
-        "vw-custom-topic-wrapper"
-    );
-
-    if (wrapper) {
-
-        wrapper.hidden = true;
-
-    }
-
-
+    hideCustomTopic();
 
 }
 
+function onCategoryChange() {
 
+    DropdownManager.populateTopicsByCategory(
 
+        UI.topic,
 
+        UI.category.value
 
+    );
 
-
-
-
-function setupCascade(){
-
-
-
-    if(UI.purpose){
-
-
-        UI.purpose.addEventListener(
-
-            "change",
-
-            ()=>{
-
-
-                DropdownManager.populateCategoriesByPurpose(
-
-                    UI.category,
-
-                    UI.purpose.value
-
-                );
-
-
-
-                DropdownManager.clearTopics(
-
-                    UI.topic
-
-                );
-
-
-            }
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-    if(UI.category){
-
-
-        UI.category.addEventListener(
-
-            "change",
-
-            ()=>{
-
-
-                DropdownManager.populateTopicsByCategory(
-
-                    UI.topic,
-
-                    UI.category.value
-
-                );
-
-                const wrapper = document.getElementById(
-                    "vw-custom-topic-wrapper"
-                );
-
-                if (wrapper) {
-
-                    wrapper.hidden = true;
-
-                }
-
-                if (UI.customTopic) {
-
-                    UI.customTopic.value = "";
-
-                }
-
-
-            }
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-    if(UI.topic){
-
-
-        UI.topic.addEventListener(
-
-            "change",
-
-            ()=>{
-
-
-                const wrapper =
-
-                document.getElementById(
-
-                    "vw-custom-topic-wrapper"
-
-                );
-
-
-
-                if(!wrapper){
-
-                    return;
-
-                }
-
-
-
-
-                wrapper.hidden =
-
-                UI.topic.value !== "custom-topic";
-
-
-
-                if(wrapper.hidden && UI.customTopic){
-
-                    UI.customTopic.value="";
-
-                }
-
-
-            }
-
-        );
-
-
-    }
-
+    hideCustomTopic();
 
 }
 
+function onTopicChange() {
 
+    if (!UI.customTopicWrapper) {
 
+        return;
 
+    }
 
+    const isCustom =
 
+        UI.topic.value === "custom-topic";
 
+    UI.customTopicWrapper.hidden = !isCustom;
 
+    if (!isCustom && UI.customTopic) {
 
-function getValues(){
+        UI.customTopic.value = "";
 
+    }
 
+}
 
-    return {
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
 
+function hideCustomTopic() {
 
-        purpose:
+    if (UI.customTopicWrapper) {
 
-        UI.purpose?.value || "",
+        UI.customTopicWrapper.hidden = true;
 
+    }
 
+    if (UI.customTopic) {
 
-        category:
+        UI.customTopic.value = "";
 
-        UI.category?.value || "",
+    }
 
+}
 
+/* ==========================================================================
+   Form Values
+   ========================================================================== */
 
-        topic:
+function getValues() {
+
+    ensureDOM();
+
+    const topic =
 
         UI.topic?.value === "custom-topic"
 
-        ?
+            ? (UI.customTopic?.value || "").trim()
 
-        UI.customTopic?.value || ""
+            : (UI.topic?.value || "");
 
-        :
+    return {
 
-        UI.topic?.value || "",
+        purpose: UI.purpose?.value || "",
 
+        category: UI.category?.value || "",
 
+        topic,
 
-        customTopic:
+        customTopic: (UI.customTopic?.value || "").trim(),
 
-        UI.customTopic?.value || "",
+        goal: UI.goal?.value || "",
 
+        contentStyle: UI.contentStyle?.value || "",
 
+        tone: UI.tone?.value || "",
 
-        goal:
+        audience: UI.audience?.value || "",
 
-        UI.goal?.value || "",
+        length: UI.length?.value || "",
 
+        platform: UI.platform?.value || "",
 
+        language: UI.language?.value || "",
 
-        contentStyle:
+        creativity: UI.creativity?.value || "",
 
-        UI.contentStyle?.value || "",
+        emoji: UI.emoji?.value || "",
 
-
-        tone:
-
-        UI.tone?.value || "",
-
-
-
-        audience:
-
-        UI.audience?.value || "",
-
-
-
-        length:
-
-        UI.length?.value || "",
-
-
-
-        platform:
-
-        UI.platform?.value || "",
-
-
-
-        language:
-
-        UI.language?.value || "",
-
-
-
-        creativity:
-
-        UI.creativity?.value || "",
-
-
-
-        emoji:
-
-        UI.emoji?.value || "",
-
-
-
-        cta:
-
-        UI.cta?.value || ""
-
+        cta: UI.cta?.value || ""
 
     };
 
+}
+
+/* ==========================================================================
+   Rich Selection Context
+   ========================================================================== */
+
+function getSelectionContext() {
+
+    const values = getValues();
+
+    return {
+
+        values,
+
+        context: DataManager.getSelectionContext(values)
+
+    };
 
 }
 
+/* ==========================================================================
+   Utility Methods
+   ========================================================================== */
 
+function resetForm() {
 
+    ensureDOM();
 
+    const controls = [
 
+        UI.purpose,
+        UI.category,
+        UI.topic,
+        UI.goal,
+        UI.contentStyle,
+        UI.tone,
+        UI.audience,
+        UI.length,
+        UI.platform,
+        UI.language,
+        UI.creativity,
+        UI.emoji,
+        UI.cta
 
+    ];
 
+    controls.forEach(control => {
+
+        if (control) {
+
+            control.selectedIndex = 0;
+
+        }
+
+    });
+
+    if (UI.customTopic) {
+
+        UI.customTopic.value = "";
+
+    }
+
+    hideCustomTopic();
+
+    DropdownManager.clearCategories(
+
+        UI.category
+
+    );
+
+    DropdownManager.clearTopics(
+
+        UI.topic
+
+    );
+
+}
+
+/* ==========================================================================
+   Debug
+   ========================================================================== */
+
+function logSummary() {
+
+    if (
+
+        typeof location !== "undefined" &&
+
+        (
+
+            location.hostname === "localhost" ||
+
+            location.hostname === "127.0.0.1"
+
+        )
+
+    ) {
+
+        console.group("VIDHWAAN AI Writer - UI Manager");
+
+        console.log("UI Elements", UI);
+
+        console.log("Current Values", getValues());
+
+        console.groupEnd();
+
+    }
+
+}
+
+/* ==========================================================================
+   Initialize
+   ========================================================================== */
+
+function initialize() {
+
+    cacheDOM();
+
+    initializeDropdowns();
+
+    logSummary();
+
+}
+
+/* ==========================================================================
+   Exports
+   ========================================================================== */
 
 export {
 
-
     UI,
+
+    initialize,
 
     initializeDropdowns,
 
-    getValues
+    getValues,
 
+    getSelectionContext,
+
+    resetForm
 
 };
+
+
+
+
+
+
