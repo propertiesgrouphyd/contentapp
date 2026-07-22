@@ -5,6 +5,7 @@
    Global Configuration
    ========================================================================== */
 
+
 window.VW_CONFIG = Object.freeze({
 
     APP_NAME:
@@ -15,7 +16,6 @@ window.VW_CONFIG = Object.freeze({
 
     DEBUG:
         false,
-
 
 
     API: Object.freeze({
@@ -49,9 +49,6 @@ window.VW_CONFIG = Object.freeze({
 
         PAYMENT_PAGE:
             "https://create.vidhwaan.com/payment",
-
-        PAYMENT_CALLBACK:
-            "https://create.vidhwaan.com/payment-callback",
 
         PAYMENT_STATUS:
             "https://create.vidhwaan.com/paymentstatus"
@@ -114,5 +111,6 @@ window.VW_CONFIG = Object.freeze({
             3000
 
     })
+
 
 });
