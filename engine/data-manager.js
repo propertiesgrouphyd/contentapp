@@ -351,9 +351,24 @@ const DataManager = {
                 this.getCategory(values.category)
             ),
 
-            topic: clone(
-                this.getTopic(values.topic)
-            ),
+            topic:
+
+                values.customTopic
+
+                    ? {
+
+                        id: "custom-topic",
+
+                        label: values.customTopic,
+
+                        description:
+                        "User provided custom topic"
+
+                    }
+
+                    : clone(
+                        this.getTopic(values.topic)
+                    ),
 
             goal: clone(
                 this.getGoal(values.goal)
@@ -564,4 +579,3 @@ DataManager.logSummary();
 export default DataManager;
    
    
-
