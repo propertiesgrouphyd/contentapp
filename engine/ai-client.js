@@ -26,7 +26,7 @@ const DEFAULT_OPTIONS = Object.freeze({
 
     top_p: 0.9,
 
-    max_tokens: 2048,
+    max_tokens: 4096,
 
     frequency_penalty: 0.2,
 
@@ -129,6 +129,15 @@ const AIClient = {
                 VW_CONFIG.API.MODEL,
 
             messages: [
+
+                {
+
+                    role: "system",
+
+                    content:
+                    "You are VIDHWAAN AI Writer, a world-class professional content creation engine. Create high-quality human-like content following the user's requirements."
+
+                },
 
                 {
 
