@@ -1203,7 +1203,7 @@ summary h2::before{
 
     min-height:420px;
 
-    padding:32px;
+    padding:24px;
 
     background:#ffffff;
 
@@ -1577,7 +1577,7 @@ summary h2::before{
 
         max-width:100%;
 
-        padding:22px;
+        padding:12px 10px;
 
         font-size:19px;
 
