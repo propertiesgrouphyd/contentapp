@@ -26,7 +26,7 @@ const DEFAULT_OPTIONS = Object.freeze({
 
     top_p: 0.9,
 
-    max_tokens: 4096,
+    max_tokens: 2048,
 
     frequency_penalty: 0.2,
 
