@@ -2,33 +2,73 @@
 
 /* ==========================================================================
    VIDHWAAN AI Writer
+
    Output Renderer
-   Global Production Version
+   Production Lightweight Version
+
+   Responsibilities:
+
+   • Display rendered HTML
+   • Copy HTML + plain text
+   • Manage output state
+
    ========================================================================== */
 
+
+
 const EMPTY_TEMPLATE = `
+
 <div class="vw-empty-state">
+
     <h3>Nothing generated yet</h3>
+
     <p>
+
         Complete the form and click
-        <strong>Generate Content</strong>.
+
+        <strong>
+
+            Generate Content
+
+        </strong>.
+
     </p>
+
 </div>
+
 `;
 
-function getOutputElement() {
+
+
+function getOutputElement(){
+
 
     return document.getElementById(
+
         "vw-output"
+
     );
+
 
 }
 
-function render(content = "") {
 
-    const output = getOutputElement();
 
-    if (!output) {
+/* ==========================================================
+   RENDER
+   ========================================================== */
+
+
+function render(content = ""){
+
+
+    const output =
+
+        getOutputElement();
+
+
+
+    if(!output){
 
         return false;
 
@@ -44,80 +84,144 @@ function render(content = "") {
 
             : "";
 
+
+
     output.innerHTML =
 
         html || EMPTY_TEMPLATE;
 
 
+
     output.scrollTop = 0;
+
+
 
     return true;
 
+
 }
 
-function clear() {
+
+
+/* ==========================================================
+   CLEAR
+   ========================================================== */
+
+
+function clear(){
+
 
     return render("");
 
+
 }
 
 
 
+/* ==========================================================
+   CREATE CLIPBOARD HTML
+
+   Screen HTML:
+       uses CSS
+
+   Clipboard HTML:
+       uses inline styles
+
+   Because external apps ignore our CSS.
+
+   ========================================================== */
 
 
 function createClipboardHTML(output){
 
 
     const clone =
+
         output.cloneNode(true);
 
 
 
     clone
-    .querySelectorAll(
-        ".vw-paragraph"
-    )
-    .forEach(block=>{
+
+    .querySelectorAll("p")
+
+    .forEach(p=>{
 
 
-        const p =
-            document.createElement(
-                "p"
-            );
+        p.style.marginBottom =
+
+            "1em";
 
 
-        p.innerHTML =
-            block.innerHTML;
+        p.style.lineHeight =
 
-
-        block.replaceWith(
-            p
-        );
+            "1.6";
 
 
     });
 
 
 
-    return Array.from(
-        clone.children
-    )
-    .map(
-        block =>
-            block.outerHTML
-    )
-    .join("\n\n")
-    .trim();
+    clone
+
+    .querySelectorAll("h1,h2,h3")
+
+    .forEach(h=>{
+
+
+        h.style.marginTop =
+
+            "1em";
+
+
+        h.style.marginBottom =
+
+            "0.5em";
+
+
+    });
+
+
+
+    clone
+
+    .querySelectorAll("li")
+
+    .forEach(li=>{
+
+
+        li.style.marginBottom =
+
+            "0.4em";
+
+
+    });
+
+
+
+    return clone.innerHTML.trim();
+
 
 }
 
 
+/* ==========================================================
+   COPY
+
+   Copies:
+   1. HTML version
+   2. Plain text version
+
+   ========================================================== */
 
 
-async function copy() {
+async function copy(){
+
 
     const output =
+
         getOutputElement();
+
 
 
     if(!output){
@@ -127,10 +231,15 @@ async function copy() {
     }
 
 
+
     if(
+
         output.querySelector(
+
             ".vw-empty-state"
+
         )
+
     ){
 
         return false;
@@ -138,116 +247,149 @@ async function copy() {
     }
 
 
+
     try{
 
 
-        const clone =
-            output.cloneNode(true);
-
-
-
-        /*
-            Create stable clipboard formats
-            for HTML and plain text
-        */
-
-
-
-
-
         const html =
+
             createClipboardHTML(
+
                 output
+
             );
 
 
 
         const text =
-            Array.from(
-                clone.children
-            )
-            .map(
-                item =>
-                    item.textContent
-                        .trim()
-            )
-            .filter(Boolean)
-            .join("\n\n");
+
+            output.innerText
+
+                .replace(/\n{3,}/g,"\n\n")
+
+                .trim();
 
 
 
 
         if(
+
             navigator.clipboard &&
+
             window.ClipboardItem
+
         ){
 
 
-            const item =
+
+            const clipboardItem =
+
                 new ClipboardItem({
 
-                    "text/plain":
-
-                    new Blob(
-                        [
-                            text
-                        ],
-                        {
-                            type:
-                            "text/plain"
-                        }
-                    ),
 
 
                     "text/html":
 
                     new Blob(
+
                         [
+
                             html
+
                         ],
+
                         {
+
                             type:
+
                             "text/html"
+
                         }
+
+                    ),
+
+
+
+                    "text/plain":
+
+                    new Blob(
+
+                        [
+
+                            text
+
+                        ],
+
+                        {
+
+                            type:
+
+                            "text/plain"
+
+                        }
+
                     )
+
+
 
                 });
 
 
+
             await navigator.clipboard.write(
+
                 [
-                    item
+
+                    clipboardItem
+
                 ]
+
             );
 
 
         }
+
         else{
 
 
             const range =
+
                 document.createRange();
 
 
+
             range.selectNodeContents(
+
                 output
+
             );
 
 
+
             const selection =
+
                 window.getSelection();
+
 
 
             selection.removeAllRanges();
 
+
+
             selection.addRange(
+
                 range
+
             );
+
 
 
             document.execCommand(
+
                 "copy"
+
             );
+
 
 
             selection.removeAllRanges();
@@ -261,12 +403,16 @@ async function copy() {
 
 
     }
+
     catch(error){
 
 
         console.error(
-            "Clipboard copy failed:",
+
+            "Copy failed:",
+
             error
+
         );
 
 
@@ -278,52 +424,78 @@ async function copy() {
 
 }
 
+/* ==========================================================
+   TEXT EXTRACTION
+   ========================================================== */
 
-function getText() {
 
-    const output = getOutputElement();
+function getText(){
 
 
-    if (!output) {
+    const output =
+
+        getOutputElement();
+
+
+
+    if(!output){
 
         return "";
 
     }
 
 
-    let text =
+
+    return (
 
         output.innerText ||
 
         output.textContent ||
 
-        "";
+        ""
 
+    )
 
-    text = text
+    .replace(/\r\n/g,"\n")
 
-        .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g,"\n\n")
 
-        .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
-        .trim();
-
-
-    return text;
 
 }
 
-function isEmpty() {
+
+
+/* ==========================================================
+   STATE
+   ========================================================== */
+
+
+function isEmpty(){
+
 
     return getText().length === 0;
 
+
 }
 
-function hasContent() {
+
+
+function hasContent(){
+
 
     return !isEmpty();
 
+
 }
+
+
+
+/* ==========================================================
+   EXPORT
+   ========================================================== */
+
 
 export {
 
