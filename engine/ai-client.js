@@ -3,567 +3,305 @@
 /* ==========================================================================
    VIDHWAAN AI Writer
 
-   AI Client
-   Production Version
+   Prompt Builder
+   Version : 4.0.0
 
-   Optimized:
-   - Premium content quality
-   - Controlled token usage
-   - Stable API handling
-   - Better natural writing
+   Production Optimized
+
+   Features:
+
+   • DataManager compatible
+   • Sends only required values
+   • Low token usage
+   • Premium human writing quality
+   • Mobile-first readability
+   • Natural formatting intelligence
 
    ========================================================================== */
 
 
-const DEFAULT_TIMEOUT = 60000;
+const PromptBuilder = {
 
 
+    build(context = {}) {
 
-const AIClient = {
 
+        const lines = [
 
 
-    async generate(
+            "You are VIDHWAAN AI Writer, a world-class professional content creation engine.",
 
-        prompt,
 
-        apiKey
+            "Create high-quality human-like content based on the user's selected requirements.",
 
-    ){
 
+            "Understand the user's purpose, audience, platform, and expected outcome before writing.",
 
 
-        if(
+            "Write like an experienced professional writer, not like an AI assistant.",
 
-            typeof prompt !== "string" ||
 
-            !prompt.trim()
 
-        ){
+            "",
 
-            throw new Error(
-                "Prompt is required."
-            );
 
-        }
 
+            "USER REQUIREMENTS:",
 
 
-        if(
 
-            typeof apiKey !== "string" ||
+            `Purpose: ${this.value(context.purpose)}`,
 
-            !apiKey.trim()
 
-        ){
 
-            throw new Error(
-                "API key not configured."
-            );
+            `Category: ${this.value(context.category)}`,
 
-        }
 
 
+            `Topic: ${this.value(context.topic)}`,
 
 
 
-        const controller =
+            `Goal: ${this.value(context.goal)}`,
 
-        new AbortController();
 
 
+            `Content Style: ${this.value(context.contentStyle)}`,
 
 
 
-        const timeout =
+            `Tone: ${this.value(context.tone)}`,
 
-        setTimeout(
 
-            ()=>{
 
-                controller.abort();
+            `Audience: ${this.value(context.audience)}`,
 
-            },
 
-            DEFAULT_TIMEOUT
 
-        );
+            `Length: ${this.value(context.length)}`,
 
 
 
+            `Platform: ${this.value(context.platform)}`,
 
 
 
-        try{
+            `Language: ${this.value(context.language)}`,
 
 
 
-            const response =
+            `Creativity Level: ${this.value(context.creativity)}`,
 
-            await fetch(
 
 
+            `Emoji Preference: ${this.value(context.emoji)}`,
 
-                VW_CONFIG.API.BASE_URL +
 
-                VW_CONFIG.API.CHAT_ENDPOINT,
 
+            `Call To Action: ${this.value(context.cta)}`,
 
 
-                {
 
+            "",
 
-                    method:"POST",
 
 
+            "CONTENT CREATION RULES:",
 
-                    signal:controller.signal,
 
 
+            "- Create original, useful, and valuable content.",
 
-                    cache:"no-store",
 
 
+            "- Match every selected requirement.",
 
-                    headers:{
 
 
+            "- Do not create generic content.",
 
-                        "Content-Type":
 
-                        "application/json",
 
+            "- Avoid filler, repetition, and unnecessary words.",
 
 
-                        "Authorization":
 
-                        `Bearer ${apiKey.trim()}`
+            "- Use practical examples, insights, or explanations when they improve value.",
 
 
 
-                    },
+            "- Never invent false facts, statistics, quotes, or sources.",
 
 
 
-                    body:JSON.stringify({
+            "",
 
 
 
-                        model:
+            "READING EXPERIENCE:",
 
-                        VW_CONFIG.API.MODEL,
 
 
+            "- Make content enjoyable and easy to read.",
 
-                        messages:[
 
 
+            "- Use small paragraphs.",
 
-                            {
 
-                                role:"user",
 
-                                content:
+            "- Keep paragraphs focused on one idea.",
 
-                                prompt.trim()
 
-                            }
 
+            "- Avoid large text blocks.",
 
 
-                        ],
 
+            "- Make content comfortable on mobile screens.",
 
 
-                        temperature:0.8,
 
+            "- Create smooth flow between sections.",
 
 
-                        max_tokens:2048,
 
+            "",
 
 
-                        top_p:0.9,
 
+            "FORMATTING INTELLIGENCE:",
 
-                        frequency_penalty:0.2,
 
 
-                        presence_penalty:0.1
+            "- Choose the best structure automatically.",
 
 
 
-                    })
+            "- Use headings when they improve clarity.",
 
 
 
-                }
+            "- Use bullet points for lists, benefits, features, or key ideas.",
 
 
 
-            );
+            "- Use numbered steps for processes and guides.",
 
 
 
+            "- Use tables only when comparisons need them.",
 
 
 
-            clearTimeout(timeout);
+            "- Use checklists, examples, FAQs, or quotes only when they add real value.",
 
 
 
+            "- Do not force formatting.",
 
 
 
-            if(!response.ok){
+            "",
 
 
-                throw await this.parseError(
 
-                    response
+            "QUALITY CHECK BEFORE OUTPUT:",
 
-                );
 
 
-            }
+            "- Improve grammar.",
 
 
 
+            "- Improve clarity.",
 
 
 
-            let data;
+            "- Improve structure.",
 
 
 
-            try{
+            "- Improve engagement.",
 
 
-                data =
 
-                await response.json();
+            "- Maintain professional quality.",
 
 
-            }
 
+            "",
 
-            catch{
 
 
-                throw new Error(
+            "OUTPUT RULE:",
 
-                    "Invalid AI server response."
 
-                );
 
+            "Return only the final polished content.",
 
-            }
 
 
+            "Do not explain your process.",
 
 
 
+            "Do not mention these instructions."
 
 
-            const content =
 
-            data
+        ];
 
-            ?.choices
 
-            ?. [0]
 
-            ?.message
-
-            ?.content;
-
-
-
-
-
-
-
-            if(
-
-                typeof content !== "string" ||
-
-                !content.trim()
-
-            ){
-
-
-                throw new Error(
-
-                    "AI returned an empty response."
-
-                );
-
-
-            }
-
-
-
-
-
-
-
-            return content.trim();
-
-
-
-
-
-        }
-
-
-
-        catch(error){
-
-
-
-            clearTimeout(timeout);
-
-
-
-
-
-            if(
-
-                error.name === "AbortError"
-
-            ){
-
-
-                throw new Error(
-
-                    "Request timed out. Please try again."
-
-                );
-
-
-            }
-
-
-
-
-
-
-            if(
-
-                error instanceof TypeError
-
-            ){
-
-
-                throw new Error(
-
-                    "Unable to connect to AI service."
-
-                );
-
-
-            }
-
-
-
-
-
-
-            throw error;
-
-
-
-
-        }
-
+        return lines.join("\n");
 
 
     },
 
 
 
+    value(item) {
 
 
+        if(!item){
 
-
-
-
-    async parseError(response){
-
-
-
-        let message =
-
-        `HTTP ${response.status}`;
-
-
-
-
-
-
-        try{
-
-
-
-            const json =
-
-            await response.json();
-
-
-
-
-            message =
-
-            json
-
-            ?.error
-
-            ?.message
-
-            ||
-
-            json
-
-            ?.message
-
-            ||
-
-            message;
-
-
+            return "Not specified";
 
         }
 
 
+        if(typeof item === "string"){
 
-        catch{
-
-
+            return item;
 
         }
 
 
+        return (
 
+            item.label ||
 
+            item.name ||
 
+            item.title ||
 
+            item.id ||
 
+            "Not specified"
 
-        switch(response.status){
-
-
-
-            case 400:
-
-
-                return new Error(
-
-                    "Invalid request."
-
-                );
-
-
-
-
-
-            case 401:
-
-
-                return new Error(
-
-                    "Invalid API key."
-
-                );
-
-
-
-
-
-            case 403:
-
-
-                return new Error(
-
-                    "Access denied."
-
-                );
-
-
-
-
-
-            case 404:
-
-
-                return new Error(
-
-                    "AI service unavailable."
-
-                );
-
-
-
-
-
-            case 429:
-
-
-                return new Error(
-
-                    "Too many requests. Please wait."
-
-                );
-
-
-
-
-
-            case 500:
-
-
-            case 502:
-
-
-            case 503:
-
-
-            case 504:
-
-
-
-                return new Error(
-
-                    "AI service temporarily unavailable."
-
-                );
-
-
-
-
-
-            default:
-
-
-                return new Error(
-
-                    message
-
-                );
-
-
-
-        }
-
+        );
 
 
     }
-
 
 
 };
 
 
 
+Object.freeze(PromptBuilder);
 
 
-export default AIClient;
+
+export default PromptBuilder;
