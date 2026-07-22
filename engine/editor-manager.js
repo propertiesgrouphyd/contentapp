@@ -4,14 +4,17 @@
    VIDHWAAN AI Writer
 
    Editor Manager
+   Production Version
 
    Handles:
-   - Text color
-   - Font size
-   - Bold
-   - Italic
-   - Highlight
-   - Undo / Redo
+
+   • Rich text editing
+   • Formatting toolbar
+   • Secure paste
+   • Undo / redo
+   • Draft recovery
+   • Selection handling
+   • Mobile editing
 
    ========================================================================== */
 
@@ -19,342 +22,491 @@
 const EditorManager = {
 
 
-    sanitizeHTML(html){
-
-        const template =
-            document.createElement(
-                "template"
-            );
-
-
-        template.innerHTML =
-            html;
-
-
-        template.content
-            .querySelectorAll(
-                "script,iframe,object,embed"
-            )
-            .forEach(
-                element =>
-                element.remove()
-            );
-
-
-        template.content
-            .querySelectorAll("*")
-            .forEach(
-                element=>{
-
-                    [
-                        ...element.attributes
-                    ]
-                    .forEach(
-                        attribute=>{
-
-                            if(
-                                attribute.name
-                                .startsWith(
-                                    "on"
-                                )
-                            ){
-
-                                element.removeAttribute(
-                                    attribute.name
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }
-            );
-
-
-        return template.innerHTML;
-
-    },
-
-
-
-
-    draftKey:
-        "VIDHWAAN_AI_WRITER_EDITOR_DRAFT_V1",
-
-
     output:null,
 
     initialized:false,
+
+
+    draftKey:
+
+        "VIDHWAAN_AI_WRITER_EDITOR_DRAFT_V2",
+
+
 
     history:[],
 
     historyIndex:-1,
 
+
+    savedRange:null,
+
+
     historyTimer:null,
+
+
+
+    /* ==========================================================
+       INITIALIZE
+       ========================================================== */
 
 
     init(){
 
 
-        const start = ()=>{
+        const output =
 
+            document.getElementById(
 
-            this.output =
-                document.getElementById(
-                    "vw-output"
-                );
+                "vw-output"
 
-
-            if(!this.output){
-
-                return;
-
-            }
-
-
-            if(this.initialized){
-
-                return;
-
-            }
-
-
-            this.initialized = true;
-
-
-            this.bindEvents();
-
-
-            this.restoreDraft();
-
-            this.saveHistory();
-
-
-            this.updateCounts();
-
-
-        };
-
-
-
-        if(
-            document.readyState === "loading"
-        ){
-
-            document.addEventListener(
-                "DOMContentLoaded",
-                start,
-                {
-                    once:true
-                }
             );
 
-        }
-        else{
 
-            start();
+
+        if(!output){
+
+            return;
 
         }
+
+
+
+        this.output = output;
+
+
+
+        if(this.initialized){
+
+            return;
+
+        }
+
+
+
+        this.initialized = true;
+
+
+
+        this.bindEvents();
+
+
+        this.bindToolbar();
+
+
+        this.bindKeyboard();
+
+
+
+        this.restoreDraft();
+
+
+
+        this.saveHistory();
+
+
+
+        this.updateCounts();
 
 
     },
 
+
+
+    /* ==========================================================
+       SECURITY SANITIZER
+       ========================================================== */
+
+
+    sanitizeHTML(html){
+
+
+        const template =
+
+            document.createElement(
+
+                "template"
+
+            );
+
+
+
+        template.innerHTML = html;
+
+
+
+        template.content
+
+        .querySelectorAll(
+
+            "script,iframe,object,embed,style"
+
+        )
+
+        .forEach(
+
+            element =>
+
+                element.remove()
+
+        );
+
+
+
+        template.content
+
+        .querySelectorAll("*")
+
+        .forEach(element=>{
+
+
+            [...element.attributes]
+
+            .forEach(attribute=>{
+
+
+                if(
+
+                    attribute.name
+
+                    .toLowerCase()
+
+                    .startsWith("on")
+
+                ){
+
+                    element.removeAttribute(
+
+                        attribute.name
+
+                    );
+
+                }
+
+
+
+                if(
+
+                    attribute.name === "style"
+
+                ){
+
+                    element.setAttribute(
+
+                        "style",
+
+                        attribute.value
+
+                        .replace(
+
+                            /expression\s*\([^)]*\)/gi,
+
+                            ""
+
+                        )
+
+                    );
+
+                }
+
+
+            });
+
+
+        });
+
+
+
+        return template.innerHTML;
+
+
+    },
+
+
+
+    /* ==========================================================
+       EVENTS
+       ========================================================== */
 
 
     bindEvents(){
 
 
         this.output.addEventListener(
+
             "input",
+
             ()=>{
 
+
                 this.saveSelection();
+
 
                 this.updateCounts();
 
+
                 this.saveDraft();
 
-                this.saveHistory();
 
-                this.dispatchChange();
 
-            }
-        );
+                clearTimeout(
 
+                    this.historyTimer
 
-
-        this.output.addEventListener(
-            "mouseup",
-            ()=>{
-
-                this.saveSelection();
-
-                this.updateToolbarState();
-
-                this.updateColorState();
-
-            }
-        );
-
-
-        this.output.addEventListener(
-            "keyup",
-            ()=>{
-
-                this.saveSelection();
-
-                this.updateToolbarState();
-
-                this.updateColorState();
-
-            }
-        );
-
-
-        this.output.addEventListener(
-            "keydown",
-            (event)=>{
-
-                if(
-                    event.ctrlKey &&
-                    event.key.toLowerCase() === "b"
-                ){
-
-                    event.preventDefault();
-
-                    this.applyCommand(
-                        "bold"
-                    );
-
-                }
-
-
-                if(
-                    event.ctrlKey &&
-                    event.key.toLowerCase() === "i"
-                ){
-
-                    event.preventDefault();
-
-                    this.applyCommand(
-                        "italic"
-                    );
-
-                }
-
-
-                if(
-                    event.ctrlKey &&
-                    event.key.toLowerCase() === "z"
-                ){
-
-                    event.preventDefault();
-
-
-                    this.undo();
-
-
-
-   
-
-
-                    this.updateToolbarState();
-
-
-                    this.updateColorState();
-
-
-                    this.updateCounts();
-
-
-                    this.saveDraft();
-
-
-                    this.dispatchChange();
-
-                }
-
-
-                if(
-                    event.ctrlKey &&
-                    event.key.toLowerCase() === "y"
-                ){
-
-                    event.preventDefault();
-
-
-                    this.redo();
-
-
-
-
-
-
-                    this.updateToolbarState();
-
-
-                    this.updateColorState();
-
-
-                    this.updateCounts();
-
-
-                    this.saveDraft();
-
-
-                    this.dispatchChange();
-
-                }
-
-            }
-        );
-
-
-        this.output.addEventListener(
-            "paste",
-            (event)=>{
-
-                event.preventDefault();
-
-
-                const text =
-                    event.clipboardData
-                        ? event.clipboardData.getData(
-                            "text/plain"
-                        )
-                        : "";
-
-
-                document.execCommand(
-                    "insertText",
-                    false,
-                    text
                 );
 
 
-                this.saveSelection();
 
-                this.updateCounts();
+                this.historyTimer =
 
+                    setTimeout(
 
-                this.saveDraft();
+                        ()=>{
 
-                this.saveHistory();
+                            this.saveHistory();
+
+                        },
+
+                        500
+
+                    );
+
 
 
                 this.dispatchChange();
 
+
             }
+
         );
 
 
 
- 
+        this.output.addEventListener(
+
+            "mouseup",
+
+            ()=>{
+
+
+                this.saveSelection();
+
+                this.updateToolbarState();
+
+
+            }
+
+        );
+
+
+
+        this.output.addEventListener(
+
+            "keyup",
+
+            ()=>{
+
+
+                this.saveSelection();
+
+                this.updateToolbarState();
+
+
+            }
+
+        );
+
+
+
+        this.output.addEventListener(
+
+            "paste",
+
+            event =>
+
+                this.handlePaste(event)
+
+        );
+
+
+
+    },
+
+
+    /* ==========================================================
+       SECURE HTML PASTE
+       ========================================================== */
+
+
+    handlePaste(event){
+
+
+        event.preventDefault();
+
+
+
+        const clipboard =
+
+            event.clipboardData;
+
+
+
+        if(!clipboard){
+
+            return;
+
+        }
+
+
+
+        const html =
+
+            clipboard.getData(
+
+                "text/html"
+
+            );
+
+
+
+        const text =
+
+            clipboard.getData(
+
+                "text/plain"
+
+            );
+
+
+
+        let content = "";
+
+
+
+        if(html){
+
+
+            content =
+
+                this.sanitizeHTML(
+
+                    html
+
+                );
+
+
+        }
+
+        else{
+
+
+            content =
+
+                this.escapeHTML(
+
+                    text
+
+                )
+
+                .replace(
+
+                    /\n/g,
+
+                    "<br>"
+
+                );
+
+
+        }
+
+
+
+        document.execCommand(
+
+            "insertHTML",
+
+            false,
+
+            content
+
+        );
+
+
+
+        this.finishEdit();
+
+
+    },
+
+
+
+    escapeHTML(text=""){
+
+
+        return text
+
+            .replace(
+
+                /&/g,
+
+                "&amp;"
+
+            )
+
+            .replace(
+
+                /</g,
+
+                "&lt;"
+
+            )
+
+            .replace(
+
+                />/g,
+
+                "&gt;"
+
+            );
+
+
+    },
+
+
+
+    /* ==========================================================
+       TOOLBAR + SHORTCUTS
+       ========================================================== */
+
+
+    bindToolbar(){
+
+
+        const buttons = {
+
+            bold:
+                "vw-bold-btn",
+
+            italic:
+                "vw-italic-btn",
+
+            undo:
+                "vw-undo-btn",
+
+            redo:
+                "vw-redo-btn"
+
+        };
+
 
         const color =
             document.getElementById(
                 "vw-text-color"
+            );
+
+
+        const highlight =
+            document.getElementById(
+                "vw-highlight-btn"
             );
 
 
@@ -370,188 +522,269 @@ const EditorManager = {
             );
 
 
-        const bold =
-            document.getElementById(
-                "vw-bold-btn"
+        if(color){
+
+            color.addEventListener(
+                "change",
+                ()=>{
+
+                    this.applyColor(
+                        color.value
+                    );
+
+                }
             );
 
+        }
 
-        const italic =
-            document.getElementById(
-                "vw-italic-btn"
+
+        if(highlight){
+
+            highlight.addEventListener(
+                "click",
+                ()=>{
+
+                    this.applyHighlight();
+
+                }
             );
 
+        }
 
-        const highlight =
-            document.getElementById(
-                "vw-highlight-btn"
+
+        if(increase){
+
+            increase.addEventListener(
+                "click",
+                ()=>{
+
+                    this.changeFontSize(2);
+
+                }
             );
 
+        }
 
-        const undo =
-            document.getElementById(
-                "vw-undo-btn"
+
+        if(decrease){
+
+            decrease.addEventListener(
+                "click",
+                ()=>{
+
+                    this.changeFontSize(-2);
+
+                }
             );
 
-
-        const redo =
-            document.getElementById(
-                "vw-redo-btn"
-            );
-
-        const toolbar =
-            document.querySelector(
-                ".vw-editor-toolbar"
-            );
+        }
 
 
-        toolbar?.addEventListener(
-            "mousedown",
-            (event)=>{
 
-                if(
-                    event.target.tagName === "BUTTON" ||
-                    event.target.tagName === "INPUT"
-                ){
+        Object.entries(buttons)
 
-                    this.saveSelection();
+        .forEach(
+
+            ([command,id])=>{
+
+
+                const button =
+
+                    document.getElementById(
+
+                        id
+
+                    );
+
+
+
+                if(!button){
+
+                    return;
 
                 }
 
-            }
-        );
 
 
-        toolbar?.addEventListener(
-            "touchstart",
-            ()=>{
+                button.addEventListener(
 
-                this.saveSelection();
+                    "click",
 
-            },
-            {
-                passive:true
-            }
-        );
+                    ()=>{
 
 
+                        if(
+
+                            command === "undo"
+
+                        ){
+
+                            this.undo();
+
+                            return;
+
+                        }
 
 
 
-        color?.addEventListener(
-            "change",
-            ()=>{
+                        if(
 
-                this.applyColor(
-                    color.value
+                            command === "redo"
+
+                        ){
+
+                            this.redo();
+
+                            return;
+
+                        }
+
+
+
+                        this.applyCommand(
+
+                            command
+
+                        );
+
+
+                    }
+
                 );
 
-            }
-        );
-
-
-
-        increase?.addEventListener(
-            "click",
-            ()=>{
-
-                this.changeFontSize(
-                    2
-                );
 
             }
+
         );
 
-
-
-        decrease?.addEventListener(
-            "click",
-            ()=>{
-
-                this.changeFontSize(
-                    -2
-                );
-
-            }
-        );
-
-
-
-        bold?.addEventListener(
-            "click",
-            ()=>{
-
-                this.applyCommand(
-                    "bold"
-                );
-
-            }
-        );
-
-
-
-        italic?.addEventListener(
-            "click",
-            ()=>{
-
-                this.applyCommand(
-                    "italic"
-                );
-
-            }
-        );
-
-
-
-        highlight?.addEventListener(
-            "click",
-            ()=>{
-
-                this.applyHighlight();
-
-            }
-        );
-
-
-
-        undo?.addEventListener(
-            "click",
-            ()=>{
-
-                this.undo();
-
-            }
-        );
-
-
-
-        redo?.addEventListener(
-            "click",
-            ()=>{
-
-                this.redo();
-
-            }
-        );
 
     },
 
 
 
-    applyCommand(type){
+    bindKeyboard(){
+
+
+        this.output.addEventListener(
+
+            "keydown",
+
+            event=>{
+
+
+                if(
+
+                    event.ctrlKey &&
+
+                    event.key.toLowerCase()
+
+                    === "b"
+
+                ){
+
+                    event.preventDefault();
+
+                    this.applyCommand(
+
+                        "bold"
+
+                    );
+
+                }
+
+
+
+                if(
+
+                    event.ctrlKey &&
+
+                    event.key.toLowerCase()
+
+                    === "i"
+
+                ){
+
+                    event.preventDefault();
+
+                    this.applyCommand(
+
+                        "italic"
+
+                    );
+
+                }
+
+
+
+                if(
+
+                    event.ctrlKey &&
+
+                    event.key.toLowerCase()
+
+                    === "z"
+
+                ){
+
+                    event.preventDefault();
+
+                    this.undo();
+
+                }
+
+
+
+                if(
+
+                    event.ctrlKey &&
+
+                    event.key.toLowerCase()
+
+                    === "y"
+
+                ){
+
+                    event.preventDefault();
+
+                    this.redo();
+
+                }
+
+
+            }
+
+        );
+
+
+    },
+
+    /* ==========================================================
+       APPLY COMMAND
+       ========================================================== */
+
+
+    applyCommand(command){
 
 
         this.restoreSelection();
 
 
+
         document.execCommand(
-            type,
+
+            command,
+
             false,
+
             null
+
         );
 
 
+
         this.saveSelection();
+
+
 
         this.updateToolbarState();
 
@@ -569,6 +802,12 @@ const EditorManager = {
 
 
     },
+
+
+
+    /* ==========================================================
+       TEXT COLOR
+       ========================================================== */
 
 
     applyColor(color){
@@ -577,13 +816,11 @@ const EditorManager = {
         this.restoreSelection();
 
 
-        const selection =
-            window.getSelection();
-
 
         if(
-            !selection ||
-            !selection.rangeCount
+
+            !color
+
         ){
 
             return;
@@ -591,85 +828,41 @@ const EditorManager = {
         }
 
 
-        const range =
-            selection.getRangeAt(0);
 
+        const span =
 
-        const parent =
-            range.commonAncestorContainer
-                .parentElement;
+            document.createElement(
 
+                "span"
 
-        try{
-
-
-            if(
-                parent &&
-                this.rgbToHex(
-                    window.getComputedStyle(parent).color
-                ) === color
-            ){
-
-                parent.style.color = "";
-
-            }
-            else{
-
-
-                const span =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                span.style.color =
-                    color;
-
-
-                this.wrapSelection(
-                    span
-                );
-
-            }
-
-
-        }
-        catch(error){
-
-
-            document.execCommand(
-                "foreColor",
-                false,
-                color
             );
 
 
-        }
+
+        span.style.color =
+
+            color;
 
 
 
-        this.saveSelection();
+        this.wrapSelection(
+
+            span
+
+        );
 
 
-        this.updateToolbarState();
 
-
-        this.updateColorState();
-
-
-        this.updateCounts();
-
-
-        this.saveDraft();
-
-        this.saveHistory();
-
-
-        this.dispatchChange();
+        this.finishEdit();
 
 
     },
 
+
+
+    /* ==========================================================
+       HIGHLIGHT
+       ========================================================== */
 
 
     applyHighlight(){
@@ -678,109 +871,101 @@ const EditorManager = {
         this.restoreSelection();
 
 
-        const selection =
-            window.getSelection();
 
+        const span =
 
-        if(
-            !selection ||
-            !selection.rangeCount
-        ){
+            document.createElement(
 
-            return;
+                "span"
 
-        }
-
-
-        const range =
-            selection.getRangeAt(0);
-
-
-        const parent =
-            range.commonAncestorContainer
-                .parentElement;
-
-
-
-        try{
-
-
-            if(
-                parent &&
-                window.getComputedStyle(parent).backgroundColor === "rgb(255, 245, 157)"
-            ){
-
-                parent.style.backgroundColor = "";
-
-            }
-            else{
-
-
-                const span =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                span.style.backgroundColor =
-                    "#fff59d";
-
-
-                this.wrapSelection(
-                    span
-                );
-
-            }
-
-
-        }
-        catch(error){
-
-
-            document.execCommand(
-                "hiliteColor",
-                false,
-                "#fff59d"
             );
 
 
-        }
+
+        span.style.backgroundColor =
+
+            "#fff59d";
 
 
 
-        this.saveSelection();
+        this.wrapSelection(
+
+            span
+
+        );
 
 
-        this.updateToolbarState();
 
-        this.updateColorState();
-
-
-        this.updateCounts();
-
-
-        this.saveDraft();
-
-        this.saveHistory();
-
-
-        this.dispatchChange();
+        this.finishEdit();
 
 
     },
 
 
 
+    /* ==========================================================
+       FONT SIZE
+       ========================================================== */
+
+
+    changeFontSize(value){
+
+
+        this.restoreSelection();
+
+
+
+        const span =
+
+            document.createElement(
+
+                "span"
+
+            );
+
+
+
+        span.style.fontSize =
+
+            `${value}px`;
+
+
+
+        this.wrapSelection(
+
+            span
+
+        );
+
+
+
+        this.finishEdit();
+
+
+    },
+
+
+
+    /* ==========================================================
+       WRAP SELECTION
+       ========================================================== */
+
+
     wrapSelection(element){
 
 
         const selection =
+
             window.getSelection();
 
 
+
         if(
+
             !selection ||
+
             !selection.rangeCount
+
         ){
 
             return false;
@@ -788,7 +973,9 @@ const EditorManager = {
         }
 
 
+
         const range =
+
             selection.getRangeAt(0);
 
 
@@ -797,46 +984,67 @@ const EditorManager = {
 
 
             range.surroundContents(
+
                 element
+
             );
 
 
         }
+
         catch(error){
 
 
+
             const fragment =
+
                 range.extractContents();
 
 
+
             element.appendChild(
+
                 fragment
+
             );
 
 
+
             range.insertNode(
+
                 element
+
             );
 
 
         }
+
 
 
         selection.removeAllRanges();
 
 
+
         const newRange =
+
             document.createRange();
 
 
+
         newRange.selectNodeContents(
+
             element
+
         );
+
 
 
         selection.addRange(
+
             newRange
+
         );
+
 
 
         return true;
@@ -846,150 +1054,32 @@ const EditorManager = {
 
 
 
+    /* ==========================================================
+       SELECTION
+       ========================================================== */
 
-    changeFontSize(amount){
 
-
-        this.restoreSelection();
+    saveSelection(){
 
 
         const selection =
+
             window.getSelection();
 
 
+
         if(
-            !selection ||
-            !selection.rangeCount
+
+            selection &&
+
+            selection.rangeCount
+
         ){
 
-            return;
 
-        }
+            this.savedRange =
 
-
-        const range =
-            selection.getRangeAt(0);
-
-
-
-        const span =
-            document.createElement(
-                "span"
-            );
-
-
-        let currentSize = 16;
-
-
-
-        const parent =
-            range.commonAncestorContainer
-                .parentElement;
-
-
-
-        if(parent){
-
-            const computed =
-                window.getComputedStyle(
-                    parent
-                );
-
-
-            const size =
-                parseInt(
-                    computed.fontSize
-                );
-
-
-            if(!isNaN(size)){
-
-                currentSize = size;
-
-            }
-
-        }
-
-
-
-        let newSize =
-            currentSize + amount;
-
-
-
-        if(newSize < 10){
-
-            newSize = 10;
-
-        }
-
-
-        if(newSize > 48){
-
-            newSize = 48;
-
-        }
-
-
-
-        span.style.fontSize =
-            `${newSize}px`;
-
-
-
-        try{
-
-
-            this.wrapSelection(
-                span
-            );
-
-
-            this.saveSelection();
-
-
-            this.updateToolbarState();
-
-
-            this.updateColorState();
-
-
-            this.updateCounts();
-
-            this.saveDraft();
-
-            this.saveHistory();
-
-
-            this.dispatchChange();
-
-        }
-        catch(error){
-
-
-            document.execCommand(
-                "fontSize",
-                false,
-                "4"
-            );
-
-
-            this.saveSelection();
-
-
-            this.updateToolbarState();
-
-            this.updateColorState();
-
-
-            this.updateCounts();
-
-            this.saveDraft();
-
-            this.saveHistory();
-
-
-            this.dispatchChange();
+                selection.getRangeAt(0);
 
 
         }
@@ -999,31 +1089,28 @@ const EditorManager = {
 
 
 
-
-    updateColorState(){
-
-
-        const color =
-            document.getElementById(
-                "vw-text-color"
-            );
+    restoreSelection(){
 
 
-        if(!color){
+        if(
+
+            !this.savedRange
+
+        ){
 
             return;
 
         }
+
 
 
         const selection =
+
             window.getSelection();
 
 
-        if(
-            !selection ||
-            !selection.rangeCount
-        ){
+
+        if(!selection){
 
             return;
 
@@ -1031,104 +1118,247 @@ const EditorManager = {
 
 
 
-        const element =
-            selection
-                .getRangeAt(0)
-                .commonAncestorContainer
-                .parentElement;
+        selection.removeAllRanges();
 
 
 
-        if(!element){
+        selection.addRange(
 
-            return;
-
-        }
-
-
-
-        const style =
-            window.getComputedStyle(
-                element
-            );
-
-
-
-        if(style.color){
-
-            color.value =
-                this.rgbToHex(
-                    style.color
-                );
-
-        }
-        else{
-
-            color.value =
-                "#000000";
-
-        }
-
-
-    },
-
-
-
-    rgbToHex(rgb){
-
-
-        if(
-            typeof rgb !== "string"
-        ){
-
-            return "#000000";
-
-        }
-
-
-        const result =
-            rgb.match(
-                /\d+/g
-            );
-
-
-        if(
-            !result ||
-            result.length < 3
-        ){
-
-            return "#000000";
-
-        }
-
-
-        return (
-
-            "#" +
-
-            [
-                Number(result[0]),
-                Number(result[1]),
-                Number(result[2])
-            ]
-
-            .map(
-
-                value =>
-
-                value
-                .toString(16)
-                .padStart(2,"0")
-
-            )
-
-            .join("")
+            this.savedRange
 
         );
 
 
+
+        this.output.focus();
+
+
     },
 
+    /* ==========================================================
+       FINISH EDIT ACTION
+       ========================================================== */
+
+
+    finishEdit(){
+
+
+        this.saveSelection();
+
+
+        this.updateToolbarState();
+
+
+        this.updateCounts();
+
+
+        this.saveDraft();
+
+
+        this.saveHistory();
+
+
+        this.dispatchChange();
+
+
+    },
+
+
+
+    /* ==========================================================
+       HISTORY
+       ========================================================== */
+
+
+    saveHistory(){
+
+
+        if(!this.output){
+
+            return;
+
+        }
+
+
+
+        const html =
+
+            this.output.innerHTML;
+
+
+
+        if(
+
+            this.history[
+
+                this.historyIndex
+
+            ] === html
+
+        ){
+
+            return;
+
+        }
+
+
+
+        this.history =
+
+            this.history.slice(
+
+                0,
+
+                this.historyIndex + 1
+
+            );
+
+
+
+        this.history.push(
+
+            html
+
+        );
+
+
+
+        this.historyIndex =
+
+            this.history.length - 1;
+
+
+
+        if(
+
+            this.history.length > 50
+
+        ){
+
+
+            this.history.shift();
+
+
+            this.historyIndex--;
+
+
+        }
+
+
+    },
+
+
+
+    undo(){
+
+
+        if(
+
+            this.historyIndex <= 0
+
+        ){
+
+            return;
+
+        }
+
+
+
+        this.historyIndex--;
+
+
+
+        this.output.innerHTML =
+
+            this.history[
+
+                this.historyIndex
+
+            ];
+
+
+
+        this.afterHistoryChange();
+
+
+    },
+
+
+
+    redo(){
+
+
+        if(
+
+            this.historyIndex >=
+
+            this.history.length - 1
+
+        ){
+
+            return;
+
+        }
+
+
+
+        this.historyIndex++;
+
+
+
+        this.output.innerHTML =
+
+            this.history[
+
+                this.historyIndex
+
+            ];
+
+
+
+        this.afterHistoryChange();
+
+
+    },
+
+
+
+    afterHistoryChange(){
+
+
+        this.savedRange = null;
+
+
+
+        const selection =
+
+            window.getSelection();
+
+
+
+        selection?.removeAllRanges();
+
+
+
+        this.updateCounts();
+
+
+        this.updateToolbarState();
+
+
+        this.saveDraft();
+
+
+        this.dispatchChange();
+
+
+    },
+
+
+
+    /* ==========================================================
+       WORD COUNT
+       ========================================================== */
 
 
     updateCounts(){
@@ -1141,11 +1371,10 @@ const EditorManager = {
         }
 
 
+
         const text =
 
             this.output.innerText ||
-
-            this.output.textContent ||
 
             "";
 
@@ -1156,7 +1385,9 @@ const EditorManager = {
             text.trim()
 
                 ? text.trim()
+
                     .split(/\s+/)
+
                     .length
 
                 : 0;
@@ -1164,19 +1395,27 @@ const EditorManager = {
 
 
         const characters =
+
             text.length;
 
 
 
         const wordCount =
+
             document.getElementById(
+
                 "vw-word-count"
+
             );
 
 
+
         const characterCount =
+
             document.getElementById(
+
                 "vw-character-count"
+
             );
 
 
@@ -1184,6 +1423,7 @@ const EditorManager = {
         if(wordCount){
 
             wordCount.textContent =
+
                 words;
 
         }
@@ -1193,6 +1433,7 @@ const EditorManager = {
         if(characterCount){
 
             characterCount.textContent =
+
                 characters;
 
         }
@@ -1201,28 +1442,27 @@ const EditorManager = {
     },
 
 
+
+    /* ==========================================================
+       TOOLBAR STATE
+       ========================================================== */
+
+
     updateToolbarState(){
 
 
-        const bold =
-            document.getElementById(
-                "vw-bold-btn"
-            );
-
-
-        const italic =
-            document.getElementById(
-                "vw-italic-btn"
-            );
-
-
         const selection =
+
             window.getSelection();
 
 
+
         if(
+
             !selection ||
+
             !selection.rangeCount
+
         ){
 
             return;
@@ -1230,20 +1470,29 @@ const EditorManager = {
         }
 
 
+
         let element =
+
             selection
+
             .getRangeAt(0)
+
             .commonAncestorContainer;
 
 
+
         if(
+
             element.nodeType === 3
+
         ){
 
             element =
+
                 element.parentElement;
 
         }
+
 
 
         if(!element){
@@ -1255,8 +1504,31 @@ const EditorManager = {
 
 
         const style =
+
             window.getComputedStyle(
+
                 element
+
+            );
+
+
+
+        const bold =
+
+            document.getElementById(
+
+                "vw-bold-btn"
+
+            );
+
+
+
+        const italic =
+
+            document.getElementById(
+
+                "vw-italic-btn"
+
             );
 
 
@@ -1264,9 +1536,13 @@ const EditorManager = {
         if(bold){
 
             bold.classList.toggle(
+
                 "active",
+
                 style.fontWeight === "bold" ||
+
                 Number(style.fontWeight) >= 700
+
             );
 
         }
@@ -1276,8 +1552,11 @@ const EditorManager = {
         if(italic){
 
             italic.classList.toggle(
+
                 "active",
+
                 style.fontStyle === "italic"
+
             );
 
         }
@@ -1285,346 +1564,10 @@ const EditorManager = {
 
     },
 
+    /* ==========================================================
+       DRAFT STORAGE
+       ========================================================== */
 
-
-    saveHistory(){
-
-        if(!this.output){
-
-            return;
-
-        }
-
-
-        const html =
-            this.output.innerHTML;
-
-
-        if(
-            this.history[
-                this.historyIndex
-            ] === html
-        ){
-
-            return;
-
-        }
-
-
-        this.history =
-            this.history.slice(
-                0,
-                this.historyIndex + 1
-            );
-
-
-        this.history.push(
-            html
-        );
-
-
-        this.historyIndex =
-            this.history.length - 1;
-
-
-        if(this.history.length > 50){
-
-            this.history.shift();
-
-            this.historyIndex--;
-
-        }
-
-
-    },
-
-
-
-
-
-    undo(){
-
-
-        if(
-            this.historyIndex <= 0
-        ){
-
-            return;
-
-        }
-
-
-        this.historyIndex--;
-
-
-        this.output.innerHTML =
-
-            this.history[
-                this.historyIndex
-            ];
-
-
-
-        this.savedRange = null;
-
-
-        const selection =
-            window.getSelection();
-
-
-        if(selection){
-
-            selection.removeAllRanges();
-
-        }
-
-
-
-        this.updateCounts();
-
-        this.updateToolbarState();
-
-        this.updateColorState();
-
-
-        this.saveDraft();
-
-        this.dispatchChange();
-
-
-    },
-
-
-
-    redo(){
-
-
-        if(
-            this.historyIndex >=
-            this.history.length - 1
-        ){
-
-            return;
-
-        }
-
-
-        this.historyIndex++;
-
-
-        this.output.innerHTML =
-
-            this.history[
-                this.historyIndex
-            ];
-
-
-        this.savedRange = null;
-
-
-        const selection =
-            window.getSelection();
-
-
-        if(selection){
-
-            selection.removeAllRanges();
-
-        }
-
-
-
-        this.updateCounts();
-
-        this.updateToolbarState();
-
-        this.updateColorState();
-
-
-        this.saveDraft();
-
-        this.dispatchChange();
-
-
-    },
-
-
-
-
-    reset(){
-
-
-        this.clearDraft();
-
-
-        this.savedRange = null;
-
-
-        const selection =
-            window.getSelection();
-
-
-        if(selection){
-
-            selection.removeAllRanges();
-
-        }
-
-
-
-        const bold =
-            document.getElementById(
-                "vw-bold-btn"
-            );
-
-
-        const italic =
-            document.getElementById(
-                "vw-italic-btn"
-            );
-
-
-
-        if(bold){
-
-            bold.classList.remove(
-                "active"
-            );
-
-        }
-
-
-        if(italic){
-
-            italic.classList.remove(
-                "active"
-            );
-
-        }
-
-
-
-        const color =
-            document.getElementById(
-                "vw-text-color"
-            );
-
-
-        if(color){
-
-            color.value =
-                "#000000";
-
-        }
-
-
-
-        this.updateCounts();
-
-
-        this.updateToolbarState();
-
-
-    },
-
-
-    clearDraft(){
-
-
-        try{
-
-
-            localStorage.removeItem(
-                this.draftKey
-            );
-
-
-        }
-        catch(error){
-
-
-            console.error(
-                "Draft clear failed:",
-                error
-            );
-
-
-        }
-
-
-    },
-
-
-
-    cleanHTML(html){
-
-
-        const template =
-            document.createElement(
-                "template"
-            );
-
-
-        template.innerHTML =
-            html;
-
-
-
-        template.content
-            .querySelectorAll(
-                "span"
-            )
-            .forEach(
-                span=>{
-
-
-                    const parent =
-                        span.parentElement;
-
-
-
-                    if(
-                        parent &&
-                        parent.tagName === "SPAN" &&
-                        parent.getAttribute(
-                            "style"
-                        ) === span.getAttribute(
-                            "style"
-                        )
-                    ){
-
-                        span.replaceWith(
-                            ...span.childNodes
-                        );
-
-
-                        return;
-
-                    }
-
-
-
-                    if(
-                        !span.getAttribute(
-                            "style"
-                        )
-                    ){
-
-                        span.replaceWith(
-                            ...span.childNodes
-                        );
-
-                    }
-
-
-                }
-            );
-
-
-        return template.innerHTML;
-
-
-    },
 
     saveDraft(){
 
@@ -1636,18 +1579,27 @@ const EditorManager = {
         }
 
 
+
         const html =
+
             this.cleanHTML(
-                this.output.innerHTML.trim()
+
+                this.output.innerHTML
+
             );
 
 
 
         if(
+
             !html ||
+
             html.includes(
+
                 "vw-empty-state"
+
             )
+
         ){
 
             this.clearDraft();
@@ -1671,12 +1623,16 @@ const EditorManager = {
 
 
         }
+
         catch(error){
 
 
             console.error(
+
                 "Draft save failed:",
+
                 error
+
             );
 
 
@@ -1684,6 +1640,7 @@ const EditorManager = {
 
 
     },
+
 
 
     restoreDraft(){
@@ -1696,60 +1653,224 @@ const EditorManager = {
         }
 
 
-        const draft =
-            localStorage.getItem(
-                this.draftKey
-            );
+
+        let draft = "";
+
+
+
+        try{
+
+
+            draft =
+
+                localStorage.getItem(
+
+                    this.draftKey
+
+                );
+
+
+        }
+
+        catch(error){
+
+
+            return;
+
+        }
+
 
 
         if(
+
             draft &&
+
             draft.trim()
+
         ){
 
 
             this.output.innerHTML =
+
                 this.sanitizeHTML(
+
                     draft
+
                 );
+
 
 
             this.history = [];
 
             this.historyIndex = -1;
 
+
+
             this.saveHistory();
 
 
-            this.savedRange = null;
-
-
-
-            const selection =
-                window.getSelection();
-
-
-            if(selection){
-
-                selection.removeAllRanges();
-
-            }
-
-
-
             this.updateCounts();
-
-
-            this.updateToolbarState();
-
-
-            this.updateColorState();
 
 
         }
 
 
     },
+
+
+
+    clearDraft(){
+
+
+        try{
+
+
+            localStorage.removeItem(
+
+                this.draftKey
+
+            );
+
+
+        }
+
+        catch(error){
+
+
+
+        }
+
+
+    },
+
+
+
+    /* ==========================================================
+       CLEAN HTML
+       ========================================================== */
+
+
+    cleanHTML(html){
+
+
+        const template =
+
+            document.createElement(
+
+                "template"
+
+            );
+
+
+
+        template.innerHTML = html;
+
+
+
+        template.content
+
+        .querySelectorAll(
+
+            "span"
+
+        )
+
+        .forEach(span=>{
+
+
+            const style =
+
+                span.getAttribute(
+
+                    "style"
+
+                );
+
+
+
+            if(
+
+                !style
+
+            ){
+
+                span.replaceWith(
+
+                    ...span.childNodes
+
+                );
+
+            }
+
+
+        });
+
+
+
+        return template.innerHTML.trim();
+
+
+    },
+
+
+
+    /* ==========================================================
+       RESET
+       ========================================================== */
+
+
+    reset(){
+
+
+        this.clearDraft();
+
+
+
+        if(this.output){
+
+
+            this.output.innerHTML = "";
+
+
+        }
+
+
+
+        this.history = [];
+
+
+        this.historyIndex = -1;
+
+        this.saveHistory();
+
+
+        this.savedRange = null;
+
+
+
+        const selection =
+
+            window.getSelection();
+
+
+
+        selection?.removeAllRanges();
+
+
+
+        this.updateCounts();
+
+
+        this.dispatchChange();
+
+
+    },
+
+
+
+    /* ==========================================================
+       CHANGE EVENT
+       ========================================================== */
 
 
     dispatchChange(){
@@ -1762,18 +1883,25 @@ const EditorManager = {
         }
 
 
+
         this.output.dispatchEvent(
 
             new CustomEvent(
+
                 "vw-editor-change",
+
                 {
+
                     detail:{
 
                         html:
+
                         this.output.innerHTML
 
                     }
+
                 }
+
             )
 
         );
@@ -1782,67 +1910,180 @@ const EditorManager = {
     },
 
 
-    savedRange:null,
+    /* ==========================================================
+       COLOR STATE
+       ========================================================== */
 
 
-    saveSelection(){
+    updateColorState(){
+
+
+        const color =
+
+            document.getElementById(
+
+                "vw-text-color"
+
+            );
+
+
+
+        if(!color){
+
+            return;
+
+        }
+
 
 
         const selection =
+
             window.getSelection();
 
 
+
         if(
-            selection &&
-            selection.rangeCount
+
+            !selection ||
+
+            !selection.rangeCount
+
         ){
 
-            this.savedRange =
-                selection.getRangeAt(0);
+            return;
 
         }
+
+
+
+        let element =
+
+            selection
+
+            .getRangeAt(0)
+
+            .commonAncestorContainer;
+
+
+
+        if(
+
+            element.nodeType === 3
+
+        ){
+
+            element =
+
+                element.parentElement;
+
+        }
+
+
+
+        if(!element){
+
+            return;
+
+        }
+
+
+
+        const computed =
+
+            window.getComputedStyle(
+
+                element
+
+            );
+
+
+
+        color.value =
+
+            this.rgbToHex(
+
+                computed.color
+
+            );
 
 
     },
 
 
 
-    restoreSelection(){
+    rgbToHex(rgb){
 
 
-        if(!this.savedRange){
+        if(
 
-            return;
+            typeof rgb !== "string"
 
-        }
+        ){
 
-
-        const selection =
-            window.getSelection();
-
-
-        if(!selection){
-
-            return;
+            return "#000000";
 
         }
 
 
-        selection.removeAllRanges();
+
+        const values =
+
+            rgb.match(
+
+                /\d+/g
+
+            );
 
 
-        selection.addRange(
-            this.savedRange
+
+        if(
+
+            !values ||
+
+            values.length < 3
+
+        ){
+
+            return "#000000";
+
+        }
+
+
+
+        return (
+
+            "#" +
+
+            values
+
+            .slice(0,3)
+
+            .map(
+
+                value =>
+
+                Number(value)
+
+                .toString(16)
+
+                .padStart(2,"0")
+
+            )
+
+            .join("")
+
         );
-
-
-        this.output.focus();
 
 
     }
 
 
+
 };
 
 
+
 export default EditorManager;
+
+
+
