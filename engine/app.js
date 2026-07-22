@@ -15,6 +15,7 @@ import Storage from "./storage.js";
 import SubscriptionManager from "./subscription-manager.js";
 import AIClient from "./ai-client.js";
 import PromptBuilder from "./prompt-builder.js";
+import DataManager from "./data-manager.js";
 import ContentRenderer from "./content-renderer.js";
 import * as OutputRenderer from "./output-renderer.js";
 import PWAManager from "./pwa-manager.js";
@@ -465,9 +466,15 @@ const App = {
 
                 getValues();
 
+
+            const context =
+
+                DataManager.getSelectionContext(values);
+
+
             const prompt =
 
-                PromptBuilder.build(values);
+                PromptBuilder.build(context);
 
             this.setGenerating(true);
 
