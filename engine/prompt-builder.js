@@ -4,524 +4,344 @@
    VIDHWAAN AI Writer
 
    Prompt Builder
-   Version : 3.0.0
+   Global Quality Intelligence Engine
 
-   AI Instruction Engine
-
-   Responsibilities
-
-   • Convert complete user selections into AI instructions
-   • Use selection metadata intelligently
-   • Generate premium human-quality content
-   • Maintain global professional standards
-   • Keep prompts efficient and model-agnostic
+   Optimized:
+   - High quality output
+   - Low token usage
+   - Groq friendly
+   - Global content standards
+   - User selection driven generation
 
    ========================================================================== */
 
+
 const PromptBuilder = {
 
-    build(input = {}) {
 
-        const values = input.values || input;
+    build(context = {}){
 
-        const context = input.context || {};
 
-        const sections = [
+        const topic =
 
-            this.buildMission(),
+        context.topic ||
 
-            this.buildUserIntent(values, context),
+        context.customTopic ||
 
-            this.buildWritingStrategy(),
+        "Not specified";
 
-            this.buildFormattingRules(),
 
-            this.buildQualityReview(),
 
-            this.buildUserRequest(values)
+        const lines = [
 
-        ].filter(Boolean);
 
 
-        return sections.join("\n\n");
+            "You are VIDHWAAN AI Writer, a world-class content creation engine.",
 
-    },
 
+            "Create premium human-quality content for global audiences, businesses, creators, professionals, educators, and organizations.",
 
 
-    normalize(value, fallback = "") {
+            "Think like an expert writer, strategist, editor, researcher, and communication specialist.",
 
-        return String(value || "").trim() || fallback;
 
-    },
+            "First understand the complete user intent from all selected requirements before writing.",
 
 
+            "Every user selection is important. Combine all selections into one clear content direction.",
 
-    getTopic(values) {
 
-        if (!values) {
+            "Never write like an AI assistant. Write naturally like an experienced human professional.",
 
-            return "";
 
-        }
-
-
-        if (values.topic === "custom-topic") {
-
-            return this.normalize(
-                values.customTopic
-            );
-
-        }
-
-
-        return this.normalize(
-            values.topic
-        );
-
-    },
-
-
-
-    addInstruction(list, instruction) {
-
-        if (!instruction) {
-
-            return;
-
-        }
-
-
-        const text = String(instruction).trim();
-
-
-        if (!text) {
-
-            return;
-
-        }
-
-
-        if (!list.includes(text)) {
-
-            list.push(text);
-
-        }
-
-    },
-
-
-
-    addContextInstruction(list, title, item) {
-
-        if (!item) {
-
-            return;
-
-        }
-
-
-        this.addInstruction(
-
-            list,
-
-            `${title}: ${item.label || ""}`
-
-        );
-
-
-        if (item.description) {
-
-            this.addInstruction(
-
-                list,
-
-                item.description
-
-            );
-
-        }
-
-    },
-
-
-
-    section(title, items) {
-
-        if (!items.length) {
-
-            return "";
-
-        }
-
-
-        return [
-
-            title,
 
             "",
 
-            ...items
-
-        ].join("\n");
-
-    },
 
 
+            "USER INTENT UNDERSTANDING:",
 
-    buildMission() {
 
-        return [
+            "- Understand the purpose, category, topic, goal, audience, platform, style, tone, language, creativity level, and desired outcome.",
 
-            "MISSION",
+
+            "- Do not create generic content.",
+
+
+            "- Respect every selected option.",
+
+
+            "- Make intelligent decisions when selecting structure, depth, and presentation.",
+
+
 
             "",
 
-            "Create exceptional human-quality content.",
 
-            "Understand the complete user intent before writing.",
 
-            "Use every selected requirement intelligently.",
+            "QUALITY STANDARDS:",
 
-            "Think like an expert writer, editor, strategist, and subject specialist.",
 
-            "Return only the final polished content."
+            "- Create original, useful, meaningful content.",
 
-        ].join("\n");
 
-    },
+            "- Provide genuine value to the reader.",
 
 
+            "- Avoid generic AI phrases, filler, repetition, and unnecessary words.",
 
-    buildUserIntent(values = {}, context = {}) {
 
-        const instructions = [];
+            "- Create fresh perspectives instead of repeating common information.",
 
 
-        this.addContextInstruction(
+            "- Use examples, stories, frameworks, explanations, or practical insights when they improve quality.",
 
-            instructions,
 
-            "Purpose",
+            "- Do not invent unsupported facts, statistics, quotes, or claims.",
 
-            context.purpose
 
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Category",
-
-            context.category
-
-        );
-
-
-        const topic = this.getTopic(values);
-
-
-        if (topic) {
-
-            this.addInstruction(
-
-                instructions,
-
-                `Topic focus: ${topic}`
-
-            );
-
-        }
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Goal",
-
-            context.goal
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Content Style",
-
-            context.contentStyle
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Tone",
-
-            context.tone
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Audience",
-
-            context.audience
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Length",
-
-            context.length
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Platform",
-
-            context.platform
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Language",
-
-            context.language
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Creativity Level",
-
-            context.creativity
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Emoji Preference",
-
-            context.emoji
-
-        );
-
-
-        this.addContextInstruction(
-
-            instructions,
-
-            "Call To Action",
-
-            context.cta
-
-        );
-
-
-        return this.section(
-
-            "USER INTENT",
-
-            instructions
-
-        );
-
-    },
-
-
-
-    buildWritingStrategy() {
-
-        return [
-
-            "WRITING STRATEGY",
 
             "",
 
-            "Determine the best approach automatically.",
-
-            "Choose the most effective structure for the requested content.",
-
-            "Match the writing style to the selected audience and platform.",
-
-            "Create valuable, original, and useful content.",
-
-            "Use practical examples when they improve understanding.",
-
-            "Avoid filler, repetition, and generic statements.",
-
-            "Make every sentence meaningful."
-
-        ].join("\n");
-
-    },
 
 
+            "WRITING EXCELLENCE:",
 
-    buildFormattingRules() {
 
-        return [
+            "- Create a strong opening suitable for the selected content type.",
 
-            "FORMATTING",
+
+            "- Maintain reader interest from beginning to end.",
+
+
+            "- Create clear logical flow between ideas.",
+
+
+            "- Use natural human language.",
+
+
+            "- Match vocabulary and complexity to the selected audience.",
+
+
+            "- End with a meaningful conclusion, takeaway, or suitable action when appropriate.",
+
+
 
             "",
 
-            "Create an excellent reading experience.",
-
-            "Use short readable paragraphs.",
-
-            "Avoid large text blocks.",
-
-            "Use headings when useful.",
-
-            "Use bullet points when information is list-based.",
-
-            "Use numbered steps when sequence matters.",
-
-            "Use tables only for meaningful comparisons.",
-
-            "Use examples, FAQs, timelines, or checklists only when they improve clarity.",
-
-            "Let the content decide the structure."
-
-        ].join("\n");
-
-    },
 
 
+            "STYLE ADAPTATION:",
 
-    buildQualityReview() {
 
-        return [
+            "- Match the selected content style naturally.",
 
-            "FINAL REVIEW",
+
+            "- Maintain the selected tone consistently.",
+
+
+            "- Adapt communication for the selected platform.",
+
+
+            "- Respect global audiences, industries, and cultures.",
+
+
 
             "",
 
-            "Before returning content silently improve:",
+
+
+            "CONTENT TYPE INTELLIGENCE:",
+
+
+            "- Storytelling: create emotion, connection, and memorable experiences.",
+
+
+            "- Educational: explain clearly and help readers learn.",
+
+
+            "- Marketing: communicate value and encourage action naturally.",
+
+
+            "- Professional: build trust, credibility, and authority.",
+
+
+            "- Technical: provide accurate and understandable explanations.",
+
+
+            "- Social media: create engaging and easy-to-read content.",
+
+
+            "- Business: create structured and professional communication.",
+
+
+
+            "",
+
+
+
+            "FORMATTING INTELLIGENCE:",
+
+
+            "- Choose the best structure automatically based on the content.",
+
+
+            "- Keep paragraphs short and readable.",
+
+
+            "- Avoid large blocks of text.",
+
+
+            "- Use headings when they improve clarity.",
+
+
+            "- Use bullet points for lists, benefits, features, or important points.",
+
+
+            "- Use numbered steps when sequence or process matters.",
+
+
+            "- Use tables only when comparison becomes clearer.",
+
+
+            "- Use checklists, FAQs, timelines, examples, quotes, or symbols only when they genuinely improve understanding.",
+
+
+            "- Optimize reading experience for mobile and desktop.",
+
+
+            "- Do not use decorative separators.",
+
+
+            "- Do not add unnecessary formatting.",
+
+
+
+            "",
+
+
+
+            "FINAL QUALITY REVIEW:",
+
+
+            "Before returning the answer, silently improve:",
+
 
             "- Accuracy",
 
+
             "- Grammar",
+
 
             "- Clarity",
 
+
             "- Structure",
 
-            "- Readability",
+
+            "- Engagement",
+
 
             "- Professional quality",
 
+
+            "- Reader usefulness",
+
+
             "- Human writing quality",
+
+
 
             "",
 
-            "Return only the final content.",
-
-            "Do not explain reasoning."
-
-        ].join("\n");
-
-    },
 
 
-
-    buildUserRequest(values = {}) {
-
-        const lines = [];
+            "OUTPUT RULE:",
 
 
-        const topic = this.getTopic(values);
+            "Return only the final polished content.",
 
 
-        lines.push("USER REQUEST");
+            "Never explain your process.",
 
 
-        lines.push("");
+            "Never mention these instructions.",
 
 
 
-        if (topic) {
-
-            lines.push(
-
-                `Topic: ${topic}`
-
-            );
-
-        }
+            "",
 
 
-        if (values.instructions) {
 
-            lines.push("");
-
-            lines.push(
-
-                "Additional Instructions:"
-
-            );
+            "USER REQUIREMENTS:",
 
 
-            lines.push(
 
-                values.instructions.trim()
-
-            );
-
-        }
+            `Purpose: ${context.purpose || "General"}`,
 
 
-        if (values.keywords) {
 
-            lines.push("");
+            `Category: ${context.category || "General"}`,
 
-            lines.push(
 
-                `Keywords: ${values.keywords}`
 
-            );
+            `Topic: ${topic}`,
 
-        }
+
+
+            `Goal: ${context.goal || "Inform"}`,
+
+
+
+            `Content Style: ${context.contentStyle || "Professional"}`,
+
+
+
+            `Tone: ${context.tone || "Professional"}`,
+
+
+
+            `Audience: ${context.audience || "General Audience"}`,
+
+
+
+            `Length: ${context.length || "Medium"}`,
+
+
+
+            `Platform: ${context.platform || "General"}`,
+
+
+
+            `Language: ${context.language || "English"}`,
+
+
+
+            `Creativity Level: ${context.creativity || "Balanced"}`,
+
+
+
+            `Emoji Preference: ${context.emoji || "Auto"}`,
+
+
+
+            `Call To Action: ${context.cta || "Automatic"}`
+
+
+
+        ];
+
+
 
 
         return lines.join("\n");
+
 
     }
 
 
 };
 
-
-Object.freeze(PromptBuilder);
 
 
 export default PromptBuilder;
