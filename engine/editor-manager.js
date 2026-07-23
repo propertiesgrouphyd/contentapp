@@ -65,6 +65,28 @@ const EditorManager = {
 
                             }
 
+
+                            if(
+                                (
+                                    attribute.name === "href" ||
+                                    attribute.name === "src"
+                                ) &&
+                                /javascript:/i.test(
+                                    attribute.value
+                                )
+                            ){
+
+                                element.removeAttribute(
+                                    attribute.name
+                                );
+
+                            }
+
+
+
+
+
+
                         }
                     );
 
@@ -609,6 +631,16 @@ const EditorManager = {
         );
 
 
+        if(
+            type === "insertUnorderedList" ||
+            type === "insertOrderedList"
+        ){
+
+            this.cleanLists();
+
+        }
+
+
         this.saveSelection();
 
         this.updateToolbarState();
@@ -768,7 +800,13 @@ const EditorManager = {
                 window.getComputedStyle(parent).backgroundColor === "rgb(255, 245, 157)"
             ){
 
-                parent.style.backgroundColor = "";
+                parent.style.removeProperty(
+                    "background-color"
+                );
+
+                parent.classList.remove(
+                    "vw-highlight"
+                );
 
             }
             else{
@@ -782,6 +820,10 @@ const EditorManager = {
 
                 span.style.backgroundColor =
                     "#fff59d";
+
+
+                span.className =
+                    "vw-highlight";
 
 
                 this.wrapSelection(
@@ -993,9 +1035,29 @@ const EditorManager = {
         span.style.fontSize =
             `${newSize}px`;
 
+        span.className =
+            "vw-font-size";
+
 
 
         try{
+
+
+            this.output
+            .querySelectorAll(
+                ".vw-font-size"
+            )
+            .forEach(old=>{
+
+                if(
+                    old.textContent.trim() === ""
+                ){
+
+                    old.remove();
+
+                }
+
+            });
 
 
             this.wrapSelection(
@@ -1056,6 +1118,53 @@ const EditorManager = {
     },
 
 
+
+    cleanLists(){
+
+
+        if(!this.output){
+
+            return;
+
+        }
+
+
+        this.output
+        .querySelectorAll(
+            "ul,ol"
+        )
+        .forEach(list=>{
+
+
+            list
+            .querySelectorAll(
+                "div"
+            )
+            .forEach(div=>{
+
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                li.innerHTML =
+                    div.innerHTML;
+
+
+                div.replaceWith(
+                    li
+                );
+
+
+            });
+
+
+        });
+
+
+    },
 
 
     updateColorState(){
@@ -1670,31 +1779,46 @@ const EditorManager = {
 
         template.content
             .querySelectorAll(
-                "span"
+                "span,div"
             )
             .forEach(
-                span=>{
+                element=>{
 
 
                     const parent =
-                        span.parentElement;
+                        element.parentElement;
 
+
+
+                    /*
+                        Remove duplicate nested formatting
+
+                        Example:
+
+                        <span style="color:red">
+                            <span style="color:red">
+                                Text
+                            </span>
+                        </span>
+
+                        becomes:
+
+                        <span style="color:red">
+                            Text
+                        </span>
+                    */
 
 
                     if(
+                        element.tagName === "SPAN" &&
                         parent &&
                         parent.tagName === "SPAN" &&
-                        parent.getAttribute(
-                            "style"
-                        ) === span.getAttribute(
-                            "style"
-                        )
+                        parent.getAttribute("style") === element.getAttribute("style")
                     ){
 
-                        span.replaceWith(
-                            ...span.childNodes
+                        element.replaceWith(
+                            ...element.childNodes
                         );
-
 
                         return;
 
@@ -1702,22 +1826,52 @@ const EditorManager = {
 
 
 
+                    /*
+                        Remove empty spans only
+
+                        Keep styled spans:
+                        - color
+                        - highlight
+                        - font size
+                    */
+
+
                     if(
-                        !span.getAttribute(
-                            "style"
-                        )
+                        element.tagName === "SPAN" &&
+                        element.attributes.length === 0
                     ){
 
-                        span.replaceWith(
-                            ...span.childNodes
+                        element.replaceWith(
+                            ...element.childNodes
                         );
+
+                        return;
+
+                    }
+
+
+
+                    /*
+                        Remove empty div wrappers
+
+                        Do not remove useful divs
+                    */
+
+
+                    if(
+                        element.tagName === "DIV" &&
+                        !element.attributes.length &&
+                        element.children.length === 0 &&
+                        !element.textContent.trim()
+                    ){
+
+                        element.remove();
 
                     }
 
 
                 }
             );
-
 
         return template.innerHTML;
 
