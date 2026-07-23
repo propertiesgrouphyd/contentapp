@@ -4,9 +4,23 @@
    VIDHWAAN AI Writer
 
    Professional PDF Exporter
+
    Production Version
 
+   Features:
+   - Exact editor content export
+   - Includes user edits
+   - Preserves HTML formatting
+   - A4 PDF
+   - Mobile and desktop consistent
+   - Multi-page support
+   - Safe cleanup
+
+   Requires:
+   html2pdf.js
+
    ========================================================================== */
+
 
 const PDFExporter = {
 
@@ -27,24 +41,27 @@ const PDFExporter = {
         }
 
 
-        const content =
-            output.innerHTML.trim();
 
-
-        if(!content){
+        if(
+            !output.innerText.trim()
+        ){
 
             return false;
 
         }
 
 
-        if(!window.html2pdf){
+
+        if(
+            !window.html2pdf
+        ){
 
             throw new Error(
                 "PDF library not loaded."
             );
 
         }
+
 
 
         const date =
@@ -54,39 +71,31 @@ const PDFExporter = {
 
 
 
-        const wrapper =
-            document.createElement(
-                "div"
-            );
+        const clone =
+            output.cloneNode(true);
 
 
-        wrapper.className =
+
+        clone.removeAttribute(
+            "contenteditable"
+        );
+
+
+
+        clone.className =
             "vw-pdf-page";
 
-
-        wrapper.innerHTML =
-            content;
-
-
-
-        /*
-            PDF document styling
-
-            Visible layout engine,
-            hidden from user,
-            but available for html2canvas
-        */
 
 
         Object.assign(
 
-            wrapper.style,
+            clone.style,
 
             {
 
                 position:"absolute",
 
-                left:"0",
+                left:"-10000px",
 
                 top:"0",
 
@@ -98,14 +107,12 @@ const PDFExporter = {
 
                 background:"#ffffff",
 
-                color:"#000000",
+                color:"#111827",
 
                 boxSizing:"border-box",
 
                 fontFamily:
-                "Arial, Helvetica, sans-serif",
-
-                visibility:"hidden"
+                "Arial, Helvetica, sans-serif"
 
             }
 
@@ -113,8 +120,53 @@ const PDFExporter = {
 
 
 
+        clone
+        .querySelectorAll(
+            "p"
+        )
+        .forEach(p=>{
+
+            p.style.fontSize =
+                "17px";
+
+            p.style.lineHeight =
+                "1.7";
+
+            p.style.marginBottom =
+                "14px";
+
+        });
+
+
+
+        clone
+        .querySelectorAll(
+            "h1,h2,h3"
+        )
+        .forEach(h=>{
+
+            h.style.pageBreakAfter =
+                "avoid";
+
+        });
+
+
+
+        clone
+        .querySelectorAll(
+            "ul,ol,blockquote,table"
+        )
+        .forEach(block=>{
+
+            block.style.pageBreakInside =
+                "avoid";
+
+        });
+
+
+
         document.body.appendChild(
-            wrapper
+            clone
         );
 
 
@@ -127,41 +179,27 @@ const PDFExporter = {
             .set({
 
                 filename:
-
                 `VIDHWAAN-AI-Writer-${date}.pdf`,
 
 
-
                 margin:
-
                 [
-
                     15,
-
                     15,
-
                     15,
-
                     15
-
                 ],
 
 
-
                 image:
-
                 {
-
                     type:"jpeg",
 
                     quality:0.98
-
                 },
 
 
-
                 html2canvas:
-
                 {
 
                     scale:2,
@@ -179,27 +217,19 @@ const PDFExporter = {
                 },
 
 
-
                 pagebreak:
-
                 {
 
                     mode:
-
                     [
-
                         "css",
-
                         "legacy"
-
                     ]
 
                 },
 
 
-
                 jsPDF:
-
                 {
 
                     unit:"mm",
@@ -213,10 +243,9 @@ const PDFExporter = {
 
             })
 
-            .from(wrapper)
+            .from(clone)
 
             .save();
-
 
 
         }
@@ -224,10 +253,11 @@ const PDFExporter = {
         finally{
 
 
-            wrapper.remove();
+            clone.remove();
 
 
         }
+
 
 
         return true;
