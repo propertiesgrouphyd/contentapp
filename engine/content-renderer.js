@@ -145,9 +145,19 @@ const ContentRenderer = {
 
         html = html.replace(
 
-            /^> (.*)$/gm,
+            /((?:^>.*(?:\r?\n|$))+)/gm,
 
-            "<blockquote>$1</blockquote>"
+            (match)=>{
+
+                const text =
+                    match
+                    .replace(/^>\s?/gm,"")
+                    .trim();
+
+
+                return `<blockquote>${text}</blockquote>`;
+
+            }
 
         );
 
@@ -188,7 +198,7 @@ const ContentRenderer = {
 
 html = html.replace(
 
-    /((?:^\d+\.\s.*(?:\r?\n|$))+)/gm,
+    /((?:^\d+(?:\.|\)|-)\s+.*(?:\r?\n|$))+)/gm,
 
     (match) => {
 
@@ -199,7 +209,7 @@ html = html.replace(
 
                 const text =
                     line.replace(
-                        /^\d+\.\s/,
+                        /^\d+(?:\.|\)|-)\s+/,
                         ""
                     ).trim();
 
@@ -221,7 +231,7 @@ html = html.replace(
 
 html = html.replace(
 
-    /((?:^[-*]\s.*(?:\r?\n|$))+)/gm,
+    /((?:^(?:[-*•✓→▪◦➜✔☑◆★])\s+.*(?:\r?\n|$))+)/gm,
 
     (match) => {
 
@@ -235,7 +245,7 @@ html = html.replace(
 
                     const text =
                         line.replace(
-                            /^[-*]\s/,
+                            /^(?:[-*•✓→▪◦➜✔☑◆★])\s+/,
                             ""
                         ).trim();
 
@@ -381,7 +391,22 @@ html = html.replace(
            Paragraphs
         ------------------------------------------------------------------ */
 
-        html = html.replace(/\n{3,}/g,"\n\n");
+        html = html.replace(
+
+            /([^\n])\n((?:[-*•✓→▪◦➜✔☑◆★])\s+)/g,
+
+            "$1\n\n$2"
+
+        );
+
+
+        html = html.replace(
+
+            /\n{3,}/g,
+
+            "\n\n"
+
+        );
 
 
         const blocks = html
