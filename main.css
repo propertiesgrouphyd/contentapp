@@ -939,13 +939,17 @@ summary h2::before{
 
     }
 
+
     .vw-header-container{
 
         flex-direction:column;
 
         align-items:flex-start;
 
+        padding:16px;
+
     }
+
 
     .vw-footer-container{
 
@@ -953,13 +957,46 @@ summary h2::before{
 
         align-items:flex-start;
 
+        padding:20px 16px;
+
     }
+
+
+    /*
+       Mobile full width content sections
+       Keep cards, borders and separation
+    */
 
     #vw-main{
 
-        padding:12px;
+        width:100%;
+
+        padding:8px 0;
+
+        gap:16px;
 
     }
+
+
+    .vw-card{
+
+        width:100%;
+
+        max-width:none;
+
+        padding:16px;
+
+        border-radius:16px;
+
+    }
+
+
+    #vw-output-card{
+
+        width:100%;
+
+    }
+
 
 }
 
@@ -1220,7 +1257,7 @@ summary h2::before{
 
     word-break:normal;
 
-    white-space:pre-wrap;
+    white-space:normal;
 
     font-family:
         system-ui,
@@ -1575,15 +1612,15 @@ summary h2::before{
 
         width:100%;
 
-        max-width:100%;
+        max-width:none;
 
-        padding:12px 10px;
+        padding:20px 16px;
 
-        font-size:19px;
+        font-size:18px;
 
         line-height:1.75;
 
-        border-radius:16px;
+        border-radius:12px;
 
     }
 
@@ -2293,4 +2330,3 @@ body.vw-payment-open{
     break-inside:avoid;
 
 }
-
