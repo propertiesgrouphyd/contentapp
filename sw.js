@@ -17,7 +17,7 @@
 
 
 const CACHE_NAME =
-    "vidhwaan-ai-runtime-v53";
+    "vidhwaan-ai-runtime-v54";
 
 
 
