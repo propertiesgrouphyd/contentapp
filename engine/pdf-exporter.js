@@ -174,7 +174,13 @@ async download(){
 
             fontSize:"17px",
 
-            lineHeight:"1.7"
+            lineHeight:"1.7",
+
+            visibility:"hidden",
+           
+            pointerEvents:"none",
+
+            zIndex:"-1"
 
         }
 
