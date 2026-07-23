@@ -5,20 +5,18 @@
 
    Professional PDF Exporter
 
-   Production Version
-
    Features:
-   - Exact editor content export
-   - Includes user edits
-   - Preserves HTML formatting
    - A4 PDF
-   - Mobile and desktop consistent
-   - Multi-page support
-   - Safe cleanup
-
-   Requires:
-   html2pdf.js
-
+   - Preserves editor appearance
+   - Headings
+   - Bold
+   - Italic
+   - Colors
+   - Highlights
+   - Font sizes
+   - Lists
+   - Paragraph spacing
+   - Mobile safe
    ========================================================================== */
 
 
@@ -29,9 +27,11 @@ const PDFExporter = {
 
 
         const output =
+
             document.getElementById(
                 "vw-output"
             );
+
 
 
         if(!output){
@@ -53,156 +53,34 @@ const PDFExporter = {
 
 
         if(
-            !window.html2pdf
+            !window.html2canvas ||
+            !window.jspdf
         ){
 
             throw new Error(
-                "PDF library not loaded."
+                "PDF libraries not loaded."
             );
 
         }
 
 
 
-        const date =
-            new Date()
-            .toISOString()
-            .split("T")[0];
+        const {
+            jsPDF
+        } =
+        window.jspdf;
 
 
 
-        const clone =
-            output.cloneNode(true);
+        const canvas =
 
+            await html2canvas(
 
+                output,
 
-        clone.removeAttribute(
-            "contenteditable"
-        );
-
-
-
-        clone.className =
-            "vw-pdf-page";
-
-
-
-        Object.assign(
-
-            clone.style,
-
-            {
-
-                position:"absolute",
-
-                left:"-10000px",
-
-                top:"0",
-
-                width:"794px",
-
-                minHeight:"1123px",
-
-                padding:"40px",
-
-                background:"#ffffff",
-
-                color:"#111827",
-
-                boxSizing:"border-box",
-
-                fontFamily:
-                "Arial, Helvetica, sans-serif"
-
-            }
-
-        );
-
-
-
-        clone
-        .querySelectorAll(
-            "p"
-        )
-        .forEach(p=>{
-
-            p.style.fontSize =
-                "17px";
-
-            p.style.lineHeight =
-                "1.7";
-
-            p.style.marginBottom =
-                "14px";
-
-        });
-
-
-
-        clone
-        .querySelectorAll(
-            "h1,h2,h3"
-        )
-        .forEach(h=>{
-
-            h.style.pageBreakAfter =
-                "avoid";
-
-        });
-
-
-
-        clone
-        .querySelectorAll(
-            "ul,ol,blockquote,table"
-        )
-        .forEach(block=>{
-
-            block.style.pageBreakInside =
-                "avoid";
-
-        });
-
-
-
-        document.body.appendChild(
-            clone
-        );
-
-
-
-        try{
-
-
-            await html2pdf()
-
-            .set({
-
-                filename:
-                `VIDHWAAN-AI-Writer-${date}.pdf`,
-
-
-                margin:
-                [
-                    15,
-                    15,
-                    15,
-                    15
-                ],
-
-
-                image:
-                {
-                    type:"jpeg",
-
-                    quality:0.98
-                },
-
-
-                html2canvas:
                 {
 
-                    scale:2,
+                    scale: 2,
 
                     useCORS:true,
 
@@ -210,53 +88,167 @@ const PDFExporter = {
 
                     backgroundColor:"#ffffff",
 
-                    logging:false,
-
-                    windowWidth:794
-
-                },
-
-
-                pagebreak:
-                {
-
-                    mode:
-                    [
-                        "css",
-                        "legacy"
-                    ]
-
-                },
-
-
-                jsPDF:
-                {
-
-                    unit:"mm",
-
-                    format:"a4",
-
-                    orientation:"portrait"
+                    logging:false
 
                 }
 
+            );
 
-            })
 
-            .from(clone)
 
-            .save();
+        const pdf =
+
+            new jsPDF(
+
+                "p",
+
+                "mm",
+
+                "a4"
+
+            );
+
+
+
+        const pageWidth =
+
+            pdf.internal.pageSize.getWidth();
+
+
+
+        const pageHeight =
+
+            pdf.internal.pageSize.getHeight();
+
+
+
+        const margin = 10;
+
+
+
+        const contentWidth =
+
+            pageWidth -
+            (
+                margin * 2
+            );
+
+
+
+        const imageHeight =
+
+            canvas.height *
+            contentWidth /
+            canvas.width;
+
+
+
+        const imageData =
+
+            canvas.toDataURL(
+                "image/png",
+                1.0
+            );
+
+
+
+        let heightLeft =
+            imageHeight;
+
+
+
+        let position =
+            margin;
+
+
+
+        pdf.addImage(
+
+            imageData,
+
+            "PNG",
+
+            margin,
+
+            position,
+
+            contentWidth,
+
+            imageHeight
+
+        );
+
+
+
+        heightLeft -=
+
+            pageHeight -
+            (
+                margin * 2
+            );
+
+
+
+        while(
+            heightLeft > 0
+        ){
+
+
+            position =
+
+                heightLeft -
+                imageHeight +
+                margin;
+
+
+
+            pdf.addPage();
+
+
+
+            pdf.addImage(
+
+                imageData,
+
+                "PNG",
+
+                margin,
+
+                position,
+
+                contentWidth,
+
+                imageHeight
+
+            );
+
+
+
+            heightLeft -=
+
+                pageHeight -
+                (
+                    margin * 2
+                );
 
 
         }
 
-        finally{
 
 
-            clone.remove();
+        const date =
+
+            new Date()
+            .toISOString()
+            .split("T")[0];
 
 
-        }
+
+        pdf.save(
+
+            `VIDHWAAN-AI-Writer-${date}.pdf`
+
+        );
 
 
 
