@@ -1255,15 +1255,16 @@ summary h2::before{
 
     outline:none;
 
-    overflow-wrap:anywhere;
+    overflow-wrap:break-word;
 
-    word-break:break-word;
+    word-break:normal;
 
     white-space:normal;
 
     overflow-x:hidden;
 
     font-family:
+        Inter,
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
@@ -1303,7 +1304,7 @@ summary h2::before{
 
     cursor:text;
 
-    overflow-wrap:anywhere;
+    overflow-wrap:break-word;
 
     word-break:normal;
 
@@ -1353,7 +1354,7 @@ summary h2::before{
 
     font-size:inherit;
 
-    line-height:1.8;
+    line-height:1.65;
 
 }
 
@@ -1363,7 +1364,7 @@ summary h2::before{
 
     color:#1f2937;
 
-    line-height:1.8;
+    line-height:1.65;
 
 }
 
@@ -1373,13 +1374,13 @@ summary h2::before{
 
     margin:
 
-    34px 0 18px;
+    38px 0 14px;
 
 
     font-size:2rem;
 
 
-    font-weight:750;
+    font-weight:700;
 
 
     line-height:1.25;
@@ -1395,7 +1396,7 @@ summary h2::before{
 
     margin:
 
-    28px 0 14px;
+    32px 0 10px;
 
 
     font-size:1.5rem;
@@ -1417,7 +1418,7 @@ summary h2::before{
 
     margin:
 
-     22px 0 12px;
+     26px 0 8px;
 
 
     font-size:1.2rem;
@@ -1470,7 +1471,7 @@ summary h2::before{
 
     margin-bottom:12px;
 
-    line-height:1.8;
+    line-height:1.65;
 
 }
 
@@ -1577,6 +1578,8 @@ summary h2::before{
 
     max-width:100%;
 
+    height:auto;
+
     margin:24px auto;
 
     border-radius:14px;
@@ -1641,15 +1644,37 @@ summary h2::before{
 
         min-width:0;
 
-        padding:20px 14px;
+        padding:20px 16px;
 
-        font-size:18px;
+        font-family:
+            Inter,
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif;
 
-        line-height:1.75;
+        font-size:17px;
+
+        font-weight:400;
+
+        line-height:1.65;
+
+        letter-spacing:0;
 
         border-radius:12px;
 
+        overflow-wrap:break-word;
+
+        word-wrap:break-word;
+
         overflow-x:hidden;
+
+        -webkit-font-smoothing:antialiased;
+
+        text-rendering:optimizeLegibility;
 
     }
 
@@ -1657,13 +1682,15 @@ summary h2::before{
 
     #vw-output p{
 
-        margin-bottom:18px;
+        margin-bottom:20px;
+
+        line-height:1.65;
 
     }
 
     #vw-output .vw-paragraph{
 
-        margin-bottom:12px;
+        margin-bottom:20px;
 
     }
 
@@ -1675,7 +1702,7 @@ summary h2::before{
 
         margin:
 
-        24px 0 14px;
+        30px 0 12px;
 
     }
 
@@ -1687,7 +1714,7 @@ summary h2::before{
 
         margin:
 
-        22px 0 12px;
+        26px 0 10px;
 
     }
 
@@ -1699,7 +1726,7 @@ summary h2::before{
 
         margin:
 
-        18px 0 10px;
+        22px 0 8px;
 
     }
 
@@ -1718,7 +1745,7 @@ summary h2::before{
 
     #vw-output li{
 
-        margin-bottom:8px;
+        margin-bottom:10px;
 
     }
 
@@ -1788,7 +1815,7 @@ summary h2::before{
 
     max-width:100%;
 
-    overflow-wrap:anywhere;
+    overflow-wrap:break-word;
 
     word-break:normal;
 
@@ -1821,7 +1848,7 @@ summary h2::before{
 #vw-output td,
 #vw-output th{
 
-    overflow-wrap:anywhere;
+    overflow-wrap:break-word;
 
     word-break:normal;
 
@@ -1842,7 +1869,7 @@ summary h2::before{
 #vw-output h2,
 #vw-output h3{
 
-    overflow-wrap:anywhere;
+    overflow-wrap:break-word;
 
 }
 
@@ -2250,6 +2277,7 @@ body.vw-payment-open{
     box-sizing:border-box;
 
     font-family:
+        Inter,
         Arial,
         Helvetica,
         sans-serif;
