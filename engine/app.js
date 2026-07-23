@@ -163,7 +163,7 @@ const App = {
 
 
                     window.location.href =
-                        "https://create.vidhwaan.com/payment";
+                        "https://writer.vidhwaan.com/payment";
 
 
                 }
@@ -871,5 +871,4 @@ document.addEventListener(
     }
 
 );
-
 
