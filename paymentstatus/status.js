@@ -108,7 +108,7 @@ const StatusPage = {
 
                     window.location.href =
 
-                    "https://create.vidhwaan.com";
+                    "https://writer.vidhwaan.com";
 
 
                 }
