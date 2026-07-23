@@ -5,18 +5,22 @@
 
    Professional PDF Exporter
 
+   Production Version
+
    Features:
-   - A4 PDF
-   - Preserves editor appearance
-   - Headings
-   - Bold
-   - Italic
-   - Colors
-   - Highlights
-   - Font sizes
-   - Lists
-   - Paragraph spacing
-   - Mobile safe
+
+   - A4 document based PDF
+   - Same output on mobile and desktop
+   - Preserves editor HTML
+   - Preserves headings
+   - Preserves bold / italic
+   - Preserves colors
+   - Preserves highlights
+   - Preserves lists
+   - Better page breaks
+   - Hidden export container
+   - Optimized PDF quality
+
    ========================================================================== */
 
 
@@ -53,184 +57,12 @@ const PDFExporter = {
 
 
         if(
-            !window.html2canvas ||
-            !window.jspdf
+            !window.html2pdf
         ){
 
             throw new Error(
-                "PDF libraries not loaded."
+                "PDF library not loaded."
             );
-
-        }
-
-
-
-        const {
-            jsPDF
-        } =
-        window.jspdf;
-
-
-
-        const canvas =
-
-            await html2canvas(
-
-                output,
-
-                {
-
-                    scale: 2,
-
-                    useCORS:true,
-
-                    allowTaint:false,
-
-                    backgroundColor:"#ffffff",
-
-                    logging:false
-
-                }
-
-            );
-
-
-
-        const pdf =
-
-            new jsPDF(
-
-                "p",
-
-                "mm",
-
-                "a4"
-
-            );
-
-
-
-        const pageWidth =
-
-            pdf.internal.pageSize.getWidth();
-
-
-
-        const pageHeight =
-
-            pdf.internal.pageSize.getHeight();
-
-
-
-        const margin = 10;
-
-
-
-        const contentWidth =
-
-            pageWidth -
-            (
-                margin * 2
-            );
-
-
-
-        const imageHeight =
-
-            canvas.height *
-            contentWidth /
-            canvas.width;
-
-
-
-        const imageData =
-
-            canvas.toDataURL(
-                "image/png",
-                1.0
-            );
-
-
-
-        let heightLeft =
-            imageHeight;
-
-
-
-        let position =
-            margin;
-
-
-
-        pdf.addImage(
-
-            imageData,
-
-            "PNG",
-
-            margin,
-
-            position,
-
-            contentWidth,
-
-            imageHeight
-
-        );
-
-
-
-        heightLeft -=
-
-            pageHeight -
-            (
-                margin * 2
-            );
-
-
-
-        while(
-            heightLeft > 0
-        ){
-
-
-            position =
-
-                heightLeft -
-                imageHeight +
-                margin;
-
-
-
-            pdf.addPage();
-
-
-
-            pdf.addImage(
-
-                imageData,
-
-                "PNG",
-
-                margin,
-
-                position,
-
-                contentWidth,
-
-                imageHeight
-
-            );
-
-
-
-            heightLeft -=
-
-                pageHeight -
-                (
-                    margin * 2
-                );
-
 
         }
 
@@ -244,11 +76,206 @@ const PDFExporter = {
 
 
 
-        pdf.save(
+        /*
+           Create isolated A4 document area
 
-            `VIDHWAAN-AI-Writer-${date}.pdf`
+           This prevents:
+           - mobile width changes
+           - desktop width changes
+           - editor CSS conflicts
+        */
 
+
+        const wrapper =
+
+            document.createElement(
+                "div"
+            );
+
+
+
+        wrapper.className =
+            "vw-pdf-page";
+
+
+
+        wrapper.innerHTML =
+
+            output.innerHTML;
+
+
+
+        wrapper.style.position =
+            "fixed";
+
+
+        wrapper.style.left =
+            "-99999px";
+
+
+        wrapper.style.top =
+            "0";
+
+
+        wrapper.style.width =
+            "794px";
+
+
+        wrapper.style.background =
+            "#ffffff";
+
+
+        wrapper.style.color =
+            "#000000";
+
+
+
+        document.body.appendChild(
+            wrapper
         );
+
+
+
+        try{
+
+
+            await html2pdf()
+
+            .set({
+
+
+
+                filename:
+
+                `VIDHWAAN-AI-Writer-${date}.pdf`,
+
+
+
+
+
+                margin:[
+
+                    15,
+
+                    15,
+
+                    15,
+
+                    15
+
+                ],
+
+
+
+
+
+                image:{
+
+
+                    type:
+                    "jpeg",
+
+
+                    quality:
+                    0.98
+
+
+                },
+
+
+
+
+
+                html2canvas:{
+
+
+                    scale:
+                    2,
+
+
+                    useCORS:
+                    true,
+
+
+                    allowTaint:
+                    false,
+
+
+                    backgroundColor:
+                    "#ffffff",
+
+
+                    logging:
+                    false
+
+
+                },
+
+
+
+
+
+                pagebreak:{
+
+
+                    mode:[
+
+                        "css",
+
+                        "legacy"
+
+                    ]
+
+
+                },
+
+
+
+
+
+                jsPDF:{
+
+
+                    unit:
+                    "mm",
+
+
+                    format:
+                    "a4",
+
+
+                    orientation:
+                    "portrait"
+
+
+                }
+
+
+
+            })
+
+
+
+            .from(wrapper)
+
+
+
+            .save();
+
+
+
+        }
+
+
+        finally{
+
+
+            wrapper.remove();
+
+
+        }
+
+
 
 
 
@@ -259,6 +286,9 @@ const PDFExporter = {
 
 
 };
+
+
+
 
 
 export default PDFExporter;
