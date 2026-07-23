@@ -153,38 +153,46 @@ async download(){
 
         {
 
-            position:"absolute",
+            position: "fixed",
 
-            left:"0",
+            left: "-100000px",
 
-            top:"0",
+            top: "0",
 
-            width:"794px",
+            width: "794px",
 
-            padding:"60px",
+            minHeight: "1123px",
 
-            background:"#ffffff",
+            padding: "60px",
 
-            color:"#111827",
+            background: "#ffffff",
 
-            boxSizing:"border-box",
+            color: "#111827",
 
-            fontFamily:
-            "Arial, Helvetica, sans-serif",
+            boxSizing: "border-box",
 
-            fontSize:"17px",
+            fontFamily: "Arial, Helvetica, sans-serif",
 
-            lineHeight:"1.7",
+            fontSize: "17px",
 
-            visibility:"hidden",
-           
-            pointerEvents:"none",
+            lineHeight: "1.7",
 
-            zIndex:"-1"
+            pointerEvents: "none",
+
+            overflow: "visible",
+
+            transform: "none",
+
+            visibility: "visible",
+
+            opacity: "1",
+
+            zIndex: "-1"
 
         }
 
     );
+
 
 
 
@@ -211,9 +219,10 @@ async download(){
 
 
 
-    document.body.appendChild(
-        clone
-    );
+    document.body.appendChild(clone);
+
+    // Wait one frame so layout is complete
+    await new Promise(requestAnimationFrame);
 
 
 
