@@ -4,25 +4,9 @@
    VIDHWAAN AI Writer
 
    Professional PDF Exporter
-
    Production Version
 
-   Features:
-
-   - A4 document based PDF
-   - Same output on mobile and desktop
-   - Preserves editor HTML
-   - Preserves headings
-   - Preserves bold / italic
-   - Preserves colors
-   - Preserves highlights
-   - Preserves lists
-   - Better page breaks
-   - Hidden export container
-   - Optimized PDF quality
-
    ========================================================================== */
-
 
 const PDFExporter = {
 
@@ -31,11 +15,9 @@ const PDFExporter = {
 
 
         const output =
-
             document.getElementById(
                 "vw-output"
             );
-
 
 
         if(!output){
@@ -45,20 +27,18 @@ const PDFExporter = {
         }
 
 
+        const content =
+            output.innerHTML.trim();
 
-        if(
-            !output.innerText.trim()
-        ){
+
+        if(!content){
 
             return false;
 
         }
 
 
-
-        if(
-            !window.html2pdf
-        ){
+        if(!window.html2pdf){
 
             throw new Error(
                 "PDF library not loaded."
@@ -67,66 +47,69 @@ const PDFExporter = {
         }
 
 
-
         const date =
-
             new Date()
             .toISOString()
             .split("T")[0];
 
 
 
-        /*
-           Create isolated A4 document area
-
-           This prevents:
-           - mobile width changes
-           - desktop width changes
-           - editor CSS conflicts
-        */
-
-
         const wrapper =
-
             document.createElement(
                 "div"
             );
-
 
 
         wrapper.className =
             "vw-pdf-page";
 
 
-
         wrapper.innerHTML =
-
-            output.innerHTML;
-
+            content;
 
 
-        wrapper.style.position =
-            "fixed";
+
+        /*
+            PDF document styling
+
+            Visible layout engine,
+            hidden from user,
+            but available for html2canvas
+        */
 
 
-        wrapper.style.left =
-            "-99999px";
+        Object.assign(
 
+            wrapper.style,
 
-        wrapper.style.top =
-            "0";
+            {
 
+                position:"absolute",
 
-        wrapper.style.width =
-            "794px";
+                left:"0",
 
+                top:"0",
 
-        wrapper.style.background =
-            "#ffffff";
+                width:"794px",
 
+                minHeight:"1123px",
 
-        wrapper.style.color =
-            "#000000";
+                padding:"40px",
+
+                background:"#ffffff",
+
+                color:"#000000",
+
+                boxSizing:"border-box",
+
+                fontFamily:
+                "Arial, Helvetica, sans-serif",
+
+                visibility:"hidden"
+
+            }
+
+        );
 
 
 
@@ -143,17 +126,15 @@ const PDFExporter = {
 
             .set({
 
-
-
                 filename:
 
                 `VIDHWAAN-AI-Writer-${date}.pdf`,
 
 
 
+                margin:
 
-
-                margin:[
+                [
 
                     15,
 
@@ -167,58 +148,45 @@ const PDFExporter = {
 
 
 
+                image:
 
+                {
 
-                image:{
+                    type:"jpeg",
 
-
-                    type:
-                    "jpeg",
-
-
-                    quality:
-                    0.98
-
+                    quality:0.98
 
                 },
 
 
 
+                html2canvas:
 
+                {
 
-                html2canvas:{
+                    scale:2,
 
+                    useCORS:true,
 
-                    scale:
-                    2,
+                    allowTaint:false,
 
+                    backgroundColor:"#ffffff",
 
-                    useCORS:
-                    true,
+                    logging:false,
 
-
-                    allowTaint:
-                    false,
-
-
-                    backgroundColor:
-                    "#ffffff",
-
-
-                    logging:
-                    false
-
+                    windowWidth:794
 
                 },
 
 
 
+                pagebreak:
 
+                {
 
-                pagebreak:{
+                    mode:
 
-
-                    mode:[
+                    [
 
                         "css",
 
@@ -226,46 +194,32 @@ const PDFExporter = {
 
                     ]
 
-
                 },
 
 
 
+                jsPDF:
 
+                {
 
-                jsPDF:{
+                    unit:"mm",
 
+                    format:"a4",
 
-                    unit:
-                    "mm",
-
-
-                    format:
-                    "a4",
-
-
-                    orientation:
-                    "portrait"
-
+                    orientation:"portrait"
 
                 }
 
 
-
             })
 
-
-
             .from(wrapper)
-
-
 
             .save();
 
 
 
         }
-
 
         finally{
 
@@ -276,9 +230,6 @@ const PDFExporter = {
         }
 
 
-
-
-
         return true;
 
 
@@ -286,9 +237,6 @@ const PDFExporter = {
 
 
 };
-
-
-
 
 
 export default PDFExporter;
