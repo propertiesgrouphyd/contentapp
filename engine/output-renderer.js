@@ -163,16 +163,9 @@ async function copy() {
 
 
         const text =
-            Array.from(
-                clone.children
-            )
-            .map(
-                item =>
-                    item.textContent
-                        .trim()
-            )
-            .filter(Boolean)
-            .join("\n\n");
+            clone.innerText
+                .replace(/\n{3,}/g,"\n\n")
+                .trim();
 
 
 
@@ -225,12 +218,38 @@ async function copy() {
         else{
 
 
+            const temp =
+                document.createElement(
+                    "div"
+                );
+
+
+            temp.innerHTML =
+                html;
+
+            Object.assign(
+                temp.style,
+                {
+                    position:"fixed",
+                    left:"-9999px"
+                }
+            );
+
+
+            document.body.appendChild(
+                temp
+            );
+
+            temp.style.position = "fixed";
+            temp.style.left = "-9999px";
+
+
             const range =
                 document.createRange();
 
 
             range.selectNodeContents(
-                output
+                temp
             );
 
 
@@ -251,6 +270,9 @@ async function copy() {
 
 
             selection.removeAllRanges();
+
+
+            temp.remove();
 
 
         }
