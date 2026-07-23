@@ -62,7 +62,7 @@ a{
 
 ul,
 ol{
-    list-style:none;
+    list-style-position:outside;
 }
 
 /* ========================================================================
@@ -1439,17 +1439,34 @@ summary h2::before{
 #vw-output ol{
 
     margin:
-
-    0 0 20px 24px;
-
+    0 0 20px 28px;
 
     padding:0;
+
+    list-style-position:outside;
 
 }
 
 
+#vw-output ul{
+
+    list-style-type:disc;
+
+}
+
+
+#vw-output ol{
+
+    list-style-type:decimal;
+
+}
+
 
 #vw-output li{
+
+    display:list-item;
+
+    list-style-position:outside;
 
     margin-bottom:12px;
 
