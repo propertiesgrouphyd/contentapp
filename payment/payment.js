@@ -70,7 +70,7 @@ const PaymentPage = {
                 () => {
 
                     window.location.href =
-                        "https://write.vidhwaan.com";
+                        "https://writer.vidhwaan.com";
 
                 }
 
