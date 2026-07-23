@@ -522,11 +522,57 @@ const App = {
 
             console.error(error);
 
-            this.updateStatus("Generation Failed");
+
+            const message =
+                error.message || "";
+
+
+            const apiError =
+
+                message.toLowerCase().includes("api key") ||
+
+                message.toLowerCase().includes("unauthorized") ||
+
+                message.toLowerCase().includes("access denied") ||
+
+                message.toLowerCase().includes("invalid api") ||
+
+                message.toLowerCase().includes("invalid key");
+
+
+            if (apiError) {
+
+
+                this.updateStatus(
+                    "API Key Required"
+                );
+
+
+                if (this.elements.apiInput) {
+
+                    this.elements.apiInput.value = "";
+
+                }
+
+
+                this.showModal(
+                    this.elements.apiModal
+                );
+
+
+                return;
+
+            }
+
+
+            this.updateStatus(
+                "Generation Failed"
+            );
+
 
             this.showToast(
 
-                error.message ||
+                message ||
 
                 "Unable to generate content."
 
