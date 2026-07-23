@@ -246,6 +246,24 @@ const EditorManager = {
 
                 if(
                     event.ctrlKey &&
+                    event.shiftKey &&
+                    event.key === "8"
+                ){
+
+                    event.preventDefault();
+
+                    this.applyCommand(
+                        "insertUnorderedList"
+                    );
+
+                }
+
+
+
+
+
+                if(
+                    event.ctrlKey &&
                     event.key.toLowerCase() === "z"
                 ){
 
@@ -382,10 +400,24 @@ const EditorManager = {
             );
 
 
+        const bullet =
+            document.getElementById(
+                "vw-bullet-btn"
+            );
+
+
+        const number =
+            document.getElementById(
+                "vw-number-btn"
+            );
+
+
+
         const highlight =
             document.getElementById(
                 "vw-highlight-btn"
             );
+
 
 
         const undo =
@@ -508,6 +540,32 @@ const EditorManager = {
             ()=>{
 
                 this.applyHighlight();
+
+            }
+        );
+
+
+
+        bullet?.addEventListener(
+            "click",
+            ()=>{
+
+                this.applyCommand(
+                    "insertUnorderedList"
+                );
+
+            }
+        );
+
+
+
+        number?.addEventListener(
+            "click",
+            ()=>{
+
+                this.applyCommand(
+                    "insertOrderedList"
+                );
 
             }
         );
@@ -1215,6 +1273,19 @@ const EditorManager = {
                 "vw-italic-btn"
             );
 
+        const bullet =
+            document.getElementById(
+                "vw-bullet-btn"
+            );
+
+
+        const number =
+            document.getElementById(
+                "vw-number-btn"
+            );
+
+
+
 
         const selection =
             window.getSelection();
@@ -1281,6 +1352,33 @@ const EditorManager = {
             );
 
         }
+
+
+
+
+        if(bullet){
+
+            bullet.classList.toggle(
+                "active",
+                document.queryCommandState(
+                    "insertUnorderedList"
+                )
+            );
+
+        }
+
+
+        if(number){
+
+            number.classList.toggle(
+                "active",
+                document.queryCommandState(
+                    "insertOrderedList"
+                )
+            );
+
+        }
+
 
 
     },
