@@ -5,11 +5,15 @@
 
    Professional A4 PDF Exporter
 
-   - Same output on mobile and desktop
-   - Uses editor content
-   - Preserves formatting
+   Features:
    - No empty PDF
-   - Multi page support
+   - Same output mobile + desktop
+   - Preserves editor content
+   - Preserves formatting
+   - Stable bullets and numbers
+   - Stable highlights
+   - Multi page A4 PDF
+
    ========================================================================== */
 
 
@@ -19,236 +23,381 @@ const PDFExporter = {
 async download(){
 
 
-const output =
-document.getElementById("vw-output");
+    const output =
+        document.getElementById(
+            "vw-output"
+        );
 
 
-if(!output || !output.innerText.trim()){
+    if(
+        !output ||
+        !output.innerText.trim()
+    ){
 
-    return false;
+        return false;
 
-}
+    }
 
 
-if(!window.html2canvas || !window.jspdf){
 
-    throw new Error("PDF libraries missing");
+    if(
+        !window.html2canvas ||
+        !window.jspdf
+    ){
 
-}
+        throw new Error(
+            "PDF libraries missing"
+        );
 
+    }
 
-const clone =
-output.cloneNode(true);
 
 
+    const clone =
+        output.cloneNode(true);
 
-clone.removeAttribute(
-"contenteditable"
-);
 
 
+    clone.removeAttribute(
+        "contenteditable"
+    );
 
-Object.assign(
 
-clone.style,
 
-{
+    /*
+       PDF-only list normalization
 
-position:"absolute",
+       Convert browser markers
+       into normal text.
+    */
 
-left:"0",
+    clone.querySelectorAll(
+        "ul,ol"
+    )
+    .forEach(list=>{
 
-top:"0",
 
-width:"794px",
+        const isNumber =
+            list.tagName === "OL";
 
-padding:"60px",
 
-background:"#ffffff",
+        list.style.listStyleType =
+            "none";
 
-color:"#111827",
 
-boxSizing:"border-box",
+        Array.from(
+            list.children
+        )
+        .forEach(
+            (li,index)=>{
 
-fontFamily:
-"Arial, Helvetica, sans-serif",
 
-fontSize:"17px",
+                const prefix =
+                    isNumber
+                    ? `${index + 1}. `
+                    : "• ";
 
-lineHeight:"1.7"
 
-}
+                li.insertBefore(
 
-);
+                    document.createTextNode(
+                        prefix
+                    ),
 
+                    li.firstChild
 
+                );
 
-document.body.appendChild(clone);
 
+            }
+        );
 
 
-try{
+    });
 
 
-const canvas =
-await html2canvas(
 
-clone,
+    /*
+       Highlight alignment fix
+    */
 
-{
 
-scale:2,
+    clone.querySelectorAll(
+        "span"
+    )
+    .forEach(span=>{
 
-backgroundColor:"#ffffff",
 
-useCORS:true,
+        if(
+            span.style.backgroundColor
+        ){
 
-logging:false,
+            span.style.padding =
+                "2px 0";
 
-windowWidth:794
 
-}
+            span.style.lineHeight =
+                "1.7";
 
-);
 
+        }
 
 
-const pdf =
-new jspdf.jsPDF(
+    });
 
-"p",
 
-"mm",
 
-"a4"
+    Object.assign(
 
-);
+        clone.style,
 
+        {
 
+            position:"absolute",
 
-const pageWidth =
-pdf.internal.pageSize.getWidth();
+            left:"0",
 
+            top:"0",
 
-const pageHeight =
-pdf.internal.pageSize.getHeight();
+            width:"794px",
 
+            padding:"60px",
 
-const margin = 10;
+            background:"#ffffff",
 
+            color:"#111827",
 
-const imgWidth =
-pageWidth - margin * 2;
+            boxSizing:"border-box",
 
+            fontFamily:
+            "Arial, Helvetica, sans-serif",
 
-const imgHeight =
-canvas.height * imgWidth / canvas.width;
+            fontSize:"17px",
 
+            lineHeight:"1.7"
 
-const imgData =
-canvas.toDataURL(
-"image/png"
-);
+        }
 
+    );
 
 
-let heightLeft =
-imgHeight;
 
+    /*
+       PDF list styling
+    */
 
-let position =
-margin;
 
+    clone.querySelectorAll(
+        "li"
+    )
+    .forEach(li=>{
 
 
-pdf.addImage(
+        li.style.display =
+            "list-item";
 
-imgData,
 
-"PNG",
+        li.style.lineHeight =
+            "1.7";
 
-margin,
 
-position,
+    });
 
-imgWidth,
 
-imgHeight
 
-);
+    document.body.appendChild(
+        clone
+    );
 
 
 
-heightLeft -=
-pageHeight - margin * 2;
+    try{
 
 
+        const canvas =
+            await html2canvas(
 
-while(heightLeft > 0){
+                clone,
 
+                {
 
-position =
-heightLeft - imgHeight + margin;
+                    scale:2,
 
+                    backgroundColor:
+                    "#ffffff",
 
+                    useCORS:true,
 
-pdf.addPage();
+                    logging:false,
 
+                    windowWidth:794
 
+                }
 
-pdf.addImage(
+            );
 
-imgData,
 
-"PNG",
 
-margin,
+        const pdf =
+            new jspdf.jsPDF(
 
-position,
+                "p",
 
-imgWidth,
+                "mm",
 
-imgHeight
+                "a4"
 
-);
+            );
 
 
 
-heightLeft -=
-pageHeight - margin * 2;
+        const pageWidth =
+            pdf.internal.pageSize
+            .getWidth();
 
 
-}
+        const pageHeight =
+            pdf.internal.pageSize
+            .getHeight();
 
 
 
-const date =
-new Date()
-.toISOString()
-.split("T")[0];
+        const margin = 10;
 
 
-pdf.save(
 
-`VIDHWAAN-AI-Writer-${date}.pdf`
+        const imgWidth =
+            pageWidth -
+            (
+                margin * 2
+            );
 
-);
 
 
+        const imgHeight =
+            canvas.height *
+            imgWidth /
+            canvas.width;
 
-}
 
-finally{
 
+        const imgData =
+            canvas.toDataURL(
+                "image/png",
+                1.0
+            );
 
-clone.remove();
 
 
-}
+        let heightLeft =
+            imgHeight;
 
 
 
-return true;
+        let position =
+            margin;
+
+
+
+        pdf.addImage(
+
+            imgData,
+
+            "PNG",
+
+            margin,
+
+            position,
+
+            imgWidth,
+
+            imgHeight
+
+        );
+
+
+
+        heightLeft -=
+            pageHeight -
+            (
+                margin * 2
+            );
+
+
+
+        while(
+            heightLeft > 0
+        ){
+
+
+            position =
+                heightLeft -
+                imgHeight +
+                margin;
+
+
+
+            pdf.addPage();
+
+
+
+            pdf.addImage(
+
+                imgData,
+
+                "PNG",
+
+                margin,
+
+                position,
+
+                imgWidth,
+
+                imgHeight
+
+            );
+
+
+
+            heightLeft -=
+                pageHeight -
+                (
+                    margin * 2
+                );
+
+
+        }
+
+
+
+        const date =
+            new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+
+        pdf.save(
+
+            `VIDHWAAN-AI-Writer-${date}.pdf`
+
+        );
+
+
+
+    }
+
+    finally{
+
+
+        clone.remove();
+
+
+    }
+
+
+
+    return true;
 
 
 }
