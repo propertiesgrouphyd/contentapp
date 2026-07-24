@@ -106,11 +106,30 @@ function createClipboardHTML(output){
         block =>
             block.outerHTML
     )
-    .join("\n\n")
+    .join("\n")
     .trim();
 
 }
 
+
+
+function decodeHTML(value = "") {
+
+
+    const textarea =
+        document.createElement(
+            "textarea"
+        );
+
+
+    textarea.innerHTML =
+        value;
+
+
+    return textarea.value;
+
+
+}
 
 
 
@@ -163,10 +182,138 @@ async function copy() {
 
 
         const text =
-            clone.innerText
-                .replace(/\n{3,}/g,"\n\n")
-                .trim();
+            clone.innerHTML
 
+                .replace(
+                    /<br\s*\/?>/gi,
+                    "\n"
+                )
+
+
+                /*
+                    Preserve numbered lists
+                */
+
+                .replace(
+                    /<ol[^>]*>([\s\S]*?)<\/ol>/gi,
+                    (_,content)=>{
+
+                        let number = 1;
+
+
+                        return content.replace(
+                            /<li[^>]*>([\s\S]*?)<\/li>/gi,
+                            (_,item)=>{
+
+
+                                const clean =
+                                    decodeHTML(
+                                        item.replace(
+                                            /<[^>]+>/g,
+                                            ""
+                                        )
+                                    )
+                                    .trim();
+
+
+                                return `${number++}. ${clean}\n`;
+
+
+                            }
+                        );
+
+                    }
+                )
+
+
+                /*
+                    Preserve bullet lists
+                */
+
+                .replace(
+                    /<ul[^>]*>([\s\S]*?)<\/ul>/gi,
+                    (_,content)=>{
+
+
+                        return content.replace(
+                            /<li[^>]*>([\s\S]*?)<\/li>/gi,
+                            (_,item)=>{
+
+
+                                const clean =
+                                    decodeHTML(
+                                        item.replace(
+                                            /<[^>]+>/g,
+                                            ""
+                                        )
+                                    )
+                                    .trim();
+
+
+                                return `• ${clean}\n`;
+
+
+                            }
+                        );
+
+
+                    }
+                )
+
+
+                /*
+                    Normal block spacing
+                */
+
+                .replace(
+                    /<\/(p|h1|h2|h3|h4|blockquote)>/gi,
+                    "\n\n"
+                )
+
+
+                .replace(
+                    /<[^>]+>/g,
+                    ""
+                )
+
+
+                .replace(
+                    /&nbsp;/gi,
+                    " "
+                )
+
+
+                .replace(
+                    /&amp;/gi,
+                    "&"
+                )
+
+
+                .replace(
+                    /&lt;/gi,
+                    "<"
+                )
+
+
+                .replace(
+                    /&gt;/gi,
+                    ">"
+                )
+
+
+                .replace(
+                    /\n[ \t]+/g,
+                    "\n"
+                )
+
+
+                .replace(
+                    /\n{3,}/g,
+                    "\n\n"
+                )
+
+
+                .trim();
 
 
 
@@ -239,9 +386,6 @@ async function copy() {
             document.body.appendChild(
                 temp
             );
-
-            temp.style.position = "fixed";
-            temp.style.left = "-9999px";
 
 
             const range =
