@@ -934,71 +934,45 @@ summary h2::before{
 @media (max-width:900px){
 
     .vw-form-grid{
-
         grid-template-columns:1fr;
-
     }
-
 
     .vw-header-container{
-
         flex-direction:column;
-
         align-items:flex-start;
-
         padding:16px;
-
     }
-
 
     .vw-footer-container{
-
         flex-direction:row;
-
         justify-content:space-between;
-
         align-items:center;
-
         width:100%;
-
     }
-
-
-    /*
-       Mobile full width content sections
-       Keep cards, borders and separation
-    */
 
     #vw-main{
-
         width:100%;
-
         padding:8px 0;
-
         gap:16px;
-
     }
-
 
     .vw-card{
-
         width:100%;
-
         max-width:none;
-
         padding:16px;
-
         border-radius:16px;
-
     }
 
+    /* Generator section gets side spacing */
+    #vw-generator-section{
+        padding-inline:12px;
+    }
 
-    #vw-output-card{
-
+    /* Generated content remains full width */
+    #vw-output-section{
+        margin:0;
         width:100%;
-
     }
-
 
 }
 
