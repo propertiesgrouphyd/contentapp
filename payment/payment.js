@@ -726,13 +726,10 @@ const PaymentPage = {
 
 
 
-        this.setBusy(
+        this.busy = true;
 
-            true,
+        this.updatePayButton();
 
-            "Preparing Payment..."
-
-        );
 
 
 
@@ -756,24 +753,11 @@ const PaymentPage = {
 
         catch(error){
 
-
-
-            console.error(error);
-
-
-
-            alert(
-
-                error.message ||
-
-                "Unable to start payment."
-
+            console.error(
+                error
             );
 
-
-
             this.resetButton();
-
 
         }
 
@@ -1017,13 +1001,6 @@ const PaymentPage = {
 
 
 
-        this.setBusy(
-
-            true,
-
-            "Verifying Payment..."
-
-        );
 
 
 
