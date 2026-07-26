@@ -715,6 +715,46 @@ ${customer.lastName || ""}
 
 <td>
 
+Email
+
+</td>
+
+
+<td>
+
+${customer.email || "-"}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Phone
+
+</td>
+
+
+<td>
+
+${customer.phone || "-"}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
 Company
 
 </td>
@@ -763,6 +803,26 @@ State
 <td>
 
 ${customer.state || "-"}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Billing Address
+
+</td>
+
+
+<td>
+
+${customer.address || "-"}
 
 </td>
 
@@ -1167,7 +1227,15 @@ ${seller.legalName}
 
         await new Promise(
 
-            requestAnimationFrame
+            resolve =>
+
+            setTimeout(
+
+                resolve,
+
+                300
+
+            )
 
         );
 
@@ -1183,7 +1251,6 @@ ${seller.legalName}
                 container,
 
                 {
-
                     scale:2,
 
                     backgroundColor:"#ffffff",
@@ -1192,12 +1259,12 @@ ${seller.legalName}
 
                     logging:false,
 
-                    windowWidth:794
+                    windowWidth:794,
 
+                    windowHeight:1123
                 }
 
             );
-
 
 
             const pdf =
@@ -1256,23 +1323,11 @@ ${seller.legalName}
 
             canvas.toDataURL(
 
-                "image/png",
+                "image/jpeg",
 
-                1.0
+                0.95
 
             );
-
-
-
-            let heightLeft =
-
-            imgHeight;
-
-
-
-            let position =
-
-            margin;
 
 
 
@@ -1280,11 +1335,11 @@ ${seller.legalName}
 
                 imgData,
 
-                "PNG",
+                "JPEG",
 
                 margin,
 
-                position,
+                margin,
 
                 imgWidth,
 
@@ -1293,70 +1348,6 @@ ${seller.legalName}
             );
 
 
-
-            heightLeft -=
-
-            pageHeight -
-
-            (
-
-                margin * 2
-
-            );
-
-
-
-            while(
-
-                heightLeft > 0
-
-            ){
-
-
-                position =
-
-                heightLeft -
-
-                imgHeight +
-
-                margin;
-
-
-
-                pdf.addPage();
-
-
-
-                pdf.addImage(
-
-                    imgData,
-
-                    "PNG",
-
-                    margin,
-
-                    position,
-
-                    imgWidth,
-
-                    imgHeight
-
-                );
-
-
-
-                heightLeft -=
-
-                pageHeight -
-
-                (
-
-                    margin * 2
-
-                );
-
-
-            }
 
 
 
