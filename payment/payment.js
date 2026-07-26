@@ -668,7 +668,9 @@ const PaymentPage = {
 
         this.elements.payButton.textContent =
 
-        "Pay ₹30.00";
+        "Pay " +
+
+        this.elements.totalAmount.textContent;
 
 
     },
@@ -913,7 +915,7 @@ const PaymentPage = {
 
             description:
 
-            "Monthly Subscription",
+            "VIDHWAAN AI Writer Monthly Subscription",
 
 
 
