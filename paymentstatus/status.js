@@ -22,12 +22,16 @@ const StatusPage = {
 
         this.cacheElements();
 
+
         this.bindEvents();
+
 
         this.load();
 
 
     },
+
+
 
 
 
@@ -47,25 +51,44 @@ const StatusPage = {
         this.elements = {
 
 
-            icon:$("statusIcon"),
+            icon:
+            $("statusIcon"),
 
-            title:$("statusTitle"),
 
-            message:$("statusMessage"),
+            title:
+            $("statusTitle"),
 
-            subscriptionBox:$("subscriptionBox"),
 
-            subscriptionId:$("subscriptionId"),
+            message:
+            $("statusMessage"),
 
-            invoiceNumber:$("invoiceNumber"),
 
-            expiryDate:$("expiryDate"),
+            subscriptionBox:
+            $("subscriptionBox"),
 
-            downloadInvoice:$("downloadInvoice"),
 
-            failedBox:$("failedBox"),
+            subscriptionId:
+            $("subscriptionId"),
 
-            backButton:$("backButton")
+
+            invoiceNumber:
+            $("invoiceNumber"),
+
+
+            expiryDate:
+            $("expiryDate"),
+
+
+            downloadInvoice:
+            $("downloadInvoice"),
+
+
+            failedBox:
+            $("failedBox"),
+
+
+            backButton:
+            $("backButton")
 
 
         };
@@ -100,6 +123,7 @@ const StatusPage = {
             }
 
         );
+
 
 
 
@@ -223,6 +247,7 @@ const StatusPage = {
 
 
 
+
         await this.loadInvoice(uniqueId);
 
 
@@ -252,9 +277,12 @@ const StatusPage = {
 
                 "https://subscriptions.propertiesgrouphyd.online/subscriptions/" +
 
+
                 encodeURIComponent(uniqueId) +
 
+
                 ".json",
+
 
 
                 {
@@ -317,11 +345,14 @@ const StatusPage = {
 
         }
 
+
         catch(error){
 
 
 
             console.error(
+
+                "Invoice loading failed:",
 
                 error
 
@@ -331,27 +362,20 @@ const StatusPage = {
         }
 
 
+
     },
 
 
 
-
-
-
-
-
-
-    generateInvoice(){
-
+    async generateInvoice(){
 
 
         if(!this.data){
 
 
-
             alert(
 
-                "Invoice data unavailable"
+                "Invoice data unavailable."
 
             );
 
@@ -360,8 +384,6 @@ const StatusPage = {
 
 
         }
-
-
 
 
 
@@ -390,7 +412,6 @@ const StatusPage = {
 
 
 
-
         const html = `
 
 <!DOCTYPE html>
@@ -398,6 +419,7 @@ const StatusPage = {
 <html>
 
 <head>
+
 
 <title>
 
@@ -519,26 +541,24 @@ color:#6b7280;
 
 
 
-
 <div class="header">
 
 
 <div class="brand">
 
-${seller.brand}
+${seller.brand || "VIDHWAAN AI Writer"}
 
 </div>
 
 
 <div class="company">
 
-${seller.legalName}
+${seller.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
 
 </div>
 
 
 </div>
-
 
 
 
@@ -632,12 +652,18 @@ Customer Details
 </h2>
 
 
+
 <table>
 
 
 <tr>
 
-<td>Name</td>
+<td>
+
+Name
+
+</td>
+
 
 <td>
 
@@ -647,13 +673,19 @@ ${customer.lastName || ""}
 
 </td>
 
+
 </tr>
 
 
 
 <tr>
 
-<td>Company</td>
+<td>
+
+Company
+
+</td>
+
 
 <td>
 
@@ -661,13 +693,19 @@ ${customer.companyName || "-"}
 
 </td>
 
+
 </tr>
 
 
 
 <tr>
 
-<td>GSTIN</td>
+<td>
+
+GSTIN
+
+</td>
+
 
 <td>
 
@@ -675,13 +713,19 @@ ${customer.gstin || "-"}
 
 </td>
 
+
 </tr>
 
 
 
 <tr>
 
-<td>State</td>
+<td>
+
+State
+
+</td>
+
 
 <td>
 
@@ -689,10 +733,12 @@ ${customer.state || "-"}
 
 </td>
 
+
 </tr>
 
 
 </table>
+
 
 
 
@@ -725,6 +771,7 @@ Plan
 Monthly Subscription
 
 </td>
+
 
 </tr>
 
@@ -910,8 +957,8 @@ IGST
 
 
 
-
 <tr class="total">
+
 
 <td>
 
@@ -999,6 +1046,7 @@ ${payment.orderId || "-"}
 
 
 
+
 <div class="footer">
 
 
@@ -1019,7 +1067,6 @@ ${seller.legalName}
 
 
 
-
 </body>
 
 </html>
@@ -1032,38 +1079,99 @@ ${seller.legalName}
 
 
 
-        const win =
+        const container =
 
-        window.open(
-
-            "",
-
-            "_blank"
-
-        );
+        document.createElement("div");
 
 
 
-        win.document.write(html);
+        container.innerHTML = html;
 
 
-        win.document.close();
+
+        document.body.appendChild(container);
 
 
 
 
-        win.onload = ()=>{
 
 
-            win.print();
+
+        await html2pdf()
+
+        .set({
+
+            margin:10,
 
 
-        };
+            filename:
+
+            "VIDHWAAN-" +
+
+            (invoice.invoiceNumber || "Invoice") +
+
+            ".pdf",
+
+
+
+            image:{
+
+
+                type:"jpeg",
+
+
+                quality:0.98
+
+
+            },
+
+
+
+            html2canvas:{
+
+
+                scale:2,
+
+
+                useCORS:true
+
+
+            },
+
+
+
+            jsPDF:{
+
+
+                unit:"mm",
+
+
+                format:"a4",
+
+
+                orientation:"portrait"
+
+
+            }
+
+
+        })
+
+
+        .from(container)
+
+        .save();
+
+
+
+
+
+
+        container.remove();
 
 
 
     },
-
 
 
 
@@ -1083,7 +1191,6 @@ ${seller.legalName}
 
 
     },
-
 
 
 
@@ -1143,12 +1250,12 @@ ${seller.legalName}
 
 
 
-
     showFailed(){
 
 
 
         this.elements.subscriptionBox.hidden = true;
+
 
 
         this.elements.failedBox.hidden = false;
@@ -1184,6 +1291,7 @@ ${seller.legalName}
 
 
 };
+
 
 
 
