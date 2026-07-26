@@ -369,24 +369,15 @@ const StatusPage = {
 
     async generateInvoice(){
 
-
         if(!this.data){
 
-
             alert(
-
                 "Invoice data unavailable."
-
             );
-
 
             return;
 
-
         }
-
-
-
 
 
         const {
@@ -407,12 +398,46 @@ const StatusPage = {
 
 
 
+        const container = document.createElement("iframe");
+
+
+        Object.assign(
+
+            container.style,
+
+            {
+
+                position:"fixed",
+
+                width:"794px",
+
+                height:"1123px",
+
+                left:"-10000px",
+
+                top:"0",
+
+                border:"0",
+
+                visibility:"hidden"
+
+            }
+
+        );
+
+
+        document.body.appendChild(container);
 
 
 
+        const doc = container.contentDocument;
 
 
-        const html = `
+
+        doc.open();
+
+
+        doc.write(`
 
 <!DOCTYPE html>
 
@@ -420,23 +445,32 @@ const StatusPage = {
 
 <head>
 
-
-<title>
-
-${invoice.invoiceNumber || "Invoice"}
-
-</title>
-
-
-
 <style>
+
+html,body{
+
+margin:0;
+
+padding:0;
+
+width:794px;
+
+background:white;
+
+}
 
 
 body{
 
 font-family:Arial,Helvetica,sans-serif;
 
-padding:50px;
+padding:25px;
+
+box-sizing:border-box;
+
+font-size:11px;
+
+line-height:1.35;
 
 color:#111827;
 
@@ -447,14 +481,14 @@ color:#111827;
 
 border-bottom:2px solid #111827;
 
-padding-bottom:20px;
+padding-bottom:10px;
 
 }
 
 
 .brand{
 
-font-size:30px;
+font-size:22px;
 
 font-weight:700;
 
@@ -463,22 +497,22 @@ font-weight:700;
 
 .company{
 
-font-size:16px;
+font-size:12px;
 
-margin-top:8px;
+margin-top:5px;
 
 color:#4b5563;
 
 }
 
 
-
 h2{
 
-margin-top:30px;
+font-size:14px;
+
+margin:14px 0 8px;
 
 }
-
 
 
 table{
@@ -487,20 +521,18 @@ width:100%;
 
 border-collapse:collapse;
 
-margin-top:15px;
-
-page-break-inside:avoid;
-
-break-inside:avoid;
+margin-bottom:8px;
 
 }
 
 
-tr{
+td,th{
 
-page-break-inside:avoid;
+border:1px solid #d1d5db;
 
-break-inside:avoid;
+padding:5px;
+
+font-size:10px;
 
 }
 
@@ -512,160 +544,114 @@ background:#f3f4f6;
 }
 
 
-td,th{
-
-border:1px solid #d1d5db;
-
-padding:12px;
-
-}
-
-
 .total{
 
 font-weight:bold;
 
-font-size:17px;
-
 }
-
 
 
 .footer{
 
-margin-top:40px;
+margin-top:12px;
 
-font-size:14px;
+font-size:10px;
 
 color:#6b7280;
 
 }
 
 
-h2,
-table,
-tr,
-.footer{
-
-    break-inside:avoid;
-
-    page-break-inside:avoid;
-
-}
-
-
-td,
-th{
-
-    vertical-align:top;
-
-}
-
-
-
 </style>
 
-
 </head>
-
 
 
 <body>
 
 
-
 <div class="header">
 
-
 <div class="brand">
-
 ${seller.brand || "VIDHWAAN AI Writer"}
-
 </div>
-
 
 <div class="company">
-
 ${seller.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
+</div>
 
 </div>
 
 
-</div>
 
-
-
-
-
-<h2>
-
-TAX INVOICE
-
-</h2>
-
-
-
+<h2>TAX INVOICE</h2>
 
 
 <table>
 
+<tr>
+<td>Invoice Number</td>
+<td>${invoice.invoiceNumber || "-"}</td>
+</tr>
 
 <tr>
+<td>Invoice Date</td>
+<td>${this.formatDateTime(invoice.issuedAt)}</td>
+</tr>
 
-<td>
+<tr>
+<td>Payment Date</td>
+<td>${this.formatDateTime(payment.paidAt)}</td>
+</tr>
 
-Invoice Number
-
-</td>
-
-
-<td>
-
-${invoice.invoiceNumber || "-"}
-
-</td>
+</table>
 
 
+
+<h2>Customer Details</h2>
+
+
+<table>
+
+<tr>
+<td>Name</td>
+<td>${customer.firstName || ""} ${customer.lastName || ""}</td>
 </tr>
 
 
-
 <tr>
-
-<td>
-
-Invoice Date
-
-</td>
-
-
-<td>
-
-${this.formatDateTime(invoice.issuedAt)}
-
-</td>
-
-
+<td>Email</td>
+<td>${customer.email || "-"}</td>
 </tr>
 
 
+<tr>
+<td>Phone</td>
+<td>${customer.phone || "-"}</td>
+</tr>
+
 
 <tr>
-
-<td>
-
-Payment Date
-
-</td>
+<td>Company</td>
+<td>${customer.companyName || "-"}</td>
+</tr>
 
 
-<td>
+<tr>
+<td>GSTIN</td>
+<td>${customer.gstin || "-"}</td>
+</tr>
 
-${this.formatDateTime(payment.paidAt)}
 
-</td>
+<tr>
+<td>State</td>
+<td>${customer.state || "-"}</td>
+</tr>
 
 
+<tr>
+<td>Billing Address</td>
+<td>${customer.address || "-"}</td>
 </tr>
 
 
@@ -673,160 +659,32 @@ ${this.formatDateTime(payment.paidAt)}
 
 
 
-
-
-
-
-
-<h2>
-
-Customer Details
-
-</h2>
-
+<h2>Subscription Details</h2>
 
 
 <table>
 
-
 <tr>
-
-<td>
-
-Name
-
-</td>
-
-
-<td>
-
-${customer.firstName || ""}
-
-${customer.lastName || ""}
-
-</td>
-
-
+<td>Plan</td>
+<td>Monthly Subscription</td>
 </tr>
 
 
-
 <tr>
-
-<td>
-
-Email
-
-</td>
-
-
-<td>
-
-${customer.email || "-"}
-
-</td>
-
-
+<td>Valid From</td>
+<td>${this.formatDateTime(subscription.created)}</td>
 </tr>
 
 
-
 <tr>
-
-<td>
-
-Phone
-
-</td>
-
-
-<td>
-
-${customer.phone || "-"}
-
-</td>
-
-
+<td>Valid Until</td>
+<td>${this.formatDateTime(subscription.expires)}</td>
 </tr>
 
 
-
 <tr>
-
-<td>
-
-Company
-
-</td>
-
-
-<td>
-
-${customer.companyName || "-"}
-
-</td>
-
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-GSTIN
-
-</td>
-
-
-<td>
-
-${customer.gstin || "-"}
-
-</td>
-
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-State
-
-</td>
-
-
-<td>
-
-${customer.state || "-"}
-
-</td>
-
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-Billing Address
-
-</td>
-
-
-<td>
-
-${customer.address || "-"}
-
-</td>
-
-
+<td>Duration</td>
+<td>${subscription.days || 30} Days</td>
 </tr>
 
 
@@ -834,17 +692,7 @@ ${customer.address || "-"}
 
 
 
-
-
-
-
-
-<h2>
-
-Subscription Details
-
-</h2>
-
+<h2>Tax Details</h2>
 
 
 <table>
@@ -852,311 +700,100 @@ Subscription Details
 
 <tr>
 
-<td>
+<th>Description</th>
 
-Plan
-
-</td>
-
-
-<td>
-
-Monthly Subscription
-
-</td>
-
+<th>Amount</th>
 
 </tr>
-
 
 
 <tr>
 
-<td>
+<td>Subscription Value</td>
 
-Valid From
-
-</td>
-
-
-<td>
-
-${this.formatDateTime(subscription.created)}
-
-</td>
-
+<td>₹${this.money(gst.taxableAmount)}</td>
 
 </tr>
-
 
 
 <tr>
 
-<td>
+<td>CGST</td>
 
-Valid Until
-
-</td>
-
-
-<td>
-
-${this.formatDateTime(subscription.expires)}
-
-</td>
-
+<td>₹${this.money(gst.cgst)}</td>
 
 </tr>
-
 
 
 <tr>
 
-<td>
+<td>SGST</td>
 
-Duration
-
-</td>
-
-
-<td>
-
-${subscription.days || 30} Days
-
-</td>
-
+<td>₹${this.money(gst.sgst)}</td>
 
 </tr>
-
-
-
-</table>
-
-
-
-
-
-
-
-
-<h2>
-
-Tax Details
-
-</h2>
-
-
-
-<table>
 
 
 <tr>
 
-<th>
+<td>IGST</td>
 
-Description
-
-</th>
-
-
-<th>
-
-Amount
-
-</th>
-
+<td>₹${this.money(gst.igst)}</td>
 
 </tr>
-
-
-
-<tr>
-
-<td>
-
-Subscription Value
-
-</td>
-
-
-<td>
-
-₹${this.money(gst.taxableAmount)}
-
-</td>
-
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-CGST
-
-</td>
-
-
-<td>
-
-₹${this.money(gst.cgst)}
-
-</td>
-
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-SGST
-
-</td>
-
-
-<td>
-
-₹${this.money(gst.sgst)}
-
-</td>
-
-
-</tr>
-
-
-
-<tr>
-
-<td>
-
-IGST
-
-</td>
-
-
-<td>
-
-₹${this.money(gst.igst)}
-
-</td>
-
-
-</tr>
-
 
 
 <tr class="total">
 
+<td>Total Paid</td>
 
-<td>
-
-Total Paid
-
-</td>
-
-
-<td>
-
-₹${this.money(gst.totalAmount)}
-
-</td>
-
+<td>₹${this.money(gst.totalAmount)}</td>
 
 </tr>
-
 
 
 </table>
 
 
 
+<h2>Payment Reference</h2>
 
 
-
-
-
-<h2>
-
-Payment Reference
-
-</h2>
-
-
-
-<table>
-
+table>
 
 <tr>
 
-<td>
+<td>Payment ID</td>
 
-Payment ID
-
-</td>
-
-
-<td>
-
-${payment.paymentId || "-"}
-
-</td>
-
+<td>${payment.paymentId || "-"}</td>
 
 </tr>
 
 
-
 <tr>
 
-<td>
+<td>Order ID</td>
 
-Order ID
-
-</td>
-
-
-<td>
-
-${payment.orderId || "-"}
-
-</td>
-
+<td>${payment.orderId || "-"}</td>
 
 </tr>
-
 
 
 </table>
-
-
-
-
-
 
 
 
 <div class="footer">
 
-
 Thank you for choosing ${seller.brand}.
 
-
 <br><br>
-
 
 Issued by:
 
 ${seller.legalName}
 
-
 </div>
-
-
 
 
 
@@ -1164,64 +801,10 @@ ${seller.legalName}
 
 </html>
 
-`;
+`);
 
 
-
-
-
-
-        const container =
-
-        document.createElement("div");
-
-
-
-        container.innerHTML = html;
-
-
-
-        Object.assign(
-
-            container.style,
-
-            {
-
-                position:"fixed",
-
-                left:"-100000px",
-
-                top:"0",
-
-                width:"794px",
-
-                minHeight:"1123px",
-
-                background:"#ffffff",
-
-                color:"#111827",
-
-                boxSizing:"border-box",
-
-                fontFamily:"Arial, Helvetica, sans-serif",
-
-                pointerEvents:"none",
-
-                overflow:"visible",
-
-                visibility:"visible",
-
-                opacity:"1",
-
-                zIndex:"-1"
-
-            }
-
-        );
-
-
-
-        document.body.appendChild(container);
+        doc.close();
 
 
 
@@ -1229,13 +812,7 @@ ${seller.legalName}
 
             resolve =>
 
-            setTimeout(
-
-                resolve,
-
-                300
-
-            )
+            setTimeout(resolve,300)
 
         );
 
@@ -1244,32 +821,25 @@ ${seller.legalName}
         try{
 
 
-            const canvas =
+            const canvas = await html2canvas(
 
-            await html2canvas(
-
-                container,
+                doc.body,
 
                 {
+
                     scale:2,
 
                     backgroundColor:"#ffffff",
 
-                    useCORS:true,
+                    logging:false
 
-                    logging:false,
-
-                    windowWidth:794,
-
-                    windowHeight:1123
                 }
 
             );
 
 
-            const pdf =
 
-            new jspdf.jsPDF(
+            const pdf = new jspdf.jsPDF(
 
                 "p",
 
@@ -1280,74 +850,36 @@ ${seller.legalName}
             );
 
 
+            const width =
 
-            const pageWidth =
-
-            pdf.internal.pageSize.getWidth();
-
+            pdf.internal.pageSize.getWidth()-20;
 
 
-            const pageHeight =
-
-            pdf.internal.pageSize.getHeight();
-
-
-
-            const margin = 10;
-
-
-
-            const imgWidth =
-
-            pageWidth -
-
-            (
-
-                margin * 2
-
-            );
-
-
-
-            const imgHeight =
+            const height =
 
             canvas.height *
 
-            imgWidth /
+            width /
 
             canvas.width;
 
 
 
-            const imgData =
-
-            canvas.toDataURL(
-
-                "image/jpeg",
-
-                0.95
-
-            );
-
-
-
             pdf.addImage(
 
-                imgData,
+                canvas.toDataURL("image/jpeg",0.95),
 
                 "JPEG",
 
-                margin,
+                10,
 
-                margin,
+                10,
 
-                imgWidth,
+                width,
 
-                imgHeight
+                height
 
             );
-
-
 
 
 
@@ -1355,13 +887,7 @@ ${seller.legalName}
 
                 "VIDHWAAN-" +
 
-                (
-
-                    invoice.invoiceNumber ||
-
-                    "Invoice"
-
-                ) +
+                invoice.invoiceNumber +
 
                 ".pdf"
 
@@ -1380,9 +906,6 @@ ${seller.legalName}
 
 
     },
-
-
-
 
 
 
