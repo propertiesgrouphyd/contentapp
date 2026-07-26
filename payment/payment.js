@@ -3,146 +3,707 @@
 /* ==========================================================================
    VIDHWAAN AI Writer
    Production Payment Controller
+   Version 3.0
    ========================================================================== */
+
 
 const PaymentPage = {
 
-    busy: false,
 
-    elements: {},
+    busy:false,
 
-    config: null,
 
-    init() {
+    elements:{},
 
-        this.config = window.VW_CONFIG.PAYMENT;
+
+    config:null,
+
+
+
+    init(){
+
+
+        this.config =
+        window.VW_CONFIG.PAYMENT;
+
 
         this.cacheElements();
 
+
         this.bindEvents();
+
+
+        this.updateGSTDisplay();
+
 
     },
 
-    cacheElements() {
 
-        const $ = id => document.getElementById(id);
+
+
+
+    cacheElements(){
+
+
+        const $ =
+        id => document.getElementById(id);
+
+
 
         this.elements = {
 
-            accept: $("acceptTerms"),
 
-            payButton: $("payButton"),
+            accept:
+            $("acceptTerms"),
 
-            backButton: $("backButton")
+
+            payButton:
+            $("payButton"),
+
+
+            backButton:
+            $("backButton"),
+
+
+
+            firstName:
+            $("firstName"),
+
+
+            lastName:
+            $("lastName"),
+
+
+            email:
+            $("email"),
+
+
+            phone:
+            $("phone"),
+
+
+
+            customerType:
+            $("customerType"),
+
+
+            companySection:
+            $("companySection"),
+
+
+            companyName:
+            $("companyName"),
+
+
+            gstin:
+            $("gstin"),
+
+
+
+            state:
+            $("state"),
+
+
+            address:
+            $("address"),
+
+
+
+
+            cgstAmount:
+            $("cgstAmount"),
+
+
+            sgstAmount:
+            $("sgstAmount"),
+
+
+            igstAmount:
+            $("igstAmount"),
+
+
+            totalAmount:
+            $("totalAmount")
+
 
         };
 
+
     },
 
-    bindEvents() {
 
-        const e = this.elements;
 
-        if (e.accept) {
+
+
+
+
+    bindEvents(){
+
+
+        const e =
+        this.elements;
+
+
+
+        if(e.accept){
+
 
             e.accept.addEventListener(
 
                 "change",
 
-                () => {
+                ()=>{
 
-                    e.payButton.disabled =
-                        !e.accept.checked ||
-                        this.busy;
+
+                    this.updatePayButton();
+
 
                 }
 
             );
 
+
         }
 
-        if (e.backButton) {
+
+
+
+
+        if(e.customerType){
+
+
+            e.customerType.addEventListener(
+
+                "change",
+
+                ()=>{
+
+
+                    this.toggleCompany();
+
+
+                }
+
+            );
+
+
+        }
+
+
+
+
+
+        if(e.state){
+
+
+            e.state.addEventListener(
+
+                "change",
+
+                ()=>{
+
+
+                    this.updateGSTDisplay();
+
+
+                }
+
+            );
+
+
+        }
+
+
+
+
+
+        if(e.backButton){
+
 
             e.backButton.addEventListener(
 
                 "click",
 
-                () => {
+                ()=>{
+
 
                     window.location.href =
-                        "https://writer.vidhwaan.com";
+
+                    "https://writer.vidhwaan.com";
+
 
                 }
 
             );
 
+
         }
 
-        if (e.payButton) {
+
+
+
+
+        if(e.payButton){
+
 
             e.payButton.addEventListener(
 
                 "click",
 
-                () => {
+                ()=>{
+
 
                     this.startPayment();
+
 
                 }
 
             );
 
+
         }
+
 
     },
 
-    setBusy(active, text) {
 
-        this.busy = active;
 
-        const button = this.elements.payButton;
 
-        if (!button) {
 
-            return;
+
+
+
+    toggleCompany(){
+
+
+        const e =
+        this.elements;
+
+
+
+        if(
+
+            e.customerType.value === "company"
+
+        ){
+
+
+            e.companySection.hidden = false;
+
 
         }
 
-        button.disabled =
+        else{
 
-            active ||
 
-            !this.elements.accept.checked;
+            e.companySection.hidden = true;
 
-        if (text) {
 
-            button.textContent = text;
+            e.companyName.value = "";
+
+
+            e.gstin.value = "";
+
 
         }
+
 
     },
 
-    resetButton() {
 
-        this.busy = false;
 
-        this.elements.payButton.disabled =
 
-            !this.elements.accept.checked;
+
+
+
+
+    updateGSTDisplay(){
+
+
+        const e =
+        this.elements;
+
+
+
+        let cgst = 0;
+
+        let sgst = 0;
+
+        let igst = 0;
+
+
+
+        const baseAmount = 30;
+
+
+
+        const companyState =
+        "Andhra Pradesh";
+
+
+
+        if(e.state.value){
+
+
+
+            if(
+
+                e.state.value === companyState
+
+            ){
+
+
+                cgst = 2.70;
+
+
+                sgst = 2.70;
+
+
+            }
+
+            else{
+
+
+                igst = 5.40;
+
+
+            }
+
+
+        }
+
+
+
+
+
+        e.cgstAmount.textContent =
+
+        "₹" + cgst.toFixed(2);
+
+
+
+
+        e.sgstAmount.textContent =
+
+        "₹" + sgst.toFixed(2);
+
+
+
+
+        e.igstAmount.textContent =
+
+        "₹" + igst.toFixed(2);
+
+
+
+
+        e.totalAmount.textContent =
+
+        "₹" +
+
+        (
+
+            baseAmount +
+
+            cgst +
+
+            sgst +
+
+            igst
+
+        ).toFixed(2);
+
+
+
+    },
+
+
+    getCustomerData(){
+
+
+        const e =
+        this.elements;
+
+
+
+        return {
+
+
+            firstName:
+            e.firstName.value.trim(),
+
+
+            lastName:
+            e.lastName.value.trim(),
+
+
+            email:
+            e.email.value.trim(),
+
+
+            phone:
+            e.phone.value.trim(),
+
+
+            customerType:
+            e.customerType.value,
+
+
+            companyName:
+            e.companyName.value.trim(),
+
+
+            gstin:
+            e.gstin.value.trim()
+            .toUpperCase(),
+
+
+            state:
+            e.state.value.trim(),
+
+
+            address:
+            e.address.value.trim()
+
+
+        };
+
+
+    },
+
+
+
+
+
+
+
+    validateCustomer(){
+
+
+        const e =
+        this.elements;
+
+
+
+        const required = [
+
+
+            [
+                e.firstName,
+                "Enter first name"
+            ],
+
+
+            [
+                e.lastName,
+                "Enter last name"
+            ],
+
+
+            [
+                e.email,
+                "Enter email address"
+            ],
+
+
+            [
+                e.phone,
+                "Enter phone number"
+            ],
+
+
+            [
+                e.customerType,
+                "Select customer type"
+            ],
+
+
+            [
+                e.state,
+                "Select state"
+            ],
+
+
+            [
+                e.address,
+                "Enter billing address"
+            ]
+
+        ];
+
+
+
+
+
+        for(
+            const item of required
+        ){
+
+
+            if(
+                !item[0].value.trim()
+            ){
+
+
+                alert(item[1]);
+
+
+                item[0].focus();
+
+
+                return false;
+
+
+            }
+
+
+        }
+
+
+
+
+
+        if(
+
+            e.customerType.value === "company" &&
+
+            !e.companyName.value.trim()
+
+        ){
+
+
+            alert(
+                "Enter company name"
+            );
+
+
+            e.companyName.focus();
+
+
+            return false;
+
+
+        }
+
+
+
+        return true;
+
+
+    },
+
+
+
+
+
+
+
+
+    updatePayButton(){
+
+
+        const e =
+        this.elements;
+
+
+        e.payButton.disabled =
+
+        !e.accept.checked ||
+
+        this.busy;
+
+
+
+    },
+
+
+
+
+
+
+
+
+    setBusy(
+        active,
+        text
+    ){
+
+
+        this.busy =
+        active;
+
+
+        this.updatePayButton();
+
+
+
+        if(text){
+
+
+            this.elements.payButton.textContent =
+            text;
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+    resetButton(){
+
+
+        this.busy =
+        false;
+
+
+        this.updatePayButton();
+
 
         this.elements.payButton.textContent =
 
-            "Pay ₹35.40";
+        "Pay ₹30.00";
+
 
     },
 
-    async startPayment() {
 
-        if (this.busy) {
+
+
+
+
+
+
+    async startPayment(){
+
+
+        if(this.busy){
 
             return;
 
         }
+
+
+
+
+
+        if(
+            !this.validateCustomer()
+        ){
+
+            return;
+
+        }
+
+
+
+
 
         this.setBusy(
 
@@ -152,19 +713,33 @@ const PaymentPage = {
 
         );
 
-        try {
+
+
+
+
+        try{
+
 
             const order =
 
-                await this.createOrder();
+            await this.createOrder();
+
+
+
 
             this.openCheckout(order);
 
+
+
         }
 
-        catch (error) {
+        catch(error){
+
+
 
             console.error(error);
+
+
 
             alert(
 
@@ -174,205 +749,250 @@ const PaymentPage = {
 
             );
 
+
+
             this.resetButton();
 
+
         }
+
+
 
     },
 
-    async createOrder() {
 
-        const controller =
 
-            new AbortController();
 
-        const timer =
 
-            setTimeout(
 
-                () => controller.abort(),
 
-                15000
 
-            );
+    async createOrder(){
 
-        try {
 
-            const response =
+        const response =
 
-                await fetch(
+        await fetch(
 
-                    this.config.WORKER_URL +
+            this.config.WORKER_URL +
 
-                    this.config.CREATE_ORDER,
+            this.config.CREATE_ORDER,
 
-                    {
+            {
 
-                        method: "POST",
 
-                        headers: {
+                method:"POST",
 
-                            "Content-Type":
 
-                            "application/json"
+                headers:{
 
-                        },
 
-                        body: JSON.stringify({
+                    "Content-Type":
 
-                            amount:
+                    "application/json"
 
-                            this.config.AMOUNT,
 
-                            currency: "INR"
+                },
 
-                        }),
 
-                        signal:
+                body:JSON.stringify({
 
-                        controller.signal
 
-                    }
+                    customer:
 
-                );
+                    this.getCustomerData()
 
-            clearTimeout(timer);
 
-            if (!response.ok) {
+                })
 
-                throw new Error(
-
-                    "Unable to create payment order."
-
-                );
 
             }
-
-            const order =
-
-                await response.json();
-
-            if (
-
-                !order ||
-
-                !order.orderId ||
-
-                !order.key
-
-            ) {
-
-                throw new Error(
-
-                    "Invalid payment response."
-
-                );
-
-            }
-
-            return order;
-
-        }
-
-        catch (error) {
-
-            clearTimeout(timer);
-
-            if (
-
-                error.name ===
-
-                "AbortError"
-
-            ) {
-
-                throw new Error(
-
-                    "Request timed out."
-
-                );
-
-            }
-
-            throw error;
-
-        }
-
-    },
-
-    openCheckout(order) {
-
-        this.setBusy(
-
-            true,
-
-            "Opening Secure Payment..."
 
         );
 
+
+
+
+
+        if(!response.ok){
+
+
+            throw new Error(
+
+                "Order creation failed."
+
+            );
+
+
+        }
+
+
+
+
+
+        const order =
+
+        await response.json();
+
+
+
+
+
+        if(
+
+            !order.orderId ||
+
+            !order.key
+
+        ){
+
+
+            throw new Error(
+
+                "Invalid worker response."
+
+            );
+
+
+        }
+
+
+
+
+        return order;
+
+
+    },
+
+
+
+
+
+
+
+
+    openCheckout(order){
+
+
+
         const razorpay =
 
-            new Razorpay({
+        new Razorpay({
 
-                key:
-                order.key,
 
-                amount:
-                order.amount,
 
-                currency:
-                order.currency,
+            key:
 
-                order_id:
-                order.orderId,
+            order.key,
 
-                name:
-                "VIDHWAAN AI Writer",
 
-                description:
-                "Monthly Subscription",
 
-                handler:
+            amount:
 
-                async(payment)=>{
+            order.amount,
 
-                    await this.verifyPayment(
-                        payment
-                    );
 
-                },
 
-                modal:{
+            currency:
 
-                    escape:true,
+            order.currency,
 
-                    backdropclose:false,
 
-                    confirm_close:true,
 
-                    ondismiss:()=>{
+            order_id:
 
-                        this.resetButton();
+            order.orderId,
 
-                    }
 
-                },
 
-                theme:{
+            name:
 
-                    color:"#111827"
+            "VIDHWAAN AI Writer",
+
+
+
+            description:
+
+            "Monthly Subscription",
+
+
+
+
+
+            handler:
+
+            async(payment)=>{
+
+
+                await this.verifyPayment(payment);
+
+
+            },
+
+
+
+
+
+            modal:{
+
+
+                escape:true,
+
+
+                backdropclose:false,
+
+
+                confirm_close:true,
+
+
+
+                ondismiss:()=>{
+
+
+                    this.resetButton();
+
 
                 }
 
-            });
+
+            },
+
+
+
+
+
+            theme:{
+
+
+                color:"#111827"
+
+
+            }
+
+
+
+        });
+
+
+
+
 
         razorpay.open();
 
+
+
     },
+
+
+
+
+
 
 
 
     async verifyPayment(payment){
+
+
 
         this.setBusy(
 
@@ -382,149 +1002,165 @@ const PaymentPage = {
 
         );
 
-        const controller =
 
-            new AbortController();
 
-        const timer =
 
-            setTimeout(
 
-                ()=>controller.abort(),
+        const response =
 
-                20000
+        await fetch(
 
-            );
+            this.config.WORKER_URL +
 
-        try{
+            this.config.VERIFY_PAYMENT,
 
-            const response =
+            {
 
-                await fetch(
 
-                    this.config.WORKER_URL +
+                method:"POST",
 
-                    this.config.VERIFY_PAYMENT,
 
-                    {
+                headers:{
 
-                        method:"POST",
 
-                        headers:{
+                    "Content-Type":
 
-                            "Content-Type":
-                            "application/json"
+                    "application/json"
 
-                        },
 
-                        body:
+                },
 
-                        JSON.stringify(
-                            payment
-                        ),
 
-                        signal:
-                        controller.signal
+                body:JSON.stringify({
 
-                    }
 
-                );
 
-            clearTimeout(
-                timer
-            );
+                    ...payment,
 
-            if(
-                !response.ok
-            ){
 
-                throw new Error(
 
-                    "Payment verification failed."
+                    customer:
 
-                );
+                    this.getCustomerData()
+
+
+
+                })
+
 
             }
 
-            const data =
+        );
 
-                await response.json();
 
-            if(
 
-                data &&
 
-                data.uniqueId &&
 
-                data.expires
+        if(!response.ok){
 
-            ){
-
-                this.redirectSuccess(
-
-                    data
-
-                );
-
-                return;
-
-            }
 
             this.redirectFailure();
 
-        }
 
-        catch(error){
+            return;
 
-            clearTimeout(
-                timer
-            );
-
-            console.error(
-                error
-            );
-
-            this.redirectFailure();
 
         }
+
+
+
+
+
+
+        const data =
+
+        await response.json();
+
+
+
+
+
+        if(
+
+            data.success &&
+
+            data.uniqueId
+
+        ){
+
+
+
+            this.redirectSuccess(data);
+
+
+            return;
+
+
+        }
+
+
+
+
+
+        this.redirectFailure();
+
+
 
     },
+
+
+
+
+
 
 
 
     redirectSuccess(data){
 
+
+
         const url =
 
-            this.config.PAYMENT_STATUS +
+        this.config.PAYMENT_STATUS +
 
-            "?status=success" +
+        "?status=success" +
 
-            "&id=" +
+        "&id=" +
 
-            encodeURIComponent(
+        encodeURIComponent(
 
-                data.uniqueId
+            data.uniqueId
 
-            ) +
+        ) +
 
-            "&expires=" +
+        "&expires=" +
 
-            encodeURIComponent(
+        encodeURIComponent(
 
-                data.expires
+            data.expires
 
-            );
-
-        window.location.replace(
-            url
         );
+
+
+
+
+
+        window.location.replace(url);
+
+
 
     },
 
 
 
+
+
+
+
+
     redirectFailure(){
+
+
 
         window.location.replace(
 
@@ -534,9 +1170,16 @@ const PaymentPage = {
 
         );
 
+
     }
 
+
+
 };
+
+
+
+
 
 
 
@@ -546,11 +1189,10 @@ document.addEventListener(
 
     ()=>{
 
+
         PaymentPage.init();
+
 
     }
 
 );
-
-
-   

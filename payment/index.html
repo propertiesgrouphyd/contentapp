@@ -6,24 +6,31 @@
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>
 VIDHWAAN AI Writer - Subscription
 </title>
 
+
 <link
-    rel="stylesheet"
-    href="payment.css">
+rel="stylesheet"
+href="payment.css">
+
 
 </head>
 
+
 <body>
+
 
 <main class="payment-container">
 
+
 <section class="payment-card">
+
+
 
 <h1>
 
@@ -31,27 +38,526 @@ VIDHWAAN AI Writer
 
 </h1>
 
+
+
 <h2>
 
 Subscription Activation
 
 </h2>
 
+
+
 <p class="description">
 
-Review your subscription details before completing payment.
+Complete your billing details before payment.
 
 </p>
 
-<div class="price-box">
+
+
+
+
+<!-- =====================================================
+     CUSTOMER INFORMATION
+     ===================================================== -->
+
+
+<div class="customer-box">
+
 
 <h3>
 
-Monthly Subscription
+Customer Information
 
 </h3>
 
+
+
+<div class="customer-grid">
+
+
+
+
+
+<div class="customer-field">
+
+<label for="firstName">
+
+First Name
+
+</label>
+
+
+<input
+
+id="firstName"
+
+type="text"
+
+placeholder="Enter first name"
+
+autocomplete="given-name">
+
+</div>
+
+
+
+
+
+<div class="customer-field">
+
+<label for="lastName">
+
+Last Name
+
+</label>
+
+
+<input
+
+id="lastName"
+
+type="text"
+
+placeholder="Enter last name"
+
+autocomplete="family-name">
+
+</div>
+
+
+
+
+
+<div class="customer-field">
+
+<label for="email">
+
+Email Address
+
+</label>
+
+
+<input
+
+id="email"
+
+type="email"
+
+placeholder="Enter email address"
+
+autocomplete="email">
+
+</div>
+
+
+
+
+
+<div class="customer-field">
+
+<label for="phone">
+
+Phone Number
+
+</label>
+
+
+<input
+
+id="phone"
+
+type="tel"
+
+placeholder="Enter phone number"
+
+autocomplete="tel">
+
+</div>
+
+
+
+
+
+
+
+<div class="customer-field full">
+
+
+<label for="customerType">
+
+Customer Type
+
+</label>
+
+
+
+<select id="customerType">
+
+
+<option value="">
+
+Select Customer Type
+
+</option>
+
+
+<option value="individual">
+
+Individual
+
+</option>
+
+
+<option value="company">
+
+Company
+
+</option>
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+<div
+
+id="companySection"
+
+class="customer-field full"
+
+hidden>
+
+
+
+<label for="companyName">
+
+Company Name
+
+</label>
+
+
+
+<input
+
+id="companyName"
+
+type="text"
+
+placeholder="Enter company name"
+
+autocomplete="organization">
+
+
+
+
+
+<label for="gstin">
+
+GSTIN (Optional)
+
+</label>
+
+
+
+<input
+
+id="gstin"
+
+type="text"
+
+placeholder="Enter GSTIN"
+
+autocomplete="off">
+
+
+
+</div>
+
+
+
+
+
+
+<div class="customer-field full">
+
+
+<label for="state">
+
+State / Union Territory
+
+</label>
+
+
+
+<select id="state">
+
+
+<option value="">
+
+Select State / Union Territory
+
+</option>
+
+
+<option>
+Andaman and Nicobar Islands
+</option>
+
+
+<option>
+Andhra Pradesh
+</option>
+
+
+<option>
+Arunachal Pradesh
+</option>
+
+
+<option>
+Assam
+</option>
+
+
+<option>
+Bihar
+</option>
+
+
+<option>
+Chandigarh
+</option>
+
+
+<option>
+Chhattisgarh
+</option>
+
+
+<option>
+Dadra and Nagar Haveli and Daman and Diu
+</option>
+
+
+<option>
+Delhi
+</option>
+
+
+<option>
+Goa
+</option>
+
+
+<option>
+Gujarat
+</option>
+
+
+<option>
+Haryana
+</option>
+
+
+<option>
+Himachal Pradesh
+</option>
+
+
+<option>
+Jammu and Kashmir
+</option>
+
+
+<option>
+Jharkhand
+</option>
+
+
+<option>
+Karnataka
+</option>
+
+
+<option>
+Kerala
+</option>
+
+
+<option>
+Ladakh
+</option>
+
+
+<option>
+Lakshadweep
+</option>
+
+
+<option>
+Madhya Pradesh
+</option>
+
+
+<option>
+Maharashtra
+</option>
+
+
+<option>
+Manipur
+</option>
+
+
+<option>
+Meghalaya
+</option>
+
+
+<option>
+Mizoram
+</option>
+
+
+<option>
+Nagaland
+</option>
+
+
+<option>
+Odisha
+</option>
+
+
+<option>
+Puducherry
+</option>
+
+
+<option>
+Punjab
+</option>
+
+
+<option>
+Rajasthan
+</option>
+
+
+<option>
+Sikkim
+</option>
+
+
+<option>
+Tamil Nadu
+</option>
+
+
+<option>
+Telangana
+</option>
+
+
+<option>
+Tripura
+</option>
+
+
+<option>
+Uttar Pradesh
+</option>
+
+
+<option>
+Uttarakhand
+</option>
+
+
+<option>
+West Bengal
+</option>
+
+
+</select>
+
+
+</div>
+
+<!-- =====================================================
+     BILLING ADDRESS
+     ===================================================== -->
+
+
+<div class="customer-field full">
+
+
+<label for="address">
+
+Billing Address
+
+</label>
+
+
+
+<textarea
+
+id="address"
+
+rows="3"
+
+placeholder="Enter billing address"
+
+autocomplete="street-address">
+
+</textarea>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- =====================================================
+     PAYMENT SUMMARY
+     ===================================================== -->
+
+
+<div class="price-box">
+
+
+<h3>
+
+Payment Summary
+
+</h3>
+
+
+
+
 <div class="price-row">
+
 
 <span>
 
@@ -59,16 +565,92 @@ Subscription Price
 
 </span>
 
-<strong>
+
+<strong id="baseAmount">
 
 ₹30.00
 
 </strong>
 
+
 </div>
 
 
+
+
+
+<div class="price-row">
+
+
+<span>
+
+CGST
+
+</span>
+
+
+<strong id="cgstAmount">
+
+₹0.00
+
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="price-row">
+
+
+<span>
+
+SGST
+
+</span>
+
+
+<strong id="sgstAmount">
+
+₹0.00
+
+</strong>
+
+
+</div>
+
+
+
+
+
+<div class="price-row">
+
+
+<span>
+
+IGST
+
+</span>
+
+
+<strong id="igstAmount">
+
+₹0.00
+
+</strong>
+
+
+</div>
+
+
+
+
+
+
 <div class="price-row total">
+
 
 <span>
 
@@ -76,17 +658,34 @@ Total Payable
 
 </span>
 
-<strong>
+
+<strong id="totalAmount">
 
 ₹30.00
 
 </strong>
 
-</div>
 
 </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =====================================================
+     TERMS
+     ===================================================== -->
+
 
 <div class="terms-box">
+
 
 <h3>
 
@@ -94,37 +693,67 @@ Terms & Conditions
 
 </h3>
 
+
+
 <ul>
 
-<li>
-Subscription access is linked to this browser.
-</li>
 
 <li>
-Clearing browser data or local storage may remove saved subscription information.
+
+Subscription activation happens only after successful payment verification.
+
 </li>
 
-<li>
-A new subscription may be required after browser data is deleted.
-</li>
 
 <li>
-Do not share your browser profile or stored subscription information.
+
+Invoice will be generated using the billing information provided.
+
 </li>
 
+
 <li>
-Subscription activation is completed only after successful payment verification.
+
+Please provide accurate customer details.
+
 </li>
+
+
+<li>
+
+Subscription validity is 30 days from successful activation.
+
+</li>
+
+
+<li>
+
+Subscription access information is stored locally in this browser.
+
+</li>
+
 
 </ul>
 
+
 </div>
+
+
+
+
+
+
 
 <label class="accept-box">
 
+
 <input
-    id="acceptTerms"
-    type="checkbox">
+
+id="acceptTerms"
+
+type="checkbox">
+
+
 
 <span>
 
@@ -132,32 +761,64 @@ I have read and accept the Terms & Conditions.
 
 </span>
 
+
 </label>
 
+
+
+
+
+
+
 <button
-    id="payButton"
-    disabled>
+
+id="payButton"
+
+disabled>
+
 
 Pay ₹30.00
 
+
 </button>
 
+
+
+
+
+
+
 <button
-    id="backButton"
-    class="back-button"
-    type="button">
+
+id="backButton"
+
+class="back-button"
+
+type="button">
+
 
 ← Back to AI Writer
 
+
 </button>
 
+
+
+
+
+
+
+
 <div class="support">
+
 
 <p>
 
 Need assistance?
 
 </p>
+
+
 
 <p>
 
@@ -169,34 +830,69 @@ info@vidhwaan.com
 
 </p>
 
+
+
+
 <p>
 
 <a
-    href="https://vidhwaan.com"
-    target="_blank"
-    rel="noopener">
+
+href="https://vidhwaan.com"
+
+target="_blank"
+
+rel="noopener">
+
 
 vidhwaan.com
+
 
 </a>
 
 </p>
 
+
+
 </div>
+
+
+
+
+
+
 
 </section>
 
+
 </main>
+
+
+
+
+
+
 
 <script src="../config.js"></script>
 
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+
+
+
 <script
-    type="module"
-    src="payment.js">
+
+type="module"
+
+src="payment.js">
+
 </script>
 
+
+
+
+
 </body>
+
 
 </html>
