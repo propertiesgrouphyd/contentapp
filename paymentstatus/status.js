@@ -468,9 +468,9 @@ padding:25px;
 
 box-sizing:border-box;
 
-font-size:11px;
+font-size:12px;
 
-line-height:1.35;
+line-height:1.4;
 
 color:#111827;
 
@@ -759,7 +759,7 @@ ${seller.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
 <h2>Payment Reference</h2>
 
 
-table>
+<table>
 
 <tr>
 
