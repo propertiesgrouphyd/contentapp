@@ -963,15 +963,16 @@ summary h2::before{
         border-radius:16px;
     }
 
-    /* Generator section gets side spacing */
+    /* Only generator card gets side spacing */
     #vw-generator-section{
-        padding-inline:12px;
+        width:calc(100% - (var(--vw-space-3) * 2));
+        margin-inline:auto;
     }
 
-    /* Generated content remains full width */
+    /* Output card remains full width */
     #vw-output-section{
-        margin:0;
         width:100%;
+        margin:0;
     }
 
 }
