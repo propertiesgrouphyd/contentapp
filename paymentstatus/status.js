@@ -1,28 +1,23 @@
 "use strict";
 
+
 /* ==========================================================================
    VIDHWAAN AI Writer
 
    Payment Status Controller
 
-   Production
-
-   Responsibilities
-
-   • Display payment result
-   • Save subscription locally
-   • Store subscription ID
-   • Store expiry date
-   • Return user to application
+   - Reads subscription ID
+   - Fetches R2 JSON
+   - Displays invoice number
+   - Generates PDF invoice
 
    ========================================================================== */
 
 
-import Storage from "../engine/storage.js";
-
-
-
 const StatusPage = {
+
+
+    data:null,
 
 
     elements:{},
@@ -34,12 +29,17 @@ const StatusPage = {
 
         this.cacheElements();
 
+
         this.bindEvents();
 
-        this.loadStatus();
+
+        this.load();
 
 
     },
+
+
+
 
 
 
@@ -47,7 +47,8 @@ const StatusPage = {
 
 
         const $ = id =>
-            document.getElementById(id);
+
+        document.getElementById(id);
 
 
 
@@ -55,35 +56,43 @@ const StatusPage = {
 
 
             icon:
-                $("statusIcon"),
+            $("statusIcon"),
 
 
             title:
-                $("statusTitle"),
+            $("statusTitle"),
 
 
             message:
-                $("statusMessage"),
+            $("statusMessage"),
 
 
             subscriptionBox:
-                $("subscriptionBox"),
+            $("subscriptionBox"),
 
 
             subscriptionId:
-                $("subscriptionId"),
+            $("subscriptionId"),
+
+
+            invoiceNumber:
+            $("invoiceNumber"),
 
 
             expiryDate:
-                $("expiryDate"),
+            $("expiryDate"),
+
+
+            downloadInvoice:
+            $("downloadInvoice"),
 
 
             failedBox:
-                $("failedBox"),
+            $("failedBox"),
 
 
             backButton:
-                $("backButton")
+            $("backButton")
 
 
         };
@@ -93,285 +102,732 @@ const StatusPage = {
 
 
 
+
+
+
+
     bindEvents(){
 
 
-        if(this.elements.backButton){
+        this.elements.backButton?.addEventListener(
+
+            "click",
+
+            ()=>{
 
 
-            this.elements.backButton.addEventListener(
+                window.location.href =
 
-                "click",
-
-                ()=>{
+                "https://writer.vidhwaan.com";
 
 
-                    window.location.href =
+            }
 
-                    "https://writer.vidhwaan.com";
-
-
-                }
-
-            );
+        );
 
 
-        }
+
+
+
+
+        this.elements.downloadInvoice?.addEventListener(
+
+            "click",
+
+            ()=>{
+
+
+                this.downloadInvoice();
+
+
+            }
+
+        );
 
 
     },
 
 
 
-    loadStatus(){
+
+
+
+
+
+    async load(){
+
 
 
         const params =
 
-            new URLSearchParams(
+        new URLSearchParams(
 
-                window.location.search
+            window.location.search
 
-            );
+        );
 
 
 
         const status =
 
-            params.get("status") || "failed";
+        params.get("status");
 
 
 
         const id =
 
-            params.get("id") || "";
+        params.get("id");
 
 
 
         const expires =
 
-            params.get("expires") || "";
+        params.get("expires");
 
 
 
-        if(status === "success"){
 
 
-            this.showSuccess(
 
-                id,
+        if(
 
-                expires
+            status !== "success" ||
+
+            !id
+
+        ){
+
+
+
+            this.showFailed();
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+        localStorage.setItem(
+
+            "VIDHWAAN_SUBSCRIPTION_ID",
+
+            id
+
+        );
+
+
+
+
+
+        this.elements.subscriptionId.textContent =
+
+        id;
+
+
+
+        this.elements.expiryDate.textContent =
+
+        this.formatDate(expires);
+
+
+
+
+
+
+        await this.loadInvoice(id);
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+    async loadInvoice(id){
+
+
+
+        try{
+
+
+            const response =
+
+            await fetch(
+
+
+                "https://subscriptions.propertiesgrouphyd.online/subscriptions/" +
+
+                encodeURIComponent(id) +
+
+                ".json",
+
+
+                {
+
+
+                    cache:"no-store"
+
+
+                }
+
 
             );
 
 
+
+
+
+
+
+            if(!response.ok){
+
+
+                throw new Error(
+
+                    "Subscription record not found"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
+            this.data =
+
+            await response.json();
+
+
+
+
+
+
+            this.elements.invoiceNumber.textContent =
+
+            this.data.invoice?.invoiceNumber ||
+
+            "-";
+
+
+
+
+
+
+            this.elements.downloadInvoice.hidden =
+
+            false;
+
+
+
         }
 
-        else{
+        catch(error){
 
 
-            this.showFailure();
+            console.error(error);
 
 
         }
+
 
 
     },
 
 
 
-    showSuccess(id, expires){
-
-
-        const e = this.elements;
 
 
 
-        if(e.icon){
 
 
-            e.icon.textContent = "✓";
-
-            e.icon.classList.remove("failed");
-
-
-        }
+    downloadInvoice(){
 
 
 
-        if(e.title){
+        if(!this.data){
 
 
-            e.title.textContent =
 
-                "Payment Successful";
+            alert(
+
+                "Invoice data not loaded."
+
+            );
+
+
+            return;
 
 
         }
 
 
 
-        if(e.message){
-
-
-            e.message.textContent =
-
-                "Your VIDHWAAN AI Writer subscription is active. You can continue creating content.";
-
-
-        }
 
 
 
-        if(e.subscriptionBox){
 
+        const d =
 
-            e.subscriptionBox.hidden = false;
-
-
-        }
+        this.data;
 
 
 
-        if(e.failedBox){
-
-
-            e.failedBox.hidden = true;
-
-
-        }
 
 
 
-        if(e.subscriptionId){
+        const c =
 
-
-            e.subscriptionId.textContent =
-
-                id || "-";
-
-
-        }
+        d.customer || {};
 
 
 
-        if(e.expiryDate){
+        const gst =
 
-
-            e.expiryDate.textContent =
-
-                this.formatDate(expires);
-
-
-        }
+        d.gst || {};
 
 
 
-        /*
-            Save subscription locally
+        const payment =
 
-            Required for main app access
-        */
+        d.payment || {};
 
 
-        if(id && expires){
+
+        const invoice =
+
+        d.invoice || {};
 
 
-            Storage.saveSubscription({
-
-                uniqueId: id,
-
-                expires: Number(expires)
-
-            });
 
 
-        }
+
+
+
+
+        const invoiceHTML = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+
+${invoice.invoiceNumber}
+
+</title>
+
+
+<style>
+
+
+body{
+
+font-family:Arial,sans-serif;
+
+padding:40px;
+
+color:#111;
+
+}
+
+
+h1{
+
+font-size:28px;
+
+}
+
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+margin-top:20px;
+
+}
+
+
+td,th{
+
+border:1px solid #ccc;
+
+padding:10px;
+
+text-align:left;
+
+}
+
+
+.total{
+
+font-weight:bold;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h1>
+
+VIDHWAAN TECHNOLOGIES PRIVATE LIMITED
+
+</h1>
+
+
+<h2>
+
+TAX INVOICE
+
+</h2>
+
+
+
+<p>
+
+Invoice Number:
+
+${invoice.invoiceNumber || "-"}
+
+</p>
+
+
+
+<hr>
+
+
+<h3>
+
+Customer Details
+
+</h3>
+
+
+<p>
+
+${c.firstName || ""}
+
+${c.lastName || ""}
+
+</p>
+
+
+<p>
+
+${c.companyName || ""}
+
+</p>
+
+
+<p>
+
+GSTIN:
+
+${c.gstin || "-"}
+
+</p>
+
+
+<p>
+
+State:
+
+${c.state || "-"}
+
+</p>
+
+
+<p>
+
+Address:
+
+${c.address || "-"}
+
+</p>
+
+
+
+
+<table>
+
+
+<tr>
+
+<th>
+
+Description
+
+</th>
+
+<th>
+
+Amount
+
+</th>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+VIDHWAAN AI Writer Monthly Subscription
+
+</td>
+
+
+<td>
+
+₹${gst.taxableAmount || 0}
+
+</td>
+
+
+</tr>
+
+
+<tr>
+
+<td>
+
+CGST
+
+</td>
+
+<td>
+
+₹${gst.cgst || 0}
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+SGST
+
+</td>
+
+<td>
+
+₹${gst.sgst || 0}
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+IGST
+
+</td>
+
+<td>
+
+₹${gst.igst || 0}
+
+</td>
+
+</tr>
+
+
+<tr class="total">
+
+
+<td>
+
+Total Paid
+
+</td>
+
+
+<td>
+
+₹${gst.totalAmount || 0}
+
+</td>
+
+
+</tr>
+
+
+</table>
+
+
+
+<p>
+
+Payment ID:
+
+${payment.paymentId || "-"}
+
+</p>
+
+
+
+<p>
+
+Order ID:
+
+${payment.orderId || "-"}
+
+</p>
+
+
+
+<br>
+
+
+<p>
+
+Thank you for choosing VIDHWAAN.
+
+</p>
+
+
+</body>
+
+
+</html>
+
+`;
+
+
+
+
+
+
+
+
+        const win =
+
+        window.open(
+
+            "",
+
+            "_blank"
+
+        );
+
+
+
+        win.document.write(
+
+            invoiceHTML
+
+        );
+
+
+        win.document.close();
+
+
+
+
+        win.onload = ()=>{
+
+
+            win.print();
+
+
+        };
+
 
 
     },
 
 
 
-    showFailure(){
-
-
-        const e = this.elements;
 
 
 
-        if(e.icon){
-
-
-            e.icon.textContent = "!";
-
-            e.icon.classList.add("failed");
-
-
-        }
 
 
 
-        if(e.title){
-
-
-            e.title.textContent =
-
-                "Payment Not Completed";
-
-
-        }
+    showFailed(){
 
 
 
-        if(e.message){
+        this.elements.subscriptionBox.hidden =
 
-
-            e.message.textContent =
-
-                "Your payment could not be verified.";
-
-
-        }
+        true;
 
 
 
-        if(e.subscriptionBox){
+        this.elements.failedBox.hidden =
 
-
-            e.subscriptionBox.hidden = true;
-
-
-        }
+        false;
 
 
 
-        if(e.failedBox){
+        this.elements.icon.textContent =
+
+        "!";
 
 
-            e.failedBox.hidden = false;
+
+        this.elements.icon.classList.add(
+
+            "failed"
+
+        );
 
 
-        }
 
+        this.elements.title.textContent =
+
+        "Payment Failed";
+
+
+
+        this.elements.message.textContent =
+
+        "Payment verification was not completed.";
 
     },
+
+
+
+
+
 
 
 
     formatDate(value){
 
 
-        if(
 
-            !value ||
-
-            value === "-" ||
-
-            value === "null"
-
-        ){
+        if(!value){
 
             return "-";
 
@@ -379,33 +835,11 @@ const StatusPage = {
 
 
 
-        const date =
+        return new Date(
 
-            new Date(
+            Number(value)
 
-                Number(value)
-
-            );
-
-
-
-        if(
-
-            Number.isNaN(
-
-                date.getTime()
-
-            )
-
-        ){
-
-            return value;
-
-        }
-
-
-
-        return date.toLocaleDateString(
+        ).toLocaleDateString(
 
             undefined,
 
@@ -425,7 +859,12 @@ const StatusPage = {
     }
 
 
+
 };
+
+
+
+
 
 
 
