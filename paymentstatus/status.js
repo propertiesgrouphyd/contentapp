@@ -489,6 +489,19 @@ border-collapse:collapse;
 
 margin-top:15px;
 
+page-break-inside:avoid;
+
+break-inside:avoid;
+
+}
+
+
+tr{
+
+page-break-inside:avoid;
+
+break-inside:avoid;
+
 }
 
 
@@ -1089,6 +1102,17 @@ ${seller.legalName}
 
 
 
+        container.style.position = "fixed";
+
+        container.style.left = "-9999px";
+
+        container.style.top = "0";
+
+        container.style.width = "794px";
+
+        container.style.background = "#ffffff";
+
+
         document.body.appendChild(container);
 
 
@@ -1101,7 +1125,7 @@ ${seller.legalName}
 
         .set({
 
-            margin:10,
+            margin:[10,10,10,10],
 
 
             filename:
@@ -1133,7 +1157,10 @@ ${seller.legalName}
                 scale:2,
 
 
-                useCORS:true
+                useCORS:true,
+
+
+                scrollY:0
 
 
             },
