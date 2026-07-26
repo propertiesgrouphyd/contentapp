@@ -542,6 +542,26 @@ color:#6b7280;
 }
 
 
+h2,
+table,
+tr,
+.footer{
+
+    break-inside:avoid;
+
+    page-break-inside:avoid;
+
+}
+
+
+td,
+th{
+
+    vertical-align:top;
+
+}
+
+
 
 </style>
 
@@ -1091,7 +1111,6 @@ ${seller.legalName}
 
 
 
-
         const container =
 
         document.createElement("div");
@@ -1102,105 +1121,271 @@ ${seller.legalName}
 
 
 
-    
+        Object.assign(
 
-        container.style.position = "absolute";
+            container.style,
 
-        container.style.left = "0";
+            {
 
-        container.style.top = "0";
+                position:"fixed",
 
-        container.style.width = "794px";
+                left:"-100000px",
 
-        container.style.visibility = "hidden";
+                top:"0",
 
-        container.style.pointerEvents = "none";
+                width:"794px",
 
-        container.style.background = "#ffffff";
+                minHeight:"1123px",
+
+                background:"#ffffff",
+
+                color:"#111827",
+
+                boxSizing:"border-box",
+
+                fontFamily:"Arial, Helvetica, sans-serif",
+
+                pointerEvents:"none",
+
+                overflow:"visible",
+
+                visibility:"visible",
+
+                opacity:"1",
+
+                zIndex:"-1"
+
+            }
+
+        );
+
 
 
         document.body.appendChild(container);
 
 
 
+        await new Promise(
+
+            requestAnimationFrame
+
+        );
 
 
 
-        await html2pdf()
-
-        .set({
-
-            margin:[10,10,10,10],
+        try{
 
 
-            filename:
+            const canvas =
 
-            "VIDHWAAN-" +
+            await html2canvas(
 
-            (invoice.invoiceNumber || "Invoice") +
+                container,
 
-            ".pdf",
+                {
 
+                    scale:2,
 
+                    backgroundColor:"#ffffff",
 
-            image:{
+                    useCORS:true,
 
+                    logging:false,
 
-                type:"jpeg",
+                    windowWidth:794
 
+                }
 
-                quality:0.98
-
-
-            },
+            );
 
 
 
-            html2canvas:{
+            const pdf =
 
-                scale:2,
+            new jspdf.jsPDF(
 
-                useCORS:true,
+                "p",
 
-                backgroundColor:"#ffffff",
+                "mm",
 
-                windowWidth:794,
+                "a4"
 
-                scrollY:0
-
-            },
+            );
 
 
 
-            jsPDF:{
+            const pageWidth =
+
+            pdf.internal.pageSize.getWidth();
 
 
-                unit:"mm",
+
+            const pageHeight =
+
+            pdf.internal.pageSize.getHeight();
 
 
-                format:"a4",
+
+            const margin = 10;
 
 
-                orientation:"portrait"
+
+            const imgWidth =
+
+            pageWidth -
+
+            (
+
+                margin * 2
+
+            );
+
+
+
+            const imgHeight =
+
+            canvas.height *
+
+            imgWidth /
+
+            canvas.width;
+
+
+
+            const imgData =
+
+            canvas.toDataURL(
+
+                "image/png",
+
+                1.0
+
+            );
+
+
+
+            let heightLeft =
+
+            imgHeight;
+
+
+
+            let position =
+
+            margin;
+
+
+
+            pdf.addImage(
+
+                imgData,
+
+                "PNG",
+
+                margin,
+
+                position,
+
+                imgWidth,
+
+                imgHeight
+
+            );
+
+
+
+            heightLeft -=
+
+            pageHeight -
+
+            (
+
+                margin * 2
+
+            );
+
+
+
+            while(
+
+                heightLeft > 0
+
+            ){
+
+
+                position =
+
+                heightLeft -
+
+                imgHeight +
+
+                margin;
+
+
+
+                pdf.addPage();
+
+
+
+                pdf.addImage(
+
+                    imgData,
+
+                    "PNG",
+
+                    margin,
+
+                    position,
+
+                    imgWidth,
+
+                    imgHeight
+
+                );
+
+
+
+                heightLeft -=
+
+                pageHeight -
+
+                (
+
+                    margin * 2
+
+                );
 
 
             }
 
 
-        })
+
+            pdf.save(
+
+                "VIDHWAAN-" +
+
+                (
+
+                    invoice.invoiceNumber ||
+
+                    "Invoice"
+
+                ) +
+
+                ".pdf"
+
+            );
 
 
-        .from(container)
+        }
 
-        .save();
-
-
+        finally{
 
 
+            container.remove();
 
 
-        container.remove();
-
+        }
 
 
     },
