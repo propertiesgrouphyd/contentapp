@@ -427,9 +427,9 @@ const StatusPage = {
 
 
 
-        const company =
+        const seller =
 
-        data.company || {};
+        data.seller || {};
 
 
 
@@ -542,7 +542,7 @@ font-weight:bold;
 
 <h1>
 
-${company.brand || "VIDHWAAN AI Writer"}
+${seller.brand || "VIDHWAAN AI Writer"}
 
 </h1>
 
@@ -562,7 +562,7 @@ Issued By:
 
 <br>
 
-${company.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
+${seller.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
 
 </p>
 
