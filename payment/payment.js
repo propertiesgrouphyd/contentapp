@@ -919,6 +919,32 @@ const PaymentPage = {
 
 
 
+            prefill:{
+
+
+                name:
+
+                this.elements.firstName.value +
+
+                " " +
+
+                this.elements.lastName.value,
+
+
+                email:
+
+                this.elements.email.value,
+
+
+                contact:
+
+                this.elements.phone.value
+
+
+            },
+
+
+
 
 
             handler:
