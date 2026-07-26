@@ -1102,19 +1102,24 @@ ${seller.legalName}
 
 
 
-        container.style.position = "fixed";
+    
 
-        container.style.left = "-9999px";
+        container.style.position = "absolute";
+
+        container.style.left = "0";
 
         container.style.top = "0";
 
         container.style.width = "794px";
 
+        container.style.visibility = "hidden";
+
+        container.style.pointerEvents = "none";
+
         container.style.background = "#ffffff";
 
 
         document.body.appendChild(container);
-
 
 
 
@@ -1153,15 +1158,15 @@ ${seller.legalName}
 
             html2canvas:{
 
-
                 scale:2,
-
 
                 useCORS:true,
 
+                backgroundColor:"#ffffff",
+
+                windowWidth:794,
 
                 scrollY:0
-
 
             },
 
