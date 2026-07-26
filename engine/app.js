@@ -88,6 +88,8 @@ const App = {
 
             apiLinkButton: $("vw-api-link-btn"),
 
+            apiCloseButton: $("vw-api-close-btn"),
+
             copyButton: $("vw-copy-btn"),
 
             regenerateButton: $("vw-regenerate-btn"),
@@ -346,6 +348,26 @@ const App = {
             );
 
         }
+
+
+        if (e.apiCloseButton) {
+
+            e.apiCloseButton.addEventListener(
+
+                "click",
+
+                () => {
+
+                    this.hideModal(
+                        e.apiModal
+                    );
+
+                }
+
+            );
+
+        }
+        
 
         if (e.apiSaveButton) {
 
@@ -917,4 +939,3 @@ document.addEventListener(
     }
 
 );
-
