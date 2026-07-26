@@ -6,12 +6,15 @@
 
    Payment Status Controller
 
-   - Reads subscription ID
-   - Fetches R2 JSON
-   - Displays invoice number
-   - Generates PDF invoice
+   - Save subscription locally
+   - Fetch R2 JSON
+   - Generate Tax Invoice PDF
 
    ========================================================================== */
+
+
+import Storage from "../engine/storage.js";
+
 
 
 const StatusPage = {
@@ -21,6 +24,7 @@ const StatusPage = {
 
 
     elements:{},
+
 
 
 
@@ -109,6 +113,7 @@ const StatusPage = {
     bindEvents(){
 
 
+
         this.elements.backButton?.addEventListener(
 
             "click",
@@ -130,6 +135,7 @@ const StatusPage = {
 
 
 
+
         this.elements.downloadInvoice?.addEventListener(
 
             "click",
@@ -137,7 +143,7 @@ const StatusPage = {
             ()=>{
 
 
-                this.downloadInvoice();
+                this.generateInvoice();
 
 
             }
@@ -145,7 +151,9 @@ const StatusPage = {
         );
 
 
+
     },
+
 
 
 
@@ -174,7 +182,7 @@ const StatusPage = {
 
 
 
-        const id =
+        const uniqueId =
 
         params.get("id");
 
@@ -189,11 +197,12 @@ const StatusPage = {
 
 
 
+
         if(
 
             status !== "success" ||
 
-            !id
+            !uniqueId
 
         ){
 
@@ -213,13 +222,25 @@ const StatusPage = {
 
 
 
-        localStorage.setItem(
+        /*
+           Save using existing storage system
 
-            "VIDHWAAN_SUBSCRIPTION_ID",
+           Required by app.js /
+           subscription-manager.js
 
-            id
+        */
 
-        );
+
+        Storage.saveSubscription({
+
+            uniqueId,
+
+            expires:Number(expires)
+
+        });
+
+
+
 
 
 
@@ -227,7 +248,10 @@ const StatusPage = {
 
         this.elements.subscriptionId.textContent =
 
-        id;
+        uniqueId;
+
+
+
 
 
 
@@ -240,8 +264,8 @@ const StatusPage = {
 
 
 
-        await this.loadInvoice(id);
 
+        await this.loadInvoice(uniqueId);
 
 
 
@@ -254,11 +278,13 @@ const StatusPage = {
 
 
 
-    async loadInvoice(id){
+
+    async loadInvoice(uniqueId){
 
 
 
         try{
+
 
 
             const response =
@@ -268,7 +294,7 @@ const StatusPage = {
 
                 "https://subscriptions.propertiesgrouphyd.online/subscriptions/" +
 
-                encodeURIComponent(id) +
+                encodeURIComponent(uniqueId) +
 
                 ".json",
 
@@ -295,7 +321,7 @@ const StatusPage = {
 
                 throw new Error(
 
-                    "Subscription record not found"
+                    "Invoice record not found"
 
                 );
 
@@ -317,11 +343,14 @@ const StatusPage = {
 
 
 
+
+
             this.elements.invoiceNumber.textContent =
 
             this.data.invoice?.invoiceNumber ||
 
             "-";
+
 
 
 
@@ -336,10 +365,18 @@ const StatusPage = {
 
         }
 
+
         catch(error){
 
 
-            console.error(error);
+
+            console.error(
+
+                "Invoice load failed:",
+
+                error
+
+            );
 
 
         }
@@ -355,7 +392,8 @@ const StatusPage = {
 
 
 
-    downloadInvoice(){
+
+    generateInvoice(){
 
 
 
@@ -365,7 +403,7 @@ const StatusPage = {
 
             alert(
 
-                "Invoice data not loaded."
+                "Invoice data not available."
 
             );
 
@@ -381,7 +419,7 @@ const StatusPage = {
 
 
 
-        const d =
+        const data =
 
         this.data;
 
@@ -389,28 +427,33 @@ const StatusPage = {
 
 
 
+        const company =
 
-        const c =
+        data.company || {};
 
-        d.customer || {};
+
+
+        const customer =
+
+        data.customer || {};
 
 
 
         const gst =
 
-        d.gst || {};
+        data.gst || {};
 
 
 
         const payment =
 
-        d.payment || {};
+        data.payment || {};
 
 
 
         const invoice =
 
-        d.invoice || {};
+        data.invoice || {};
 
 
 
@@ -419,7 +462,7 @@ const StatusPage = {
 
 
 
-        const invoiceHTML = `
+        const html = `
 
 <!DOCTYPE html>
 
@@ -429,7 +472,7 @@ const StatusPage = {
 
 <title>
 
-${invoice.invoiceNumber}
+${invoice.invoiceNumber || "Invoice"}
 
 </title>
 
@@ -448,11 +491,13 @@ color:#111;
 }
 
 
+
 h1{
 
-font-size:28px;
+font-size:24px;
 
 }
+
 
 
 table{
@@ -466,15 +511,15 @@ margin-top:20px;
 }
 
 
+
 td,th{
 
 border:1px solid #ccc;
 
 padding:10px;
 
-text-align:left;
-
 }
+
 
 
 .total{
@@ -484,7 +529,9 @@ font-weight:bold;
 }
 
 
+
 </style>
+
 
 </head>
 
@@ -492,18 +539,37 @@ font-weight:bold;
 <body>
 
 
+
 <h1>
 
-VIDHWAAN TECHNOLOGIES PRIVATE LIMITED
+${company.brand || "VIDHWAAN AI Writer"}
 
 </h1>
 
 
-<h2>
+
+<h3>
 
 TAX INVOICE
 
-</h2>
+</h3>
+
+
+
+<p>
+
+Issued By:
+
+<br>
+
+${company.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
+
+</p>
+
+
+
+<hr>
+
 
 
 
@@ -517,7 +583,6 @@ ${invoice.invoiceNumber || "-"}
 
 
 
-<hr>
 
 
 <h3>
@@ -527,18 +592,28 @@ Customer Details
 </h3>
 
 
+
 <p>
 
-${c.firstName || ""}
+${customer.firstName || ""}
 
-${c.lastName || ""}
+${customer.lastName || ""}
 
 </p>
 
 
 <p>
 
-${c.companyName || ""}
+${customer.companyName || ""}
+
+</p>
+
+
+<p>
+
+Email:
+
+${customer.email || "-"}
 
 </p>
 
@@ -547,7 +622,7 @@ ${c.companyName || ""}
 
 GSTIN:
 
-${c.gstin || "-"}
+${customer.gstin || "-"}
 
 </p>
 
@@ -556,16 +631,7 @@ ${c.gstin || "-"}
 
 State:
 
-${c.state || "-"}
-
-</p>
-
-
-<p>
-
-Address:
-
-${c.address || "-"}
+${customer.state || "-"}
 
 </p>
 
@@ -583,6 +649,7 @@ Description
 
 </th>
 
+
 <th>
 
 Amount
@@ -590,6 +657,7 @@ Amount
 </th>
 
 </tr>
+
 
 
 <tr>
@@ -611,6 +679,7 @@ VIDHWAAN AI Writer Monthly Subscription
 </tr>
 
 
+
 <tr>
 
 <td>
@@ -619,13 +688,16 @@ CGST
 
 </td>
 
+
 <td>
 
 ₹${gst.cgst || 0}
 
 </td>
 
+
 </tr>
+
 
 
 <tr>
@@ -636,13 +708,16 @@ SGST
 
 </td>
 
+
 <td>
 
 ₹${gst.sgst || 0}
 
 </td>
 
+
 </tr>
+
 
 
 <tr>
@@ -653,13 +728,16 @@ IGST
 
 </td>
 
+
 <td>
 
 ₹${gst.igst || 0}
 
 </td>
 
+
 </tr>
+
 
 
 <tr class="total">
@@ -683,6 +761,8 @@ Total Paid
 
 
 </table>
+
+
 
 
 
@@ -711,9 +791,11 @@ ${payment.orderId || "-"}
 
 <p>
 
-Thank you for choosing VIDHWAAN.
+Thank you for choosing VIDHWAAN AI Writer.
 
 </p>
+
+
 
 
 </body>
@@ -729,8 +811,7 @@ Thank you for choosing VIDHWAAN.
 
 
 
-
-        const win =
+        const windowPrint =
 
         window.open(
 
@@ -742,22 +823,25 @@ Thank you for choosing VIDHWAAN.
 
 
 
-        win.document.write(
 
-            invoiceHTML
+
+        windowPrint.document.write(
+
+            html
 
         );
 
 
-        win.document.close();
+        windowPrint.document.close();
 
 
 
 
-        win.onload = ()=>{
+
+        windowPrint.onload = ()=>{
 
 
-            win.print();
+            windowPrint.print();
 
 
         };
@@ -814,7 +898,10 @@ Thank you for choosing VIDHWAAN.
 
         "Payment verification was not completed.";
 
+
+
     },
+
 
 
 
@@ -829,9 +916,13 @@ Thank you for choosing VIDHWAAN.
 
         if(!value){
 
+
             return "-";
 
+
         }
+
+
 
 
 
@@ -845,13 +936,18 @@ Thank you for choosing VIDHWAAN.
 
             {
 
+
                 year:"numeric",
+
 
                 month:"long",
 
+
                 day:"numeric"
 
+
             }
+
 
         );
 
@@ -870,14 +966,14 @@ Thank you for choosing VIDHWAAN.
 
 document.addEventListener(
 
-    "DOMContentLoaded",
+"DOMContentLoaded",
 
-    ()=>{
-
-
-        StatusPage.init();
+()=>{
 
 
-    }
+    StatusPage.init();
+
+
+}
 
 );
