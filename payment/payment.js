@@ -614,8 +614,27 @@ const PaymentPage = {
 
 
 
-    },
+        if(
 
+            !this.busy &&
+
+            e.totalAmount
+
+        ){
+
+
+            e.payButton.textContent =
+
+            "Pay " +
+
+            e.totalAmount.textContent;
+
+
+        }
+
+
+
+    },
 
 
 
