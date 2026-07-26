@@ -1,18 +1,6 @@
 "use strict";
 
 
-/* ==========================================================================
-   VIDHWAAN AI Writer
-
-   Payment Status Controller
-
-   - Save subscription locally
-   - Fetch R2 JSON
-   - Generate Tax Invoice PDF
-
-   ========================================================================== */
-
-
 import Storage from "../engine/storage.js";
 
 
@@ -28,19 +16,19 @@ const StatusPage = {
 
 
 
+
     init(){
 
 
         this.cacheElements();
 
-
         this.bindEvents();
-
 
         this.load();
 
 
     },
+
 
 
 
@@ -59,50 +47,33 @@ const StatusPage = {
         this.elements = {
 
 
-            icon:
-            $("statusIcon"),
+            icon:$("statusIcon"),
 
+            title:$("statusTitle"),
 
-            title:
-            $("statusTitle"),
+            message:$("statusMessage"),
 
+            subscriptionBox:$("subscriptionBox"),
 
-            message:
-            $("statusMessage"),
+            subscriptionId:$("subscriptionId"),
 
+            invoiceNumber:$("invoiceNumber"),
 
-            subscriptionBox:
-            $("subscriptionBox"),
+            expiryDate:$("expiryDate"),
 
+            downloadInvoice:$("downloadInvoice"),
 
-            subscriptionId:
-            $("subscriptionId"),
+            failedBox:$("failedBox"),
 
-
-            invoiceNumber:
-            $("invoiceNumber"),
-
-
-            expiryDate:
-            $("expiryDate"),
-
-
-            downloadInvoice:
-            $("downloadInvoice"),
-
-
-            failedBox:
-            $("failedBox"),
-
-
-            backButton:
-            $("backButton")
+            backButton:$("backButton")
 
 
         };
 
 
     },
+
+
 
 
 
@@ -134,8 +105,6 @@ const StatusPage = {
 
 
 
-
-
         this.elements.downloadInvoice?.addEventListener(
 
             "click",
@@ -149,7 +118,6 @@ const StatusPage = {
             }
 
         );
-
 
 
     },
@@ -207,7 +175,6 @@ const StatusPage = {
         ){
 
 
-
             this.showFailed();
 
 
@@ -222,23 +189,16 @@ const StatusPage = {
 
 
 
-        /*
-           Save using existing storage system
-
-           Required by app.js /
-           subscription-manager.js
-
-        */
-
-
         Storage.saveSubscription({
+
 
             uniqueId,
 
+
             expires:Number(expires)
 
-        });
 
+        });
 
 
 
@@ -254,11 +214,9 @@ const StatusPage = {
 
 
 
-
         this.elements.expiryDate.textContent =
 
-        this.formatDate(expires);
-
+        this.formatDateTime(expires);
 
 
 
@@ -315,13 +273,12 @@ const StatusPage = {
 
 
 
-
             if(!response.ok){
 
 
                 throw new Error(
 
-                    "Invoice record not found"
+                    "Invoice record unavailable"
 
                 );
 
@@ -343,14 +300,9 @@ const StatusPage = {
 
 
 
-
-
             this.elements.invoiceNumber.textContent =
 
-            this.data.invoice?.invoiceNumber ||
-
-            "-";
-
+            this.data.invoice?.invoiceNumber || "-";
 
 
 
@@ -365,14 +317,11 @@ const StatusPage = {
 
         }
 
-
         catch(error){
 
 
 
             console.error(
-
-                "Invoice load failed:",
 
                 error
 
@@ -380,7 +329,6 @@ const StatusPage = {
 
 
         }
-
 
 
     },
@@ -403,7 +351,7 @@ const StatusPage = {
 
             alert(
 
-                "Invoice data not available."
+                "Invoice data unavailable"
 
             );
 
@@ -419,41 +367,22 @@ const StatusPage = {
 
 
 
-        const data =
+        const {
 
-        this.data;
+            seller = {},
 
+            customer = {},
 
+            payment = {},
 
+            gst = {},
 
+            invoice = {},
 
-        const seller =
+            subscription = {}
 
-        data.seller || {};
+        } = this.data;
 
-
-
-        const customer =
-
-        data.customer || {};
-
-
-
-        const gst =
-
-        data.gst || {};
-
-
-
-        const payment =
-
-        data.payment || {};
-
-
-
-        const invoice =
-
-        data.invoice || {};
 
 
 
@@ -477,24 +406,54 @@ ${invoice.invoiceNumber || "Invoice"}
 </title>
 
 
+
 <style>
 
 
 body{
 
-font-family:Arial,sans-serif;
+font-family:Arial,Helvetica,sans-serif;
 
-padding:40px;
+padding:50px;
 
-color:#111;
+color:#111827;
+
+}
+
+
+.header{
+
+border-bottom:2px solid #111827;
+
+padding-bottom:20px;
+
+}
+
+
+.brand{
+
+font-size:30px;
+
+font-weight:700;
+
+}
+
+
+.company{
+
+font-size:16px;
+
+margin-top:8px;
+
+color:#4b5563;
 
 }
 
 
 
-h1{
+h2{
 
-font-size:24px;
+margin-top:30px;
 
 }
 
@@ -506,25 +465,44 @@ width:100%;
 
 border-collapse:collapse;
 
-margin-top:20px;
+margin-top:15px;
 
 }
 
+
+th{
+
+background:#f3f4f6;
+
+}
 
 
 td,th{
 
-border:1px solid #ccc;
+border:1px solid #d1d5db;
 
-padding:10px;
+padding:12px;
 
 }
-
 
 
 .total{
 
 font-weight:bold;
+
+font-size:17px;
+
+}
+
+
+
+.footer{
+
+margin-top:40px;
+
+font-size:14px;
+
+color:#6b7280;
 
 }
 
@@ -536,105 +514,296 @@ font-weight:bold;
 </head>
 
 
+
 <body>
 
 
 
-<h1>
 
-${seller.brand || "VIDHWAAN AI Writer"}
-
-</h1>
+<div class="header">
 
 
+<div class="brand">
 
-<h3>
+${seller.brand}
+
+</div>
+
+
+<div class="company">
+
+${seller.legalName}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<h2>
 
 TAX INVOICE
 
-</h3>
-
-
-
-<p>
-
-Issued By:
-
-<br>
-
-${seller.legalName || "GIDIGI TECHNOLOGIES PRIVATE LIMITED"}
-
-</p>
-
-
-
-<hr>
+</h2>
 
 
 
 
-<p>
 
-Invoice Number:
+<table>
+
+
+<tr>
+
+<td>
+
+Invoice Number
+
+</td>
+
+
+<td>
 
 ${invoice.invoiceNumber || "-"}
 
-</p>
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Invoice Date
+
+</td>
+
+
+<td>
+
+${this.formatDateTime(invoice.issuedAt)}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Payment Date
+
+</td>
+
+
+<td>
+
+${this.formatDateTime(payment.paidAt)}
+
+</td>
+
+
+</tr>
+
+
+</table>
 
 
 
 
 
-<h3>
+
+
+
+<h2>
 
 Customer Details
 
-</h3>
+</h2>
 
 
+<table>
 
-<p>
+
+<tr>
+
+<td>Name</td>
+
+<td>
 
 ${customer.firstName || ""}
 
 ${customer.lastName || ""}
 
-</p>
+</td>
+
+</tr>
 
 
-<p>
 
-${customer.companyName || ""}
+<tr>
 
-</p>
+<td>Company</td>
 
+<td>
 
-<p>
+${customer.companyName || "-"}
 
-Email:
+</td>
 
-${customer.email || "-"}
-
-</p>
+</tr>
 
 
-<p>
 
-GSTIN:
+<tr>
+
+<td>GSTIN</td>
+
+<td>
 
 ${customer.gstin || "-"}
 
-</p>
+</td>
+
+</tr>
 
 
-<p>
 
-State:
+<tr>
+
+<td>State</td>
+
+<td>
 
 ${customer.state || "-"}
 
-</p>
+</td>
 
+</tr>
+
+
+</table>
+
+
+
+
+
+
+
+<h2>
+
+Subscription Details
+
+</h2>
+
+
+
+<table>
+
+
+<tr>
+
+<td>
+
+Plan
+
+</td>
+
+
+<td>
+
+Monthly Subscription
+
+</td>
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Valid From
+
+</td>
+
+
+<td>
+
+${this.formatDateTime(subscription.created)}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Valid Until
+
+</td>
+
+
+<td>
+
+${this.formatDateTime(subscription.expires)}
+
+</td>
+
+
+</tr>
+
+
+
+<tr>
+
+<td>
+
+Duration
+
+</td>
+
+
+<td>
+
+${subscription.days || 30} Days
+
+</td>
+
+
+</tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+
+<h2>
+
+Tax Details
+
+</h2>
 
 
 
@@ -656,6 +825,7 @@ Amount
 
 </th>
 
+
 </tr>
 
 
@@ -664,14 +834,14 @@ Amount
 
 <td>
 
-VIDHWAAN AI Writer Monthly Subscription
+Subscription Value
 
 </td>
 
 
 <td>
 
-₹${gst.taxableAmount || 0}
+₹${this.money(gst.taxableAmount)}
 
 </td>
 
@@ -691,7 +861,7 @@ CGST
 
 <td>
 
-₹${gst.cgst || 0}
+₹${this.money(gst.cgst)}
 
 </td>
 
@@ -711,7 +881,7 @@ SGST
 
 <td>
 
-₹${gst.sgst || 0}
+₹${this.money(gst.sgst)}
 
 </td>
 
@@ -731,7 +901,7 @@ IGST
 
 <td>
 
-₹${gst.igst || 0}
+₹${this.money(gst.igst)}
 
 </td>
 
@@ -740,8 +910,8 @@ IGST
 
 
 
-<tr class="total">
 
+<tr class="total">
 
 <td>
 
@@ -752,12 +922,13 @@ Total Paid
 
 <td>
 
-₹${gst.totalAmount || 0}
+₹${this.money(gst.totalAmount)}
 
 </td>
 
 
 </tr>
+
 
 
 </table>
@@ -766,40 +937,90 @@ Total Paid
 
 
 
-<p>
 
-Payment ID:
+
+
+<h2>
+
+Payment Reference
+
+</h2>
+
+
+
+<table>
+
+
+<tr>
+
+<td>
+
+Payment ID
+
+</td>
+
+
+<td>
 
 ${payment.paymentId || "-"}
 
-</p>
+</td>
+
+
+</tr>
 
 
 
-<p>
+<tr>
 
-Order ID:
+<td>
+
+Order ID
+
+</td>
+
+
+<td>
 
 ${payment.orderId || "-"}
 
-</p>
+</td>
+
+
+</tr>
 
 
 
-<br>
+</table>
 
 
-<p>
 
-Thank you for choosing VIDHWAAN AI Writer.
 
-</p>
+
+
+
+<div class="footer">
+
+
+Thank you for choosing ${seller.brand}.
+
+
+<br><br>
+
+
+Issued by:
+
+${seller.legalName}
+
+
+</div>
+
+
 
 
 
 
 </body>
-
 
 </html>
 
@@ -811,7 +1032,7 @@ Thank you for choosing VIDHWAAN AI Writer.
 
 
 
-        const windowPrint =
+        const win =
 
         window.open(
 
@@ -823,25 +1044,18 @@ Thank you for choosing VIDHWAAN AI Writer.
 
 
 
+        win.document.write(html);
 
 
-        windowPrint.document.write(
-
-            html
-
-        );
-
-
-        windowPrint.document.close();
+        win.document.close();
 
 
 
 
+        win.onload = ()=>{
 
-        windowPrint.onload = ()=>{
 
-
-            windowPrint.print();
+            win.print();
 
 
         };
@@ -858,25 +1072,90 @@ Thank you for choosing VIDHWAAN AI Writer.
 
 
 
+    money(value){
+
+
+        return Number(
+
+            value || 0
+
+        ).toFixed(2);
+
+
+    },
+
+
+
+
+
+
+
+
+
+    formatDateTime(value){
+
+
+
+        if(!value){
+
+
+            return "-";
+
+
+        }
+
+
+
+
+        return new Date(
+
+            Number(value)
+
+        ).toLocaleString(
+
+            "en-IN",
+
+            {
+
+
+                year:"numeric",
+
+                month:"long",
+
+                day:"numeric",
+
+                hour:"2-digit",
+
+                minute:"2-digit"
+
+            }
+
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
     showFailed(){
 
 
 
-        this.elements.subscriptionBox.hidden =
-
-        true;
+        this.elements.subscriptionBox.hidden = true;
 
 
-
-        this.elements.failedBox.hidden =
-
-        false;
+        this.elements.failedBox.hidden = false;
 
 
 
-        this.elements.icon.textContent =
-
-        "!";
+        this.elements.icon.textContent = "!";
 
 
 
@@ -898,58 +1177,6 @@ Thank you for choosing VIDHWAAN AI Writer.
 
         "Payment verification was not completed.";
 
-
-
-    },
-
-
-
-
-
-
-
-
-
-    formatDate(value){
-
-
-
-        if(!value){
-
-
-            return "-";
-
-
-        }
-
-
-
-
-
-        return new Date(
-
-            Number(value)
-
-        ).toLocaleDateString(
-
-            undefined,
-
-            {
-
-
-                year:"numeric",
-
-
-                month:"long",
-
-
-                day:"numeric"
-
-
-            }
-
-
-        );
 
 
     }
