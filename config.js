@@ -27,7 +27,7 @@ window.VW_CONFIG = Object.freeze({
             "/chat/completions",
 
         MODEL:
-            "llama-3.3-70b-versatile"
+            "openai/gpt-oss-120b"
 
     }),
 
