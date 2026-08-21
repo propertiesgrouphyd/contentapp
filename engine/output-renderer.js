@@ -313,25 +313,87 @@ function getText() {
     }
 
 
+    const clone = output.cloneNode(true);
+
+
+    clone
+    .querySelectorAll(
+        "br"
+    )
+    .forEach(br=>{
+
+        br.replaceWith("\n");
+
+    });
+
+
+
+    clone
+    .querySelectorAll(
+        "li"
+    )
+    .forEach(li=>{
+
+
+        const parent =
+            li.parentElement;
+
+
+        if(
+            parent &&
+            parent.tagName === "OL"
+        ){
+
+            li.textContent =
+                " " +
+                (Array.from(parent.children)
+                .indexOf(li)+1)
+                +
+                ". "
+                +
+                li.textContent;
+
+
+        }
+        else{
+
+            li.textContent =
+                "• " +
+                li.textContent;
+
+        }
+
+
+    });
+
+
+
+    clone
+    .querySelectorAll(
+        "p,h1,h2,h3,h4,h5,h6,blockquote"
+    )
+    .forEach(block=>{
+
+        block.after(
+            document.createTextNode("\n\n")
+        );
+
+    });
+
+
+
     let text =
-
-        output.innerText ||
-
-        output.textContent ||
-
+        clone.innerText ||
+        clone.textContent ||
         "";
 
 
-    text = text
 
-        .replace(/\r\n/g, "\n")
+    return text
 
-        .replace(/\n{3,}/g, "\n\n")
+        .replace(/\n{3,}/g,"\n\n")
 
         .trim();
-
-
-    return text;
 
 }
 
