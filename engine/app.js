@@ -455,29 +455,36 @@ const App = {
 
             }
 
-            const subscription =
-
-                await SubscriptionManager.check();
-
-            this.state.subscription = subscription;
-
-            if (!subscription.active) {
+            if (!VW_CONFIG.FREE_MODE) {
 
 
-                this.setGenerating(false);
+                const subscription =
+
+                    await SubscriptionManager.check();
 
 
-                this.showModal(
-                    e.paymentModal
-                );
+                this.state.subscription = subscription;
 
 
-                this.updateStatus(
-                    "Subscription Required"
-                );
+                if (!subscription.active) {
 
 
-                return;
+                    this.setGenerating(false);
+
+
+                    this.showModal(
+                        e.paymentModal
+                    );
+
+
+                    this.updateStatus(
+                        "Subscription Required"
+                    );
+
+
+                    return;
+
+                }
 
             }
 
