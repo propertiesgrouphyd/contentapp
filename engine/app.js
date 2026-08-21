@@ -621,63 +621,103 @@ const App = {
 
     async refreshSubscriptionUI() {
 
+
+        if (VW_CONFIG.FREE_MODE) {
+
+
+            if (this.elements.subscriptionStatus) {
+
+                this.elements.subscriptionStatus.textContent =
+                    "Free Mode";
+
+            }
+
+
+            if (this.elements.subscriptionButton) {
+
+                this.elements.subscriptionButton.textContent =
+                    "Free Access";
+
+                this.elements.subscriptionButton.disabled =
+                    true;
+
+            }
+
+
+            return;
+
+        }
+
+
+
         try {
+
 
             const sub =
 
                 await SubscriptionManager.check();
 
+
             this.state.subscription = sub;
 
+
+
             if (sub.active) {
+
 
                 if (this.elements.subscriptionStatus) {
 
                     this.elements.subscriptionStatus.textContent =
-
                         "Activated";
 
                 }
 
+
                 if (this.elements.subscriptionButton) {
 
                     this.elements.subscriptionButton.textContent =
-
                         "Subscription Active";
 
-                    this.elements.subscriptionButton.disabled = true;
+                    this.elements.subscriptionButton.disabled =
+                        true;
 
                 }
+
 
             }
 
             else {
 
+
                 if (this.elements.subscriptionStatus) {
 
                     this.elements.subscriptionStatus.textContent =
-
                         "Not Activated";
 
                 }
 
+
                 if (this.elements.subscriptionButton) {
 
                     this.elements.subscriptionButton.textContent =
-
                         "Get Subscription ₹30 / Month";
 
-                    this.elements.subscriptionButton.disabled = false;
+                    this.elements.subscriptionButton.disabled =
+                        false;
 
                 }
 
+
             }
+
 
         }
 
-        catch (error) {
+        catch(error) {
 
-            console.error(error);
+            console.error(
+                error
+            );
 
         }
 
