@@ -63,7 +63,7 @@ window.VW_CONFIG = Object.freeze({
     SUBSCRIPTION: Object.freeze({
 
         R2_URL:
-            "https://subscriptions.propertiesgrouphyd.online/subscriptions",
+            "https://subscriptions.gidigi.in/subscriptions",
 
         CHECK_INTERVAL:
             24 * 60 * 60 * 1000
