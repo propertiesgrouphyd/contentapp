@@ -275,7 +275,7 @@ const StatusPage = {
             await fetch(
 
 
-                "https://subscriptions.propertiesgrouphyd.online/subscriptions/" +
+                "https://subscriptions.gidigi.in/subscriptions/" +
 
 
                 encodeURIComponent(uniqueId) +
