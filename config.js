@@ -18,7 +18,7 @@ window.VW_CONFIG = Object.freeze({
         false,
 
     FREE_MODE:
-        true,
+        false,
 
 
     API: Object.freeze({
